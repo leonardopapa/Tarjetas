@@ -12,6 +12,10 @@
         <servlet-name>Controlador2</servlet-name>
         <servlet-class>Controlador.Controlador2</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ControladorBuscar</servlet-name>
+        <servlet-class>Controlador.ControladorBuscar</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ControladorTarjetas</servlet-name>
         <url-pattern>/ControladorTarjetas</url-pattern>
@@ -23,6 +27,10 @@
     <servlet-mapping>
         <servlet-name>Controlador2</servlet-name>
         <url-pattern>/Controlador2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControladorBuscar</servlet-name>
+        <url-pattern>/ControladorBuscar</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

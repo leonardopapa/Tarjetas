@@ -129,8 +129,9 @@
 
                             </div>
                             <div class="col">
-                                <div class="card""> 
-                                    <form action="ControladorTarjetas" method="POST">
+
+                                <form action="ControladorTarjetas" method="POST">
+                                    <div class="card""> 
                                         <table id="tblTarjetas" class="table table-striped" style="width:100%">
                                             <thead>
                                                 <tr>
@@ -146,11 +147,13 @@
                                             </tbody>
                                         </table>
 
-                                </div>
-                                <br>
-                                <button type="submit" class="btn btn-danger" >Finalizar</button>
+                                    </div>
+                                    <br>
+                                    <input type="hidden" name="accion" value="capturar">
+                                    
+                                    <button type="submit" class="btn btn-danger" >Finalizar</button>
 
-                                <button type="button" class="btn btn-danger" onclick="cancelar()">Cancelar</button>
+                                    <button type="button" class="btn btn-danger" onclick="cancelar()">Cancelar</button>
 
                                 </form>
                             </div>
@@ -226,7 +229,7 @@
                 // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
                 var celdaEliminar = fila.insertCell(2);
                 celdaEliminar.innerHTML = '<button onclick="eliminarFila(' + contadorFilas + ')"><i class="fas fa-trash-alt"></i></button>';
-                
+
 
                 // Limpiar los valores de los input
                 document.getElementById("inputCuenta").value = '';

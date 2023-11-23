@@ -1,14 +1,19 @@
 package Controlador;
 
 import Modelo.Estado;
+import Modelo.Movimiento;
+import Modelo.MovimientoDAO;
+import Modelo.Operador;
 import Modelo.Tarjeta;
 import Modelo.TarjetaDAO;
+import Modelo.Ubicacion;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -132,9 +137,12 @@ public class ControladorTarjetas extends HttpServlet {
                 request.getRequestDispatcher(respuesta).forward(request, response);
                  */
                 break;
-                
-            case "buscarFechaEmison":
-                String cuenta = request.getParameter("cuenta");
+
+            case "buscar":
+                // String cuenta = request.getParameter("cuenta");
+                String cuenta = "4444";
+                out.println("Buscando cuenta:" + cuenta);
+                /*
                 TarjetaDAO tdao = new TarjetaDAO();
                 String resultado = tdao.buscar(cuenta);
                 // out.println("resultado = "+resultado);
@@ -143,8 +151,9 @@ public class ControladorTarjetas extends HttpServlet {
                     out.println("no encontrado");
                 } else {
                     request.setAttribute("fechaEmision", resultado);
-                    out.println(resultado);
+                    out.println("Encontrado:" + resultado);
                 }
+                 */
                 break;
 
             default:
@@ -165,6 +174,7 @@ public class ControladorTarjetas extends HttpServlet {
             throws ServletException, IOException {
 
         PrintWriter out = response.getWriter();
+        String accion ="";
 
         // Obtener los parámetros del formulario
         Enumeration<String> parametros = request.getParameterNames();
@@ -191,11 +201,13 @@ public class ControladorTarjetas extends HttpServlet {
                 } catch (ParseException ex) {
                     Logger.getLogger(ControladorTarjetas.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            } else if (parametro.startsWith("accion")) {
+                accion = request.getParameter("accion");
             }
         }
 
-        // Mostrar los resultados
-        /*
+        //Mostrar los resultados
+        
         out.println("<html>");
         out.println("<head>");
         out.println("<title>Resultado</title>");
@@ -211,45 +223,105 @@ public class ControladorTarjetas extends HttpServlet {
         out.println("</ul>");
 
         out.println("Cantidad=" + indiceCuentas);
-        */
+        
+        switch (accion) {
+            case "capturar":
+                int exitos = 0;
+                int fracasos = 0;
 
-        int exitos = 0;
-        int fracasos = 0;
+                // Iterar sobre los datos y guardarlos en la base de datos
+                for (int i = 0; i < indiceCuentas; i++) {
+                    out.println("<br> Indice:" + i);
+                    Movimiento movimiento = new Movimiento();
+                    Estado estado = new Estado();
+                    estado.setId(1); // Impresa
+                    movimiento.setMovimiento(estado);
+                    Operador operador = new Operador();
+                    operador.setId(11); // Operador ficticio
+                    MovimientoDAO mdao = new MovimientoDAO();
+                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
+                    movimiento.setFecha(Date.valueOf(fechas[i]));
+                    movimiento.setOperador(operador);
+                    boolean resultado = mdao.agregarNuevo(movimiento);
+                    if (resultado) {
+                        exitos++;
 
-        // Iterar sobre los datos y guardarlos en la base de datos
-        for (int i = 0; i < indiceCuentas; i++) {
-            out.println("<br> Indice:" + i);
-            Tarjeta tarjeta = new Tarjeta();
-            Estado estado = new Estado();
-            estado.setId(1); // Impresa
-            tarjeta.setEstado(estado);
-            
-            TarjetaDAO tdao = new TarjetaDAO();
-            
-            tarjeta.setCliente(Integer.parseInt(cuentas[i]));
-            
-            tarjeta.setFechaEmision(Date.valueOf(fechas[i]));
-            
-            out.println(tarjeta.toString());
-            boolean resultado = tdao.agregar(tarjeta);
-            if (resultado) {
-                exitos++;
-            } else {
-                fracasos++;
-            }
+                    } else {
+                        fracasos++;
+                    }
+                }
+                request.setAttribute("exitos", exitos);
+                request.setAttribute("fracasos", fracasos);
+                /*
+                out.println("<br> Exitos=" + exitos);
+                out.println("<br> Fracasos=" + fracasos);
+                out.println("</body>");
+                out.println("</html>");
+                 */
+
+                out.println("<script>alert('Datos grabados');</script>");
+
+                request.getRequestDispatcher("Controlador2").forward(request, response);
+                
+            case "enviar":
+                out.println("Enviar");
+                String correo = request.getParameter("correo");
+                String fechaEnvio = request.getParameter("fenvio");
+                out.println("Correo: "+correo);
+                out.println("fechaEnvio: "+fechaEnvio);
+                
+                // Iterar sobre los datos y guardarlos en la base de datos
+                boolean resultado = false;
+                for (int i = 0; i < indiceCuentas; i++) {
+                    out.println("Indice:" + i);
+                    Movimiento movimiento = new Movimiento();
+                    Estado estado = new Estado();
+                    estado.setId(2); // En Distribución
+                    movimiento.setMovimiento(estado);
+                    Operador operador = new Operador();
+                    operador.setId(11); // Operador ficticio
+                    Ubicacion correo2 = new Ubicacion();                    
+                    correo2.setId(Integer.parseInt(correo));
+                    out.println("Llegué hasta aqui 0");
+                    MovimientoDAO mdao = new MovimientoDAO();
+                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
+                    out.println("Llegué hasta aqui 1");
+                    movimiento.setFecha(Date.valueOf(fechaEnvio));
+                    out.println("Llegué hasta aqui 2");
+                    movimiento.setOperador(operador);
+                    out.println("Llegué hasta aqui 3");
+                    movimiento.setUbicacion(correo2);
+                    out.println("Llegué hasta aqui 4");
+                    resultado = mdao.agregarEnviar(movimiento);                    
+                }
+                request.setAttribute("resultado", resultado);                
+                /*
+                out.println("<br> Exitos=" + exitos);
+                out.println("<br> Fracasos=" + fracasos);
+                out.println("</body>");
+                out.println("</html>");
+                 */
+
+                out.println("<script>alert('Datos grabados');</script>");
+
+                request.getRequestDispatcher("Controlador2").forward(request, response);
+                break;
+                
+            case "consultar":
+                // Generar lista de movimientos.                
+                String cuenta = request.getParameter("bcuenta");                
+                MovimientoDAO mdao = new MovimientoDAO();
+                List<Movimiento> lista = mdao.listar(cuenta);
+                request.setAttribute("mlista", lista);                
+                request.setAttribute("cuentab", cuenta);  
+                request.getRequestDispatcher("consultar2.jsp").forward(request, response);
+                break;
+
+            default:
+                out.println("No se especificó una acción válida");
+                break;
+
         }
-        request.setAttribute("exitos", exitos);
-        request.setAttribute("fracasos", fracasos);
-        /*
-        out.println("<br> Exitos=" + exitos);
-        out.println("<br> Fracasos=" + fracasos);
-        out.println("</body>");
-        out.println("</html>");
-        */
-        
-        out.println("<script>alert('Datos grabados');</script>");
-        
-        request.getRequestDispatcher("Controlador2").forward(request, response);
 
     }
 

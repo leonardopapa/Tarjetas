@@ -32,6 +32,7 @@ public class TarjetaDAO {
                 ps.setInt(3,estado);                
                 ps.setDate(4,fecha);
                 resultado = ps.execute();
+                System.out.println("Resultado:"+resultado);    
             } catch (Exception e) {          
                 System.out.println(e.toString());                
                 System.out.println("Error al agregar la tarjeta");
@@ -99,7 +100,7 @@ public class TarjetaDAO {
         try {
             // Registrar la solicitud
             con = cn.Conexion();
-            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cuit=? and estado=1");
+            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and (estado=1 or estado=5");
             ps.setInt(1, Integer.parseInt(cuenta));            
             rs = ps.executeQuery();
             

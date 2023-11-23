@@ -1,6 +1,6 @@
 package Modelo;
 
-class Operador {
+public class Operador {
     
     private int id;
     private String nombre, email, password;

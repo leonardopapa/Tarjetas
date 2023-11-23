@@ -2,7 +2,7 @@ package Modelo;
 
 import com.itextpdf.layout.Document;
 
-class Documento {
+public class Documento {
     
     private int id;
     private String numero;

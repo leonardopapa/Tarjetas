@@ -98,7 +98,7 @@
 
                                     <label for="inputCuenta" class="col-form-label">Cuenta:</label>
                                     <div class="col">
-                                        <input type="text" class="form-control" id="inputCuenta" name="bcuenta">
+                                        <input type="text" class="form-control" id="inputCuenta" name="bcuenta" value="${cuentab}">
                                     </div>
 
                                     <br>
@@ -119,6 +119,12 @@
                         <div class="card"> 
                             Movimientos  
 
+                            <%
+                                List<Movimiento> lista = (List<Movimiento>) request.getAttribute("mlista");
+                            %>
+
+
+
                             <table id=" tarjetas" class="table table-striped" style="width:100%">
                                 <thead>
                                     <tr>
@@ -131,7 +137,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-
+                                    <% for (Movimiento movimiento : lista) {%>
+                                    <tr>                                        
+                                        <td><%= movimiento.getFecha()%></td>
+                                        <td><%= movimiento.getMovimiento().getNombre()%></td>
+                                        <td><%= movimiento.getUbicacion().getNombre()%></td>
+                                        <td><%= movimiento.getMotivo().getNombre()%></td>                                        
+                                    </tr>
+                                    <% }%>
                                 </tbody>
                             </table>
                         </div>
@@ -147,7 +160,7 @@
             </section>
 
         </div>
-        
+
         <script>
 
             function cancelar() {
@@ -157,7 +170,6 @@
                 }
             }
         </script>
-
     </body>
 
 </html>
