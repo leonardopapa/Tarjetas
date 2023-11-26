@@ -8,32 +8,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- *
- * @author Leandro
- */
-public class ControladorBuscar extends HttpServlet {
+public class ControladorBuscar2 extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-
-        String cuenta = request.getParameter("inputCuenta");
-        // out.println("Buscando cuenta:" + cuenta);
+        String cuenta = request.getParameter("cuenta");        
         TarjetaDAO tdao = new TarjetaDAO();
-        String resultado = tdao.buscar(cuenta);
-        // out.println("resultado = "+resultado);
+        String resultado = tdao.buscar2(cuenta,"2","fecha_imposicion");     
         if (resultado.isEmpty()) {
-            request.setAttribute("fechaEmision", "no encontrado");
+            // request.setAttribute("resultado", "no encontrado");
             out.println("no encontrado");
         } else {
-            request.setAttribute("fechaEmision", resultado);
+            request.setAttribute("resultado", resultado);
             out.println(resultado);
         }
     }
 
-    @Override
+     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);

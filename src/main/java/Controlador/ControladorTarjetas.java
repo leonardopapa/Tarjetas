@@ -1,6 +1,7 @@
 package Controlador;
 
 import Modelo.Estado;
+import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
@@ -138,24 +139,6 @@ public class ControladorTarjetas extends HttpServlet {
                  */
                 break;
 
-            case "buscar":
-                // String cuenta = request.getParameter("cuenta");
-                String cuenta = "4444";
-                out.println("Buscando cuenta:" + cuenta);
-                /*
-                TarjetaDAO tdao = new TarjetaDAO();
-                String resultado = tdao.buscar(cuenta);
-                // out.println("resultado = "+resultado);
-                if (resultado.isEmpty()) {
-                    request.setAttribute("fechaEmision", "no encontrado");
-                    out.println("no encontrado");
-                } else {
-                    request.setAttribute("fechaEmision", resultado);
-                    out.println("Encontrado:" + resultado);
-                }
-                 */
-                break;
-
             default:
                 out.println("No se especificó una acción válida");
                 break;
@@ -182,6 +165,8 @@ public class ControladorTarjetas extends HttpServlet {
         // Arrays para almacenar cuentas y fechas
         String[] cuentas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
         String[] fechas = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
+        String[] motivos = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
+        String[] estados = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
 
         int indiceCuentas = 0;
         int indiceFechas = 0;
@@ -190,7 +175,7 @@ public class ControladorTarjetas extends HttpServlet {
         while (parametros.hasMoreElements()) {
             String parametro = parametros.nextElement();
 
-            // Verificar si el parámetro es de tipo "cuenta" o "fecha"
+            // Verificar si el parámetro es de tipo "cuenta", "fecha", "accion, "motivo" o "resultado"
             if (parametro.startsWith("cuenta")) {
                 cuentas[indiceCuentas++] = request.getParameter(parametro);
             } else if (parametro.startsWith("fecha")) {
@@ -202,7 +187,11 @@ public class ControladorTarjetas extends HttpServlet {
                     Logger.getLogger(ControladorTarjetas.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (parametro.startsWith("accion")) {
-                accion = request.getParameter("accion");
+                accion = request.getParameter("accion");                
+            } else if (parametro.startsWith("motivo")) {
+                motivos[indiceCuentas-1] = request.getParameter(parametro);
+            } else if (parametro.startsWith("resultado")) {
+                estados[indiceCuentas-1] = request.getParameter(parametro);
             }
         }
 
@@ -217,7 +206,7 @@ public class ControladorTarjetas extends HttpServlet {
         out.println("<ul>");
 
         for (int i = 0; i < indiceCuentas; i++) {
-            out.println("<li>" + i + ": " + cuentas[i] + " // " + fechas[i] + "</li>");
+            out.println("<li> " + i + " - Cuenta: " + cuentas[i] + " // Fecha: " + fechas[i] + " // Estado: " +estados[i] +" // Motivo:"+ motivos[i] +"</li>");
         }
 
         out.println("</ul>");
@@ -315,6 +304,63 @@ public class ControladorTarjetas extends HttpServlet {
                 request.setAttribute("mlista", lista);                
                 request.setAttribute("cuentab", cuenta);  
                 request.getRequestDispatcher("consultar2.jsp").forward(request, response);
+                break;
+                
+            case "recibir":
+                out.println("RECIBIR");
+                String correo2 = request.getParameter("correo");
+                String fechaRendicion = request.getParameter("frend");
+                String nroRendicion = request.getParameter("nrend");
+                out.println("Correo: "+correo2);
+                out.println("Fecha de Rendición: "+fechaRendicion);
+                out.println("Numero de Rendicion: "+ nroRendicion);
+                                
+                // Iterar sobre los datos y guardarlos en la base de datos
+                boolean resultado2 = false;
+                for (int i = 0; i < indiceCuentas; i++) {
+                    out.println("Indice:" + i);
+                    Movimiento movimiento = new Movimiento();
+                    Estado estado = new Estado();
+                    estado.setId(Integer.parseInt(estados[i])); // Entregada o devuelta 
+                    movimiento.setMovimiento(estado);
+                    Operador operador = new Operador();
+                    operador.setId(11); // Operador ficticio
+                    Ubicacion correo3 = new Ubicacion();                    
+                    correo3.setId(Integer.parseInt(correo2));
+                    //out.println("Llegué hasta aqui 0");
+                    MovimientoDAO mdao3 = new MovimientoDAO();
+                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
+                    //out.println("Llegué hasta aqui 1");
+                    movimiento.setFecha(Date.valueOf(fechaRendicion));
+                    //out.println("Llegué hasta aqui 2");
+                    movimiento.setOperador(operador);
+                    //out.println("Llegué hasta aqui 3");
+                    movimiento.setUbicacion(correo3);
+                    // out.println("Llegué hasta aqui 4");
+                    
+                    if (!(motivos[i].isEmpty())) {
+                        out.println("Motivo no vacío:" + i);
+                        Motivo motivo = new Motivo();
+                        motivo.setId(Integer.parseInt(motivos[i]));
+                        movimiento.setMotivo(motivo);
+                        resultado2 = mdao3.agregarRecibir(movimiento);                    
+                    } else {
+                        out.println("Motivo vacío:" + i);
+                        resultado2 = mdao3.agregarRecibir2(movimiento);                    
+                    }
+                    
+                }
+                request.setAttribute("resultado", resultado2);                
+                /*
+                out.println("<br> Exitos=" + exitos);
+                out.println("<br> Fracasos=" + fracasos);
+                out.println("</body>");
+                out.println("</html>");
+                 */
+
+                out.println("<script>alert('Datos grabados');</script>");
+
+                request.getRequestDispatcher("Controlador2").forward(request, response);
                 break;
 
             default:

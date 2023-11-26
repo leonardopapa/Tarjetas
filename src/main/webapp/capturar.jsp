@@ -171,7 +171,6 @@
 
             var contadorFilas = 0;
 
-
             function agregarFila() {
                 // Obtener los valores de los input
                 var cuenta = document.getElementById("inputCuenta").value;

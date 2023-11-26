@@ -56,6 +56,62 @@ public class MovimientoDAO {
             return resultado;
         }    
     
+    public boolean agregarRecibir(Movimiento movimiento) {
+            con = cn.Conexion();
+            boolean resultado = false;                            
+            String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, MOTIVO, OPERADOR) VALUES(?,?, ?, ?, ?);";                  
+            
+            System.out.println(movimiento.getFecha());
+            System.out.println(movimiento.getCliente());
+            System.out.println(movimiento.getMovimiento().getId());
+            System.out.println(movimiento.getMotivo().getId());
+            System.out.println(movimiento.getOperador().getId());
+            
+            try {
+                ps = con.prepareStatement(sql);
+                ps.setDate(1,movimiento.getFecha());
+                ps.setInt(2,movimiento.getCliente());
+                ps.setInt(3,movimiento.getMovimiento().getId());
+                ps.setInt(4,movimiento.getMotivo().getId());                
+                ps.setInt(5,movimiento.getOperador().getId());                                
+                resultado = ps.execute();
+                System.out.println("Resultado movimiento:"+resultado);    
+            } catch (Exception e) {          
+                System.out.println(e.toString());                
+                System.out.println("Error al agregar el movimiento");
+                return resultado;         
+            }            
+            cn.Desconectar();
+            return resultado;
+        }    
+    
+    public boolean agregarRecibir2(Movimiento movimiento) {
+            con = cn.Conexion();
+            boolean resultado = false;                            
+            String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, OPERADOR) VALUES(?,?, ?, ?);";                  
+            
+            System.out.println(movimiento.getFecha());
+            System.out.println(movimiento.getCliente());
+            System.out.println(movimiento.getMovimiento().getId());
+            System.out.println(movimiento.getOperador().getId());
+            
+            try {
+                ps = con.prepareStatement(sql);
+                ps.setDate(1,movimiento.getFecha());
+                ps.setInt(2,movimiento.getCliente());
+                ps.setInt(3,movimiento.getMovimiento().getId());                           
+                ps.setInt(4,movimiento.getOperador().getId());                                
+                resultado = ps.execute();
+                System.out.println("Resultado movimiento:"+resultado);    
+            } catch (Exception e) {          
+                System.out.println(e.toString());                
+                System.out.println("Error al agregar el movimiento");
+                return resultado;         
+            }            
+            cn.Desconectar();
+            return resultado;
+        }    
+    
     
     public List listar(String cuenta) {
         // Devuelve la lista de movimeinto de una cuenta
