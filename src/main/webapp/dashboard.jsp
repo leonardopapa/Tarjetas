@@ -209,7 +209,7 @@
                 data: {
                     labels: ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'],
                     datasets: [{
-                            label: 'dÃ­as promedio',
+                            label: 'dí­as promedio',
                             data: [7.5, 8, 10, 15, 9, 12],
                             borderWidth: 1
                         }]

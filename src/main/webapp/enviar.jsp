@@ -199,7 +199,7 @@
 
                 // Validar que los campos no estén vacíos
                 if (cuenta === '') {
-                    alert('Por favor, ingrese una cuneta.');
+                    alert('Por favor, ingrese una cuenta.');
                     return;
                 }
 
@@ -313,7 +313,7 @@
             }
 
             function cancelar() {
-                var confirmacion = confirm("¿Está seguro de que desea cancelar?");
+                var confirmacion = confirm("¿Está seguro de que desea salir?");
                 if (confirmacion) {
                     window.location.href = "index.jsp";
                 }

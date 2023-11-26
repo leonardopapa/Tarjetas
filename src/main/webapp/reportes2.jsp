@@ -1,3 +1,6 @@
+<%@page import="Modelo.Reporte"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.util.List"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -178,10 +181,10 @@
                 
                                             <br>
                                             -->
-                                            
+
                                             <input type="hidden" name="accion" value="reportes">
 
-                                            <button type="button" class="btn btn-danger" onclick="obtenerReporte();">Obtener Reporte</button>
+                                            <button type="button" class="btn btn-danger" onlick="obtenerReporte();">Obtener Reporte</button>
 
                                             <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
 
@@ -199,6 +202,40 @@
 
                                     <div class="card-body"> 
                                         <h6>Resultados</h6>
+
+                                        <% if (response.getStatus() == 200) {
+
+                                                List<String> titulos = (List<String>) request.getAttribute("titulos");
+                                                List<Reporte> reporte = (List<Reporte>) request.getAttribute("reporte");
+
+                                        %>
+
+                                        <table id="tblReporte" class="table table-striped" style="width:100%">
+                                            <thead>
+                                                <tr>
+
+                                                    <% for (String columna : titulos) {%>
+
+                                                    <th><%= columna%></th>
+
+                                                    <% }%>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                <% for (Reporte columna: reporte) {%>
+                                                <tr>
+                                                    <td> <%= columna.getDescripcion() %></td>
+                                                    <td> <%= columna.getCantidad() %> </td>
+                                                </tr>
+
+                                                <% }%>
+                                            </tbody>
+                                        </table> <%
+                                        }                                       
+                                        %>
+
                                     </div>
                                 </div>
 
@@ -215,7 +252,7 @@
 
         <script>
 
-            function obtenerReporte() {
+           function obtenerReporte() {
                 
                 // Validar datos de entreda                
                 var reporte = document.getElementById("selReporte");

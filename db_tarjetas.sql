@@ -208,6 +208,32 @@ INSERT INTO `operadores` VALUES (6,'Rossana Torres','rossana@credinas.com.ar',1,
 UNLOCK TABLES;
 
 --
+-- Temporary view structure for view `rapidez_x_fecha_imposicion`
+--
+
+DROP TABLE IF EXISTS `rapidez_x_fecha_imposicion`;
+/*!50001 DROP VIEW IF EXISTS `rapidez_x_fecha_imposicion`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `rapidez_x_fecha_imposicion` AS SELECT 
+ 1 AS `mes`,
+ 1 AS `rapidez`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `rapidez_x_fecha_rendicion`
+--
+
+DROP TABLE IF EXISTS `rapidez_x_fecha_rendicion`;
+/*!50001 DROP VIEW IF EXISTS `rapidez_x_fecha_rendicion`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `rapidez_x_fecha_rendicion` AS SELECT 
+ 1 AS `mes`,
+ 1 AS `rapidez`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `roles`
 --
 
@@ -314,6 +340,19 @@ INSERT INTO `ubicaciones` VALUES (17,'Tucuman',1),(18,'Banda Rio Sali',1),(19,'C
 UNLOCK TABLES;
 
 --
+-- Temporary view structure for view `vista_motivos`
+--
+
+DROP TABLE IF EXISTS `vista_motivos`;
+/*!50001 DROP VIEW IF EXISTS `vista_motivos`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `vista_motivos` AS SELECT 
+ 1 AS `causa`,
+ 1 AS `cantidad`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Temporary view structure for view `vista_movimientos`
 --
 
@@ -347,8 +386,144 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Dumping events for database 'tarjetas'
+--
+
+--
 -- Dumping routines for database 'tarjetas'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `motivos` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `motivos`(
+    IN fecha_inicial DATE,
+    IN fecha_final DATE
+)
+BEGIN
+    select motivos.nombre causa, count(*) as cantidad from movimientos
+	inner join motivos on movimientos.motivo = motivos.id
+    WHERE movimientos.fecha BETWEEN fecha_inicial AND fecha_final
+    GROUP BY causa
+order by cantidad;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `tarjetas_x_estado_impos` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `tarjetas_x_estado_impos`(
+    IN fecha_inicial DATE,
+    IN fecha_final DATE
+)
+BEGIN
+    SELECT estados.nombre AS estado, COUNT(*) AS cantidad
+    FROM tarjetas.tarjetas
+    INNER JOIN tarjetas.estados ON tarjetas.estado = estados.id
+    WHERE tarjetas.fecha_imposicion BETWEEN fecha_inicial AND fecha_final
+    GROUP BY estados.nombre;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `tarjetas_x_estado_rend` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `tarjetas_x_estado_rend`(
+    IN fecha_inicial DATE,
+    IN fecha_final DATE
+)
+BEGIN
+    SELECT estados.nombre AS estado, COUNT(*) AS cantidad
+    FROM tarjetas.tarjetas
+    INNER JOIN tarjetas.estados ON tarjetas.estado = estados.id
+    WHERE tarjetas.fecha_rendicion BETWEEN fecha_inicial AND fecha_final
+    GROUP BY estados.nombre;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Final view structure for view `rapidez_x_fecha_imposicion`
+--
+
+/*!50001 DROP VIEW IF EXISTS `rapidez_x_fecha_imposicion`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `rapidez_x_fecha_imposicion` AS select concat(year(`tarjetas`.`fecha_imposicion`),'-',lpad(month(`tarjetas`.`fecha_imposicion`),2,'0')) AS `mes`,avg((`tarjetas`.`fecha_rendicion` - `tarjetas`.`fecha_imposicion`)) AS `rapidez` from `tarjetas` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `rapidez_x_fecha_rendicion`
+--
+
+/*!50001 DROP VIEW IF EXISTS `rapidez_x_fecha_rendicion`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `rapidez_x_fecha_rendicion` AS select concat(year(`tarjetas`.`fecha_rendicion`),'-',lpad(month(`tarjetas`.`fecha_rendicion`),2,'0')) AS `mes`,avg((`tarjetas`.`fecha_rendicion` - `tarjetas`.`fecha_imposicion`)) AS `rapidez` from `tarjetas` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vista_motivos`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vista_motivos`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vista_motivos` AS select `motivos`.`nombre` AS `causa`,count(0) AS `cantidad` from (`movimientos` join `motivos` on((`movimientos`.`motivo` = `motivos`.`id`))) group by `causa` order by `cantidad` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
 -- Final view structure for view `vista_movimientos`
@@ -395,4 +570,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-26  9:57:21
+-- Dump completed on 2023-11-26 18:29:45
