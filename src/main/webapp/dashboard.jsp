@@ -82,45 +82,50 @@
 
                 <div class="card" style="margin:20px">
                     <div class="card-body">
-                        <div class="row">
 
+                        <form action="ControladorTarjetas" method="post" id="frmDashboard">
+                            <div class="row">
 
-                            <div class="col">
-                                Correo
+                                <div class="col">
 
-                                <select class="form-select" id="selCorreo">
-                                    <option selected>Seleccione el Correo</option>
-                                    <option value="29">Servicios Modernos</option>
-                                    <option value="32">Dago</option>
-                                    <option value="30">Flash</option>
-                                    <option value="33">La Veloz</option>
-                                    <option value="31">Coprisa</option>
-                                </select>
+                                    <label for="selCorreo"> Correo: </label>
+
+                                    <select class="form-select" id="selCorreo" name="correo">
+                                        <option selected>Seleccione el Correo</option>
+                                        <option value="29">Servicios Modernos</option>
+                                        <option value="32">Dago</option>
+                                        <option value="30">Flash</option>
+                                        <option value="33">La Veloz</option>
+                                        <option value="31">Coprisa</option>
+                                    </select>
+
+                                </div>
+
+                                <div class="col">
+                                    Fecha Desde:
+                                    <br>
+
+                                    <input type="date" class="form-control" id="fecha-desde" name="desde" value="2023-01-01">
+                                </div>
+
+                                <div class="col">
+                                    Fecha Hasta:
+                                    <br>
+
+                                    <input type="date" class="form-control" id="fecha-hasta" name="hasta" value="2023-12-31">
+                                </div>
+
+                                <div class="col">
+
+                                    <input type="hidden" name="accion" value="dashboard">
+
+                                    <button type="button" class="btn btn-info btn-lg" onclick="filtrar();">Confirmar</button>
+                                </div>
 
                             </div>
-
-
-                            <div class="col">
-                                Fecha Desde:
-                                <br>
-
-                                <input type="date" class="form-control" id="fecha-desde">
-                            </div>
-
-                            <div class="col">
-                                Fecha Hasta:
-                                <br>
-
-                                <input type="date" class="form-control" id="fecha-hasta">
-                            </div>
-
-                            <div class="col">
-                                <button type="button" class="btn btn-info btn-lg">Confirmar</button>
-                            </div>
-
-                        </div>
-
+                        </form>
                     </div>
+
                 </div>
 
                 <div class="card" style="margin:20px">
@@ -181,51 +186,99 @@
         </div>
 
         <script>
-            const ctx = document.getElementById('efectividad');
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'],
-                    datasets: [{
-                            label: '% de efectividad',
-                            data: [82, 75, 85, 79, 73, 80],
-                            borderWidth: 1
-                        }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+            // Obtener los KPI para el rango de fechas por defecto
+
+            var desde_init = '2023-01-01';
+            var hasta_init = '2023-12-31';
+            var meses = ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'];
+            var efectividad = [50.00, 60.00, 70.00, 76.00, 80.00, 65.00];
+            var meses2 = ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'];
+            var rapidez = [7.5, 8, 10, 15, 9, 12];
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Parse the JSON response
+                        var responseObject = JSON.parse(xhr.responseText);
+                        // var jsonArray = xhr.responseText;
+                        meses = responseObject.meses;
+                        efectividad = responseObject.efectividad;
+                        meses2 = responseObject.meses2;
+                        rapidez = responseObject.rapidez;
+                        drawCharts();
+
+                        // Process the array as needed
+                        //console.log("Desde el JS:" + responseObjetct);
+                    } else {
+                        console.error('Error:', xhr.status);
                     }
                 }
-            });
+            };
 
-            const ctx2 = document.getElementById('rapidez');
+            var url = 'ControladorTarjetas?desde=' + desde_init + '&hasta=' + hasta_init + '&accion=dashboard';
+            // console.log(url);
+            xhr.open('post', url);
+            xhr.send();            
 
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'],
-                    datasets: [{
-                            label: 'dí­as promedio',
-                            data: [7.5, 8, 10, 15, 9, 12],
-                            borderWidth: 1
-                        }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+            function drawCharts() {
+
+                const ctx = document.getElementById('efectividad');
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                                label: '% de efectividad',
+                                data: efectividad,
+                                borderWidth: 1
+                            }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
+                });
+
+                const ctx2 = document.getElementById('rapidez');
+
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: meses2,
+                        datasets: [{
+                                label: 'dí­as promedio',
+                                data: rapidez,
+                                borderWidth: 1
+                            }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                function filtrar() {
+                    var desde = document.getElementById("fecha-desde");
+                    var hasta = document.getElementById("fecha-hasta");
+                    if (desde === "" || hasta === "") {
+                        alert("Debe indicar un rango de fechas válido");
+                        return;
+                    }
+                    console.log("Validaciones superadas");
+                    var formularioDashboard = document.getElementById("frmDashboard");
+                    formularioDashboard.submit();
                 }
-            });
 
-
-
-
+            }
 
         </script>
 

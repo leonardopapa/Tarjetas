@@ -42,6 +42,23 @@ LOCK TABLES `documentos` WRITE;
 UNLOCK TABLES;
 
 --
+-- Temporary view structure for view `efectividad`
+--
+
+DROP TABLE IF EXISTS `efectividad`;
+/*!50001 DROP VIEW IF EXISTS `efectividad`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `efectividad` AS SELECT 
+ 1 AS `mes`,
+ 1 AS `total_piezas`,
+ 1 AS `entregadas`,
+ 1 AS `devueltas`,
+ 1 AS `porcentaje_entregadas`,
+ 1 AS `porcentaje_devueltas`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `estados`
 --
 
@@ -472,6 +489,24 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Final view structure for view `efectividad`
+--
+
+/*!50001 DROP VIEW IF EXISTS `efectividad`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `efectividad` AS select concat(year(`movimientos`.`fecha`),'-',lpad(month(`movimientos`.`fecha`),2,'0')) AS `mes`,count(0) AS `total_piezas`,sum((case when (`movimientos`.`estado` = 7) then 1 else 0 end)) AS `entregadas`,sum((case when (`movimientos`.`estado` = 3) then 1 else 0 end)) AS `devueltas`,round(((sum((case when (`movimientos`.`estado` = 7) then 1 else 0 end)) / count(0)) * 100),2) AS `porcentaje_entregadas`,round(((sum((case when (`movimientos`.`estado` = 3) then 1 else 0 end)) / count(0)) * 100),2) AS `porcentaje_devueltas` from `movimientos` where (`movimientos`.`estado` in (7,3)) group by `mes` order by `mes` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `rapidez_x_fecha_imposicion`
 --
 
@@ -570,4 +605,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-26 18:29:45
+-- Dump completed on 2023-11-29  1:43:50

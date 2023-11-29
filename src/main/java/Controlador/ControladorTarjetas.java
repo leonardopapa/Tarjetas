@@ -7,8 +7,6 @@ import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
 import Modelo.Reporte;
-import Modelo.Tarjeta;
-import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,128 +33,13 @@ public class ControladorTarjetas extends HttpServlet {
             throws ServletException, IOException {
         String accion = request.getParameter("accion");
         PrintWriter out = response.getWriter();
-        switch (accion) {
-
-            case "capturaruno":
-                /*
-                String cuenta3 = request.getParameter("inputCuenta");
-                String fecha3 = request.getParameter("inputFecha");
-                Tarjeta tarjeta3 = new Tarjeta();
-                Estado estado3 = new Estado();
-                estado3.setId(1); // Impresa
-                TarjetaDAO tdao3 = new TarjetaDAO();
-                tarjeta3.setCliente(Integer.parseInt(cuenta3));
-                tarjeta3.setFechaEmision(Date.valueOf(fecha3));
-                tarjeta3.setEstado(estado3);
-                boolean resultado3 = tdao3.agregar(tarjeta3);
-                request.setAttribute("resultado", resultado3);
-
-                request.getRequestDispatcher("capturar.jsp").forward(request, response);
-                 */
-                break;
-
-            case "capturar":
-                /*
-                String[] cuentas = request.getParameterValues("cuentas[]");
-                String[] fechas = request.getParameterValues("fechas[]");
-                Tarjeta tarjeta = new Tarjeta();
-                Estado estado = new Estado();
-                estado.setId(1); // Impresa
-                tarjeta.setEstado(estado);
-                TarjetaDAO tdao = new TarjetaDAO();
-                boolean resultado = false;
-                int exitos = 0;
-                int fracasos = 0;
-
-                // Iterar sobre los datos y guardarlos en la base de datos
-                for (int i = 0; i < cuentas.length; i++) {
-                    tarjeta.setCliente(Integer.parseInt(cuentas[i]));
-                    tarjeta.setFechaEmision(Date.valueOf(fechas[i]));
-                    resultado = tdao.agregar(tarjeta);
-                    if (resultado) {
-                        exitos++;
-                    } else {
-                        fracasos++;
-                    }
-                }
-                request.setAttribute("exitos", exitos);
-                request.setAttribute("fracasos", fracasos);
-                request.getRequestDispatcher("capturar.jsp").forward(request, response);
-                 */
-                break;
-
-            case "borrar":
-                String cuenta2 = request.getParameter("inputCuenta");
-                String fecha2 = request.getParameter("inputFecha");
-                Tarjeta tarjeta2 = new Tarjeta();
-                TarjetaDAO tdao2 = new TarjetaDAO();
-                tarjeta2.setCliente(Integer.parseInt(cuenta2));
-                tarjeta2.setFechaEmision(Date.valueOf(fecha2));
-                boolean resultado2 = tdao2.borrar(tarjeta2);
-                request.setAttribute("resultado", resultado2);
-
-                request.getRequestDispatcher("capturar.jsp").forward(request, response);
-                break;
-
-            case "cambiar":
-                request.getRequestDispatcher("cambiar.jsp").forward(request, response);
-                break;
-
-            case "consultar":
-                request.getRequestDispatcher("consultar.jsp").forward(request, response);
-                break;
-
-            case "dashboard":
-                request.getRequestDispatcher("dashboard.jsp").forward(request, response);
-                break;
-
-            case "enviar":
-                request.getRequestDispatcher("enviar.jsp").forward(request, response);
-                break;
-
-            case "recibir":
-                request.getRequestDispatcher("cambiar.jsp").forward(request, response);
-                break;
-
-            case "reportes":
-                /*
-                String desde = request.getParameter("fecha-desde");
-                String hasta = request.getParameter("fecha-hasta");
-                String reporte = request.getParameter("sel-reporte");
-                String respuesta = "";
-                switch (reporte) {
-                    case "0":
-                        request.setAttribute("tipoError", "Debe seleccionar un reporte de la lista");
-                        respuesta = "reportes/error-reporte.jsp";
-                        break;
-                    case "1":
-                        if (desde.isEmpty() || hasta.isEmpty()) {
-                            request.setAttribute("tipoError", "Debe indicar fechas de inicio y fin");
-                            respuesta = "reportes/error-reporte.jsp";
-                        } else {
-                            ReporteProspectoPorEstadoDAO reporteDAO = new ReporteProspectoPorEstadoDAO();
-                            List<ReporteProspectoPorEstado> reporteFinal = reporteDAO.listar(Date.valueOf(desde), Date.valueOf(hasta));
-                            request.setAttribute("reporte", reporteFinal);
-                            respuesta = "reportes/reporte_prospectos_por_estado.jsp";
-                        }
-                        break;
-                }
-                
-                request.getRequestDispatcher(respuesta).forward(request, response);
-                 */
-                break;
-
-            default:
-                out.println("No se especificó una acción válida");
-                break;
-
-        }
+        out.println("Llamada a servlet no valida");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doPost(request, response);
     }
 
     @Override
@@ -203,6 +86,7 @@ public class ControladorTarjetas extends HttpServlet {
         }
 
         //Mostrar los resultados
+        /*
         out.println("<html>");
         out.println("<head>");
         out.println("<title>Resultado</title>");
@@ -210,15 +94,15 @@ public class ControladorTarjetas extends HttpServlet {
         out.println("<body>");
         out.println("<h2>Cuentas:</h2>");
         out.println("<ul>");
-
+         */
         for (int i = 0; i < indiceCuentas; i++) {
             out.println("<li> " + i + " - Cuenta: " + cuentas[i] + " // Fecha: " + fechas[i] + " // Estado: " + estados[i] + " // Motivo:" + motivos[i] + "</li>");
         }
 
+        /*
         out.println("</ul>");
-
         out.println("Cantidad=" + indiceCuentas);
-
+         */
         switch (accion) {
             case "capturar":
                 int exitos = 0;
@@ -254,8 +138,7 @@ public class ControladorTarjetas extends HttpServlet {
                 out.println("</html>");
                  */
 
-                out.println("<script>alert('Datos grabados');</script>");
-
+                // out.println("<script>alert('Datos grabados');</script>");
                 request.getRequestDispatcher("Controlador2").forward(request, response);
 
             case "enviar":
@@ -382,22 +265,21 @@ public class ControladorTarjetas extends HttpServlet {
                     sql = "CALL tarjetas_x_estado_impos(?,?)";
                     titulos.add("Estado");
                     titulos.add("Cantidad");
-                    columna1="estado";
+                    columna1 = "estado";
                 } else if (reporte.equalsIgnoreCase("2")) //motivos de rechazo
                 {
                     sql = "CALL motivos(?,?)";
                     titulos.add("Motivo");
                     titulos.add("Cantidad");
-                    columna1="causa";
+                    columna1 = "causa";
                 }
                 try {
                     ps = con.prepareStatement(sql);
                     ps.setDate(1, Date.valueOf(desde));
                     ps.setDate(2, Date.valueOf(hasta));
-                    rs = ps.executeQuery();                                      
-                    
-                   // Convertir el resultset a lista
-                   
+                    rs = ps.executeQuery();
+
+                    // Convertir el resultset a lista
                     try {
                         while (rs.next()) {
                             Reporte reporteLinea = new Reporte();
@@ -432,12 +314,84 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "dashboard":
+                String desde2 = request.getParameter("desde");
+                String hasta2 = request.getParameter("hasta");
+                //out.println("Desde:" + desde2);
+                //out.println("Hasta:" + hasta2);
+                Conexion cn2 = new Conexion();
+                Connection con2 = cn2.Conexion();
+                PreparedStatement ps2;
+                ResultSet rs2;
+
+                // Obtener valores de efectividad
+                String sql2 = "select * from efectividad";
+                List<String> meses = new ArrayList<>();
+                List<String> efectividad = new ArrayList<>();                
+                try {
+                    ps2 = con2.prepareStatement(sql2);
+                    rs2 = ps2.executeQuery();
+                    while (rs2.next()) {
+                        meses.add(rs2.getString("mes"));
+                        efectividad.add(rs2.getString("porcentaje_entregadas"));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                             
+                // Obtener valores de rapidez
+                sql2 = "SELECT * FROM tarjetas.rapidez_x_fecha_imposicion";
+                List<String> meses2= new ArrayList<>();
+                List<String> rapidez = new ArrayList<>();
+                try {
+                    ps2 = con2.prepareStatement(sql2);
+                    rs2 = ps2.executeQuery();
+                    while (rs2.next()) {
+                        meses2.add(rs2.getString("mes"));
+                        rapidez.add(rs2.getString("rapidez"));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                // Convertir los arreglos a JSON 
+                String json1 = listToJSON(meses);
+                String json2 = listToJSON(efectividad);
+                String json3 = listToJSON(meses2);
+                String json4 = listToJSON(rapidez);
+
+                //out.println("json1:" + json1);
+                //out.println("json2:" + json2);
+                //out.println("json3:" + json3);
+                //out.println("json4:" + json4);
+
+                // Combininar los arreglos JSON en un único objeto JSON
+                String jsonResponse = String.format("{\"meses\":%s,\"efectividad\":%s,\"meses2\":%s,\"rapidez\":%s}",
+                        json1, json2, json3, json4);
+
+                //out.println("jsonresponse:" + jsonResponse);
+
+                // Set content type and write the JSON response
+                response.setContentType("application/json");
+                response.getWriter().write(jsonResponse);
+                // request.getRequestDispatcher("dashboard.jsp").forward(request, response);
                 break;
 
             default:
                 out.println("No se especificó una acción válida");
                 break;
         }
+    }
+
+    private <T> String listToJSON(List<T> list) {
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < list.size(); i++) {
+            json.append("\"").append(list.get(i)).append("\"");
+            if (i < list.size() - 1) {
+                json.append(",");
+            }
+        }
+        json.append("]");
+        return json.toString();
     }
 
     protected String convertirFecha(String fechaOrigen) throws ParseException {
