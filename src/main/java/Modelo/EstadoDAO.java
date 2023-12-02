@@ -36,4 +36,23 @@ public class EstadoDAO {
         return lista;
     }
     
+    public String buscar(String id) {
+        // Devuelve el nombre de un estado a partir de su Id
+        String sql = "SELECT nombre FROM estados where id="+id;
+        String nombre = "";
+        try {
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                nombre = rs.getString("nombre");                
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
+        cn.Desconectar();
+        return nombre;
+    }
+    
 }

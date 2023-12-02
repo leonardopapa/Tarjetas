@@ -13,6 +13,7 @@
         crossorigin="anonymous"></script>
         <link rel="stylesheet" href="css/estilos.css">
         <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+        <script src="https://kit.fontawesome.com/842280e38e.js" crossorigin="anonymous"></script>
         <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script>
         <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
         <script defer src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
@@ -91,95 +92,262 @@
 
 
                         <div class="row">
-                            <div class="col">
+                            <form action="ControladorTarjetas" method="post" id="frmCambiar">
+                                <div class="col">
 
-                                <div class="card" >
+                                    <div class="card" >
 
+                                        <div class="card-body">
 
-                                    <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="inputFechaCambio" class="col-form-label">Fecha de Enví­o</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input type="date" class="form-control" id="inputFechaCambio" name="fcambio">
+                                                </div>
 
-                                        <div class="row">
-                                            <label for="inputPassword" class="col-form-label">Nuevo Estado:</label>
-                                            <div class="col">
-                                                <select class="form-select" aria-label="Default select example">
-                                                    <option selected>Seleccione el nuevo estado</option>
-                                                    <option value="1">Impresa</option>
-                                                    <option value="2">En Distribución</option>
-                                                    <option value="3">Devuelta</option>
-                                                    <option value="4">En Sucursal</option>
-                                                    <option value="5">Reenvío</option>
-                                                    <option value="6">Enviada a Sucursal</option>
-                                                    <option value="7">Entregada</option>
-                                                    <option value="8">Destruida</option>
-                                                </select>
                                             </div>
-                                        </div>
 
-                                        <div class="row">
-                                            <label for="inputPassword" class="col-form-label">Nueva Ubicación:</label>
-                                            <div class="col">
-                                                <select class="form-select" aria-label="Default select example">
-                                                    <option selected>Seleccione la nueva ubicación</option>
-                                                    <option value="17">Tucuman</option>
-                                                    <option value="18">Banda Rio Sali</option>
-                                                    <option value="19">Concepcion</option>
-                                                    <option value="20">Santiago</option>
-                                                    <option value="21">La Banda</option>
-                                                    <option value="22">Salta</option>
-                                                    <option value="23">Oran</option>
-                                                    <option value="24">Tartagal</option>
-                                                    <option value="25">Jujuy</option>
-                                                    <option value="26">San Pedro</option>
-                                                    <option value="27">Libertador</option>
-                                                    <option value="28">Yerba Buena</option>
-                                                </select>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="selEstado" class="col-form-label">Nuevo Estado:</label>
+                                                </div>
+                                                <div class="col">
+                                                    <select class="form-select" id="selEstado" name="selEstado">
+                                                        <option selected>Seleccione el nuevo estado</option>
+                                                        <option value="1">Impresa</option>
+                                                        <option value="2">En Distribución</option>
+                                                        <option value="3">Devuelta</option>
+                                                        <option value="4">En Sucursal</option>
+                                                        <option value="5">Reenvío</option>
+                                                        <option value="6">Enviada a Sucursal</option>
+                                                        <option value="7">Entregada</option>
+                                                        <option value="8">Destruida</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <br>
 
-                                    </div>
-                                </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                <label for="selUbicacion" class="col-form-label">Nueva Ubicación:</label>
+                                                </div>
+                                                <div class="col">
+                                                    <select class="form-select" id="selUbicacion" name="selUbicacion">
+                                                        <option selected>Seleccione la nueva ubicación</option>
+                                                        <option value="17">Tucuman</option>
+                                                        <option value="18">Banda Rio Sali</option>
+                                                        <option value="19">Concepcion</option>
+                                                        <option value="20">Santiago</option>
+                                                        <option value="21">La Banda</option>
+                                                        <option value="22">Salta</option>
+                                                        <option value="23">Oran</option>
+                                                        <option value="24">Tartagal</option>
+                                                        <option value="25">Jujuy</option>
+                                                        <option value="26">San Pedro</option>
+                                                        <option value="27">Libertador</option>
+                                                        <option value="28">Yerba Buena</option>
+                                                    </select>
+                                                </div>
+                                            </div>
 
-                            </div>
-                            <div class="col">
-                                <div class="card"">                                
-                                    <table id=" tarjetas" class="table table-striped" style="width:100%">
-                                        <thead>
-                                            <tr>
+                                            <div class="row">
+                                                <div class="col">
+                                                <label for="inputCuenta" class="col-form-label">Cuenta:</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input type="text" class="form-control" name="inputCuenta" id="inputCuenta" placeholder="Ingrese el número de cuenta">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <button type="button" class="btn btn-danger" onclick="agregarFila();">Agregar</button>
 
-                                                <th>Cuenta</th>
-                                                <th>Fecha de Emisión</th>
-                                                <th>Estado</th>
+                                        </div> <!-- card body -->
+                                    </div> <!-- card -->
+                                </div> <!-- col -->
+                                <div class="col">
+                                    <div class="card"">                                
+                                        <table id="tblTarjetas" class="table table-striped" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cuenta</th>
+                                                    <th>Fecha de Emisión</th>
+                                                    <th>Estado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div> <!-- card -->
+                                    <br>
+                                    <input type="hidden" name="accion" value="cambiar">
+                                    <button type="button" class="btn btn-danger" onclick="cambiarEstado();">Confirmar</button>
+                                    <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
+                                </div> <!-- col -->
+                            </form>
+                        </div> <!-- row -->
+                    </div> <!-- card body -->
+                </div> <!-- card -->
+            </section> <!-- main -->
+        </div> <!-- contenedor -->
 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
+        <script>
 
-                                                <td>758699</td>
-                                                <td>07/10/2023</td>
-                                                <td>En Sucursal</td>
+            var contadorFilas = 0;            
+            
+            window.onload = iniciar;
+            function iniciar() {
+                InicializarFechas();                
+            }
 
-                                            </tr>
-                                            <tr>
+            function InicializarFechas() {
+                var hoy = Date.now();
+                var fechaHoy = new Date(hoy);                
+                var inputFechaCambio = document.getElementById('inputFechaCambio');
+                inputFechaCambio.value = fechaHoy.toISOString().split('T')[0];                
+            }
 
-                                                <td>758699</td>
-                                                <td>07/10/2023</td>
-                                                <td>En Sucursal</td>
+            function cambiarEstado() {
+                // Validar que los cambios no estén vacíos                
+                var nuevoEstado = document.getElementById("selEstado").value;
+                var nuevaUbicacion = document.getElementById("selUbicacion").value;
 
-                                            </tr>
+                if (nuevoEstado === '' || nuevaUbicacion === "") {
+                    alert('Debe ingresar un nuevo estado y una nueva ubicación.');
+                    return;
+                }
+                if (!(hayFilas())) {
+                    alert('No hay cuentas seleccionadas.');
+                    return;
+                }
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <br>
-                                <button type="button" class="btn btn-danger">Confirmar</button>
-                                <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+                // Enviar los datos al servet para su validación y registro
+                var frmCambiar = document.getElementById("frmCambiar");
+                frmCambiar.submit();
+            }
+
+            function hayFilas() {
+                var tabla = document.getElementById("tblTarjetas");
+                var tbody = tabla.getElementsByTagName("tbody")[0];
+                return tbody && tbody.rows.length > 0;
+            }
+
+            function agregarFila() {
+                // Obtener los valores de los input
+                var cuenta = document.getElementById("inputCuenta").value;
+
+                // Validar que los campos no estén vacíos
+                if (cuenta === '') {
+                    alert('Por favor, ingrese una cuenta.');
+                    return;
+                }
+
+                // Validar el formato de la cuenta(número de 6 dígitos)
+                var cuentaRegex = /^\d{6}$/;
+
+                if (!cuenta.match(cuentaRegex)) {
+                    alert('Número de cuenta no válido. Debe ser un número de 6 dígitos.');
+                    return;
+                }
+
+                // Recuperar los datos de la cuenta (fecha emisión y estado)
+
+                var fechaEmision = "";
+                var estado = "";
+                var resultado = "";
+
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            // Parse the JSON response
+
+                            var response = xhr.responseText;
+                            console.log(response);
+
+                            var responseObject = JSON.parse(xhr.responseText);
+                            // var jsonArray = xhr.responseText;
+                            resultado = responseObject.resultado;
+                            fechaEmision = responseObject.fechaEmision;
+                            estado = responseObject.estado;
+                            if (resultado === "no encontrado") {
+                                alert("No se encuentra la cuenta");
+                                return;
+                            }
+
+                            // Obtener la referencia de la tabla
+                            var tabla = document.getElementById("tblTarjetas");
+                            // Obtener la referencia al tbody
+                            var tbody = tabla.getElementsByTagName("tbody")[0];
+
+
+                            // Crear una nueva fila
+                            var fila = tbody.insertRow();
+                            fila.id = "fila" + contadorFilas;
+
+                            // Insertar celdas con los valores de los input
+                            var celdaCuenta = fila.insertCell(0);
+                            // celdaCuenta.innerHTML = cuenta;
+                            celdaCuenta.innerHTML = '<input type="text" name="cuenta' + contadorFilas + '" value="' + cuenta + '" readonly>';
+
+                            var celdaFecha = fila.insertCell(1);
+                            var fechaFormateada = new (Date);
+                            fechaFormateada = formatearFecha2(fechaEmision);
+                            celdaFecha.innerHTML = '<input type="text" name="fecha' + contadorFilas + '" value="' + fechaFormateada + '" readonly>';
+
+                            var celdaEstado = fila.insertCell(2);
+                            celdaEstado.innerHTML = '<input type="text" name="resultado' + contadorFilas + '" value="' + estado + '" readonly>';
+
+                            // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
+                            var celdaEliminar = fila.insertCell(3);
+                            celdaEliminar.innerHTML = '<button onclick="eliminarFila2(' + contadorFilas + ')"><i class="fas fa-trash-alt"></i></button>';
+
+                            // Limpiar los valores de los input
+                            document.getElementById("inputCuenta").value = '';
+
+                            contadorFilas++;
+
+                        } else {
+                            console.error('Error:', xhr.status);
+                        }
+                    }
+                };
+
+                var url = 'ControladorTarjetas?cuenta=' + cuenta + '&accion=buscarCambiar';
+                xhr.open('post', url);
+                xhr.send();
+            }
+
+
+            function formatearFecha2(fecha) {
+                // Suponiendo que la fecha es ingresada en el formato aa/mm/dd
+                var partes = fecha.split('-');
+                var anio = partes[0];
+                var mes = partes[1];
+                var dia = partes[2];
+
+                // Formatear a dd/mm/aa
+                return dia + '/' + mes + '/' + anio;
+            }
+
+            function eliminarFila2(indiceFila) {
+                var confirmacion = confirm("¿Está seguro de que desea eliminar esta fila?");
+                if (confirmacion) {
+                    var tabla = document.getElementById("tblTarjetas");
+                    tabla.deleteRow(indiceFila + 1); // +1 para tener en cuenta la fila de encabezado
+                }
+            }
+
+            function cancelar() {
+                var confirmacion = confirm("¿Está seguro de que desea salir?");
+                if (confirmacion) {
+                    window.location.href = "index.jsp";
+                }
+            }
+
+
+        </script>
+
+
     </body>
 </html>

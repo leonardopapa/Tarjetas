@@ -121,10 +121,10 @@ public class TarjetaDAO {
 
     public String buscar2(String cuenta, String estado, String atributo) {
         String resultado = "";
-        System.out.println("Buscando...");
-        System.out.println("Cliente:" +cuenta);
-        System.out.println("Estado:" +estado);
-        System.out.println("Atributo:" +atributo);
+        // System.out.println("Buscando...");
+        // System.out.println("Cliente:" +cuenta);
+        // System.out.println("Estado:" +estado);
+        // System.out.println("Atributo:" +atributo);
         try {            
             con = cn.Conexion();
             ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and estado="+estado);
@@ -143,4 +143,26 @@ public class TarjetaDAO {
         cn.Desconectar();
         return resultado;
     }
+    
+    public String buscar3(String cuenta, String atributo) {
+        String resultado = "";        
+        try {            
+            con = cn.Conexion();
+            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=?");
+            ps.setInt(1, Integer.parseInt(cuenta));
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                resultado = rs.getString(atributo);
+                // System.out.println("Resultado obtenido: "+resultado);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            resultado = "error";
+        }
+        cn.Desconectar();
+        return resultado;
+    }
+    
 }
