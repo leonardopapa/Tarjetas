@@ -279,8 +279,6 @@
                             var tabla = document.getElementById("tblTarjetas");
                             // Obtener la referencia al tbody
                             var tbody = tabla.getElementsByTagName("tbody")[0];
-
-
                             // Crear una nueva fila
                             var fila = tbody.insertRow();
                             fila.id = "fila" + contadorFilas;

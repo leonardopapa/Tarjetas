@@ -201,8 +201,8 @@
                             </thead>
                             <tbody>
                                 <% for (Tarjeta tarjeta : lista) {%>
-                                <tr>
-                                    <td> <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <tr id="fila<%= tarjeta.getCliente()%>">
+                                    <td> <input class="form-check-input" type="checkbox" value="" id="check<%= tarjeta.getCliente()%>">
                                     </td>
                                     <td><%= tarjeta.getCliente()%></td>
                                     <td><%= tarjeta.getFechaEmision()%></td>

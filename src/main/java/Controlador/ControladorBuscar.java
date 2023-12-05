@@ -8,10 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- *
- * @author Leandro
- */
 public class ControladorBuscar extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -21,6 +17,7 @@ public class ControladorBuscar extends HttpServlet {
 
         String cuenta = request.getParameter("inputCuenta");
         // out.println("Buscando cuenta:" + cuenta);
+        
         TarjetaDAO tdao = new TarjetaDAO();
         String resultado = tdao.buscar(cuenta);
         // out.println("resultado = "+resultado);
@@ -31,6 +28,7 @@ public class ControladorBuscar extends HttpServlet {
             request.setAttribute("fechaEmision", resultado);
             out.println(resultado);
         }
+
     }
 
     @Override

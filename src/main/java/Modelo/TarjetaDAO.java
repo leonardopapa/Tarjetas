@@ -102,8 +102,8 @@ public class TarjetaDAO {
 
         String resultado = "";
         try {            
-            con = cn.Conexion();
-            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and (estado=1 or estado=5");
+            con = cn.Conexion();            
+            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and (estado=1 or estado=5)");
             ps.setInt(1, Integer.parseInt(cuenta));
             rs = ps.executeQuery();
 

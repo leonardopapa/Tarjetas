@@ -40,19 +40,9 @@
                 <br>
                 <ul class="menu flex-column mb-auto">
 
-                    <!--
-
-                    <li class="item">
-                        <a href="Controlador?accion=testconeccion">
-                            Probar Conexión
-                        </a>
-                    </li>
-                    -->
-
                     <li class="item">
                         <form action="Controlador2" name="ini" id="frmIni" method="get" >
-                            <input type="hidden" value="prueba">
-                            <button class="btn btn-secondary" type="submit"></button>
+                            <input type="hidden" value="prueba">                            
                         </form>
                     </li>
 
@@ -105,11 +95,7 @@
 
                 <div class="card" style="margin:20px">
                     <div class="card-body">
-                        <!-- 
-                        <form id="frmIniciar">
-                            <button type="submit"></button>
-                        </form>
-                        -->
+                        
                         <form id="frmFiltros">                        
                             <div class="row">
 

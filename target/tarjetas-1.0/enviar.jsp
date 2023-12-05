@@ -134,7 +134,7 @@
                                                 </div>
                                                 <br>
                                                 <button type="button" class="btn btn-danger" onclick="agregarFila();">Agregar</button>
-                                                
+
                                             </form>
 
                                             <br>
@@ -147,7 +147,7 @@
                                 <div class="col">
 
                                     <div class="card"">                                
-                                        <table id="tblTarjetas" class="table table-striped" style="width:100%">
+                                        <table id="tblTarjetas" class="table" style="width:100%">
                                             <thead>
                                                 <tr>
 
@@ -164,9 +164,9 @@
                                         </table>
                                     </div>
                                     <br>
-                                    
+
                                     <input type="hidden" name="accion" value="enviar">
-                                    
+
                                     <button type="submit" class="btn btn-danger" onclick="generarRemito();">Generar Remito</button>
 
                                     <button type="button" class="btn btn-danger">Firmar Remito</button>
@@ -189,8 +189,6 @@
         </div>
 
         <script>
-
-            var contadorFilas = 0;
 
 
             function agregarFila() {
@@ -216,7 +214,7 @@
                 var fechaEmision = "";
                 console.log("Iniciando llamada Http - cuenta:" + cuenta);
                 var http = new XMLHttpRequest();
-                url = 'ControladorBuscar?cuenta=' + cuenta;
+                url = 'ControladorBuscar?inputCuenta=' + cuenta;
                 http.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
                         fechaEmision = this.responseText.trim();
@@ -228,29 +226,30 @@
 
                         // Obtener la referencia de la tabla
                         var tabla = document.getElementById("tblTarjetas");
-
+                        // Obtener la referencia al tbody
+                        var tbody = tabla.getElementsByTagName("tbody")[0];
                         // Crear una nueva fila
-                        var fila = tabla.insertRow();
-                        fila.id = "fila" + contadorFilas;
+                        var fila = tbody.insertRow();
+                        fila.id = "fila" + cuenta;
 
                         // Insertar celdas con los valores de los input
                         var celdaCuenta = fila.insertCell(0);
                         // celdaCuenta.innerHTML = cuenta;
-                        celdaCuenta.innerHTML = '<input type="text" name="cuenta' + contadorFilas + '" value="' + cuenta + '" readonly>';
+                        celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
 
                         var celdaFecha = fila.insertCell(1);
                         var fechaFormateada = new (Date);
                         fechaFormateada = formatearFecha2(fechaEmision);
-                        celdaFecha.innerHTML = '<input type="text" name="fecha' + contadorFilas + '" value="' + fechaFormateada + '" readonly>';
+                        celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + cuenta + '" value="' + fechaFormateada + '" readonly>';
 
                         // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
                         var celdaEliminar = fila.insertCell(2);
-                        celdaEliminar.innerHTML = '<button onclick="eliminarFila2(' + contadorFilas + ')"><i class="fas fa-trash-alt"></i></button>';
+                        celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
 
                         // Limpiar los valores de los input
                         document.getElementById("inputCuenta").value = '';
 
-                        contadorFilas++;
+
                     }
                 };
                 http.open('get', url);
@@ -291,8 +290,6 @@
                 formularioEnviar.submit();
             }
 
-
-
             function formatearFecha2(fecha) {
                 // Suponiendo que la fecha es ingresada en el formato aa/mm/dd
                 var partes = fecha.split('-');
@@ -304,11 +301,11 @@
                 return dia + '/' + mes + '/' + anio;
             }
 
-            function eliminarFila2(indiceFila) {
-                var confirmacion = confirm("¿Está seguro de que desea eliminar esta fila?");
+            function eliminarFila(indiceFila) {
+                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta "+indiceFila+"?");
                 if (confirmacion) {
-                    var tabla = document.getElementById("tblTarjetas");
-                    tabla.deleteRow(indiceFila + 1); // +1 para tener en cuenta la fila de encabezado
+                    var row = document.getElementById("fila"+indiceFila);
+                    row.remove();
                 }
             }
 

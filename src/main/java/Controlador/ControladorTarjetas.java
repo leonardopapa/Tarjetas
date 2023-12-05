@@ -104,9 +104,11 @@ public class ControladorTarjetas extends HttpServlet {
         
         out.println("</ul>");
         out.println("Cantidad=" + indiceCuentas);
-         */
+              */  
+        
         switch (accion) {
             case "capturar":
+                
                 int exitos = 0;
                 int fracasos = 0;
 
@@ -142,6 +144,7 @@ public class ControladorTarjetas extends HttpServlet {
 
                 // out.println("<script>alert('Datos grabados');</script>");
                 request.getRequestDispatcher("Controlador2").forward(request, response);
+                break;
 
             case "enviar":
                 out.println("Enviar");

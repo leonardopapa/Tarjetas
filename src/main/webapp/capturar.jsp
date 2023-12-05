@@ -132,7 +132,7 @@
 
                                 <form action="ControladorTarjetas" method="POST">
                                     <div class="card""> 
-                                        <table id="tblTarjetas" class="table table-striped" style="width:100%">
+                                        <table id="tblTarjetas" class="table" style="width:100%">
                                             <thead>
                                                 <tr>
 
@@ -150,7 +150,7 @@
                                     </div>
                                     <br>
                                     <input type="hidden" name="accion" value="capturar">
-                                    
+
                                     <button type="submit" class="btn btn-danger" >Finalizar</button>
 
                                     <button type="button" class="btn btn-danger" onclick="cancelar()">Cancelar</button>
@@ -169,7 +169,7 @@
 
         <script>
 
-            var contadorFilas = 0;
+            // var contadorFilas = 0;
 
             function agregarFila() {
                 // Obtener los valores de los input
@@ -209,32 +209,34 @@
 
                 // Obtener la referencia de la tabla
                 var tabla = document.getElementById("tblTarjetas");
-
+                // Obtener la referencia al tbody
+                var tbody = tabla.getElementsByTagName("tbody")[0];
                 // Crear una nueva fila
-                var fila = tabla.insertRow();
-                fila.id = "fila" + contadorFilas;
+                var fila = tbody.insertRow();
+                fila.id = "fila" + cuenta;
 
                 // Insertar celdas con los valores de los input
                 var celdaCuenta = fila.insertCell(0);
                 // celdaCuenta.innerHTML = cuenta;
-                celdaCuenta.innerHTML = '<input type="text" name="cuenta' + contadorFilas + '" value="' + cuenta + '" readonly>';
+                celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
 
                 var celdaFecha = fila.insertCell(1);
                 var fechaFormateada = new (Date);
                 fechaFormateada = formatearFecha(fecha);
                 // celdaFecha.innerHTML = fechaFormateada;
-                celdaFecha.innerHTML = '<input type="text" name="fecha' + contadorFilas + '" value="' + fechaFormateada + '" readonly>';
+                celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + cuenta + '" value="' + fechaFormateada + '" readonly>';
 
                 // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
                 var celdaEliminar = fila.insertCell(2);
-                celdaEliminar.innerHTML = '<button onclick="eliminarFila(' + contadorFilas + ')"><i class="fas fa-trash-alt"></i></button>';
-
+                celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
 
                 // Limpiar los valores de los input
                 document.getElementById("inputCuenta").value = '';
                 document.getElementById("inputFecha").value = '';
+                var enfocar = document.getElementById("inputCuenta");
+                enfocar.focus();
 
-                contadorFilas++;
+                // contadorFilas++;
             }
 
             function formatearFecha(fecha) {
@@ -249,15 +251,15 @@
             }
 
             function eliminarFila(indiceFila) {
-                var confirmacion = confirm("¿Está seguro de que desea eliminar esta fila?");
+                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta "+indiceFila+"?");
                 if (confirmacion) {
-                    var tabla = document.getElementById("tblTarjetas");
-                    tabla.deleteRow(indiceFila + 2); // +2 para tener en cuenta la fila de encabezado
+                    var row = document.getElementById("fila"+indiceFila);
+                    row.remove();
                 }
             }
 
             function cancelar() {
-                var confirmacion = confirm("¿Está seguro de que desea cancelar?");
+                var confirmacion = confirm("¿Está seguro de que desea salir?");
                 if (confirmacion) {
                     window.location.href = "index.jsp";
                 }
