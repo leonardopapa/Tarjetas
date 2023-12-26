@@ -236,7 +236,6 @@
                 var enfocar = document.getElementById("inputCuenta");
                 enfocar.focus();
 
-                // contadorFilas++;
             }
 
             function formatearFecha(fecha) {

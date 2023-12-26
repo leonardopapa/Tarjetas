@@ -94,7 +94,7 @@
                             Esperando ingreso de tarjetas...
                         </div>
 
-                        <form action="ControladorTarjetas" method="POST" id="formEnviar">
+                        <form action="ControladorTarjetas" method="POST" id="frmEnviar">
                             <div class="row">
                                 <div class="col">
 
@@ -165,9 +165,9 @@
                                     </div>
                                     <br>
 
-                                    <input type="hidden" name="accion" value="enviar">
+                                    <input type="hidden" name="accion" value="remito">
 
-                                    <button type="submit" class="btn btn-danger" onclick="generarRemito();">Generar Remito</button>
+                                    <button type="button" class="btn btn-danger" onclick="generarRemito();">Generar Remito</button>
 
                                     <button type="button" class="btn btn-danger">Firmar Remito</button>
 
@@ -248,7 +248,8 @@
 
                         // Limpiar los valores de los input
                         document.getElementById("inputCuenta").value = '';
-
+                        var enfocar = document.getElementById("inputCuenta");
+                        enfocar.focus();
 
                     }
                 };

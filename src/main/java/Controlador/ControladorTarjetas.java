@@ -10,6 +10,8 @@ import Modelo.Operador;
 import Modelo.Reporte;
 import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
+import Modelo.UbicacionDAO;
+import Utilidades.GestionarPDF;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -24,6 +26,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -104,11 +107,10 @@ public class ControladorTarjetas extends HttpServlet {
         
         out.println("</ul>");
         out.println("Cantidad=" + indiceCuentas);
-              */  
-        
+         */
         switch (accion) {
             case "capturar":
-                
+
                 int exitos = 0;
                 int fracasos = 0;
 
@@ -147,7 +149,7 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "enviar":
-                out.println("Enviar");
+                // out.println("Enviar");
                 String correo = request.getParameter("correo");
                 String fechaEnvio = request.getParameter("fenvio");
                 out.println("Correo: " + correo);
@@ -212,7 +214,7 @@ public class ControladorTarjetas extends HttpServlet {
                 // Iterar sobre los datos y guardarlos en la base de datos
                 boolean resultado2 = false;
                 for (int i = 0; i < indiceCuentas; i++) {
-                    out.println("Indice:" + i);
+                    // out.println("Indice:" + i);
                     Movimiento movimiento = new Movimiento();
                     Estado estado = new Estado();
                     estado.setId(Integer.parseInt(estados[i])); // Entregada o devuelta 
@@ -233,13 +235,13 @@ public class ControladorTarjetas extends HttpServlet {
                     // out.println("Llegué hasta aqui 4");
 
                     if (!(motivos[i].isEmpty())) {
-                        out.println("Motivo no vacío:" + i);
+                        // out.println("Motivo no vacío:" + i);
                         Motivo motivo = new Motivo();
                         motivo.setId(Integer.parseInt(motivos[i]));
                         movimiento.setMotivo(motivo);
                         resultado2 = mdao3.agregarRecibir(movimiento);
                     } else {
-                        out.println("Motivo vacío:" + i);
+                        // out.println("Motivo vacío:" + i);
                         resultado2 = mdao3.agregarRecibir2(movimiento);
                     }
 
@@ -422,7 +424,6 @@ public class ControladorTarjetas extends HttpServlet {
                 }
 
                 // Validar que el nuevo estado sea válido, dado el estado actual
-                
                 String nuevoEstado = request.getParameter("selEstado");
 
                 if (nuevoEstado.equals("7") && (estadoActual.equals("2") || estadoActual.equals("4"))) {
@@ -458,7 +459,7 @@ public class ControladorTarjetas extends HttpServlet {
                     m.setUbicacion(ubicacion2);
                     Operador operador = new Operador();
                     operador.setId(11); // Operador ficticio                    
-                    m.setOperador(operador);                                        
+                    m.setOperador(operador);
                     MovimientoDAO mdao2 = new MovimientoDAO();
                     mdao2.agregarRecibir(m);
                 }
@@ -467,6 +468,29 @@ public class ControladorTarjetas extends HttpServlet {
                 response.getWriter().println("Cambio registrado correctamente");
                 request.getRequestDispatcher("cambiar.jsp").forward(request, response);
 
+            case "remito":
+                // Obtener correo
+                String idCorreo = request.getParameter("correo");                
+                UbicacionDAO correoDAO = new UbicacionDAO();
+                String correo3 = correoDAO.buscar(idCorreo);
+                
+                // Obtener fecha de envío
+                String fechaEnvio2 = request.getParameter("fenvio");
+                String fechaEnvio3 ="";
+                try {
+                    fechaEnvio3 = convertirFecha2(fechaEnvio2);
+                } catch (ParseException ex) {
+                    Logger.getLogger(ControladorTarjetas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                // Obtener ruta de desgliegue
+                ServletContext servletContext = getServletContext();
+                String rutaDespliegue = servletContext.getRealPath("/");
+                
+                // Generar remito
+                GestionarPDF remito = new GestionarPDF();
+                remito.crearRemito(fechaEnvio3, correo3, cuentas, indiceCuentas, rutaDespliegue);
+                break;
 
             default:
                 out.println("No se especificó una acción válida");
@@ -486,12 +510,22 @@ public class ControladorTarjetas extends HttpServlet {
         return json.toString();
     }
 
-    protected String convertirFecha(String fechaOrigen) throws ParseException {
+    private String convertirFecha(String fechaOrigen) throws ParseException {
         SimpleDateFormat formatoOrigen = new SimpleDateFormat("dd/MM/yyyy");
         // Convertir la fecha de origen de String a Date
         java.util.Date fechaOrigenDate = formatoOrigen.parse(fechaOrigen);
         // Crear un objeto SimpleDateFormat con el patrón de la fecha de destino
         SimpleDateFormat formatoDestino = new SimpleDateFormat("yyy-MM-dd");
+        // Convertir la fecha de Date a String en el formato de destino
+        return formatoDestino.format(fechaOrigenDate);
+    }
+
+    private String convertirFecha2(String fechaOrigen) throws ParseException {
+        SimpleDateFormat formatoOrigen = new SimpleDateFormat("yyy-MM-dd");
+        // Convertir la fecha de origen de String a Date
+        java.util.Date fechaOrigenDate = formatoOrigen.parse(fechaOrigen);
+        // Crear un objeto SimpleDateFormat con el patrón de la fecha de destino
+        SimpleDateFormat formatoDestino = new SimpleDateFormat("dd/MM/yyyy");
         // Convertir la fecha de Date a String en el formato de destino
         return formatoDestino.format(fechaOrigenDate);
     }

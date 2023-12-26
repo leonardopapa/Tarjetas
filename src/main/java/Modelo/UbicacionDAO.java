@@ -14,7 +14,7 @@ public class UbicacionDAO {
     ResultSet rs;
 
     public List listar() {
-        // Devuelve la lista de estados en el arraylist list
+        // Devuelve la lista de ubicaciones en el arraylist list
         String sql = "SELECT * FROM ubicaciones";
         List<Ubicacion> lista = new ArrayList<>();
         try {
@@ -36,5 +36,23 @@ public class UbicacionDAO {
         return lista;
     }
     
+    public String buscar(String id) {
+         // Devuelve el nombre de una ubicación a partir de su Id
+        String sql = "SELECT nombre FROM ubicaciones where id="+id;
+        String nombre = "";
+        try {
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                nombre = rs.getString("nombre");                
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
+        cn.Desconectar();
+        return nombre;
+    }
     
 }
