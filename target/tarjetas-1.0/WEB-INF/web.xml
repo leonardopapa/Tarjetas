@@ -20,6 +20,10 @@
         <servlet-name>ControladorBuscar2</servlet-name>
         <servlet-class>Controlador.ControladorBuscar2</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExportController</servlet-name>
+        <servlet-class>Controlador.ExportController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ControladorTarjetas</servlet-name>
         <url-pattern>/ControladorTarjetas</url-pattern>
@@ -39,6 +43,10 @@
     <servlet-mapping>
         <servlet-name>ControladorBuscar2</servlet-name>
         <url-pattern>/ControladorBuscar2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExportController</servlet-name>
+        <url-pattern>/ExportController</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

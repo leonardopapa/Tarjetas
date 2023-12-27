@@ -210,32 +210,49 @@
 
                                         %>
 
-                                        <table id="tblReporte" class="table table-striped" style="width:100%">
-                                            <thead>
-                                                <tr>
+                                        <form id="exportForm" action="ExportController" method="post">
 
-                                                    <% for (String columna : titulos) {%>
+                                            <table id="tblReporte" class="table table-striped" style="width:100%">
+                                                <thead>
+                                                    <tr>
 
-                                                    <th><%= columna%></th>
+                                                        <% for (String columna : titulos) {%>
+
+                                                        <th><%= columna%></th>
+
+                                                        <% }%>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <% for (Reporte columna : reporte) {%>
+                                                    <tr>
+                                                        <td> <%= columna.getDescripcion()%></td>
+                                                        <td> <%= columna.getCantidad()%> </td>
+                                                    </tr>
 
                                                     <% }%>
+                                                </tbody>
+                                            </table> <%
+                                                }
+                                            %>
 
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                <% for (Reporte columna: reporte) {%>
-                                                <tr>
-                                                    <td> <%= columna.getDescripcion() %></td>
-                                                    <td> <%= columna.getCantidad() %> </td>
-                                                </tr>
-
-                                                <% }%>
-                                            </tbody>
-                                        </table> <%
-                                        }                                       
-                                        %>
-
+                                            <input type="hidden" id="columnaInput" name="columna">
+                                            <input type="hidden" id="datoInput" name="dato">
+                                            <input type="hidden" id="exportTypeInput" name="exportType">
+                                            
+                                            <button type="button" class="btn btn-success" onclick="submitForm('XLS')">
+                                                <img src="img/xls.png" width="25" height="25" alt="Exportar a XLS"/>
+                                                Exportar a XLS                                                
+                                            </button>
+                                            
+                                            <button type="button" class="btn btn-success" onclick="submitForm('XLSX')">
+                                                <img src="img/xlsx.png" width="25" height="25" alt="Exportar a XLSX"/>
+                                                Exportar a XLSX                                            
+                                            </button>  
+                                                                                        
+                                        </form>
                                     </div>
                                 </div>
 
@@ -252,27 +269,27 @@
 
         <script>
 
-           function obtenerReporte() {
-                
+            function obtenerReporte() {
+
                 // Validar datos de entreda                
                 var reporte = document.getElementById("selReporte");
                 var desde = document.getElementById("desde");
-                var hasta  = document.getElementById("hasta");
-                if (reporte.value==="0") {
+                var hasta = document.getElementById("hasta");
+                if (reporte.value === "0") {
                     alert("Debe seleccionar un reporte");
                     return;
                 }
-                
+
                 // Validar que los campos no estén vacíos
-                if (desde === ''|| hasta==='') {
+                if (desde === '' || hasta === '') {
                     alert('Por favor, ingrese un rango de fechas válido');
                     return;
                 }
-                
+
                 // Generar el reporte                
                 var formularioReporte = document.getElementById("frmReportes");
                 formularioReporte.submit();
-                
+
             }
 
             function cancelar() {
@@ -280,6 +297,37 @@
                 if (confirmacion) {
                     window.location.href = "index.jsp";
                 }
+            }
+
+            function submitForm(exportType) {
+                var table = document.getElementById("tblReporte");
+                var rows = table.getElementsByTagName("tr");
+                var columnas = [];
+
+                // Obtener encabezados
+                var headerRow = rows[0];
+                var cells = headerRow.getElementsByTagName("th");
+                for (var i = 0; i < cells.length; i++) {
+                    columnas.push(cells[i].innerText);
+                }
+
+                // Construir datos
+                var datos = [];
+                for (var j = 1; j < rows.length; j++) {
+                    var cells = rows[j].getElementsByTagName("td");
+                    var rowData = [];
+                    for (var k = 0; k < cells.length; k++) {
+                        rowData.push(cells[k].innerText);
+                    }
+                    datos.push(rowData.join(","));
+                }
+
+                // Crear campos ocultos y enviar formulario
+                document.getElementById("columnaInput").value = columnas.join(",");
+                document.getElementById("datoInput").value = datos.join(",");
+                document.getElementById("exportTypeInput").value = exportType;
+
+                document.forms["exportForm"].submit();
             }
 
 

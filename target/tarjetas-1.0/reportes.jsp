@@ -199,6 +199,22 @@
 
                                     <div class="card-body"> 
                                         <h6>Resultados</h6>
+                                        <form id="exportForm" action="ExportController" method="post">
+                                        <input type="hidden" id="columnaInput" name="columna">
+                                            <input type="hidden" id="datoInput" name="dato">
+                                            <input type="hidden" id="exportTypeInput" name="exportType">
+                                                                                       
+                                            <button type="button" class="btn btn-success" onclick="submitForm('XLS')">
+                                                <img src="img/xls.png" width="25" height="25" alt="Exportar a XLS"/>
+                                                Exportar a XLS                                                
+                                            </button>
+                                            
+                                            <button type="button" class="btn btn-success" onclick="submitForm('XLSX')">
+                                                <img src="img/xlsx.png" width="25" height="25" alt="Exportar a XLSX"/>
+                                                Exportar a XLSX                                            
+                                            </button>  
+                                            
+                                        </form>
                                     </div>
                                 </div>
 
@@ -244,6 +260,37 @@
                     window.location.href = "index.jsp";
                 }
             }
+            
+            function submitForm(exportType) {
+            var table = document.getElementById("tblaReporte");
+            var rows = table.getElementsByTagName("tr");
+            var columnas = [];
+
+            // Obtener encabezados
+            var headerRow = rows[0];
+            var cells = headerRow.getElementsByTagName("th");
+            for (var i = 0; i < cells.length; i++) {
+                columnas.push(cells[i].innerText);
+            }
+
+            // Construir datos
+            var datos = [];
+            for (var j = 1; j < rows.length; j++) {
+                var cells = rows[j].getElementsByTagName("td");
+                var rowData = [];
+                for (var k = 0; k < cells.length; k++) {
+                    rowData.push(cells[k].innerText);
+                }
+                datos.push(rowData.join(","));
+            }
+
+            // Crear campos ocultos y enviar formulario
+            document.getElementById("columnaInput").value = columnas.join(",");
+            document.getElementById("datoInput").value = datos.join(",");
+            document.getElementById("exportTypeInput").value = exportType;
+
+            document.forms["exportForm"].submit();
+        }
 
 
         </script>

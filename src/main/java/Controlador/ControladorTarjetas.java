@@ -294,16 +294,16 @@ public class ControladorTarjetas extends HttpServlet {
                             reporteLinea.setCantidad(rs.getInt(columna2));
                             reporte3.add(reporteLinea);
                         }
-                    } catch (SQLException e) {
-                        e.printStackTrace(); // Maneja la excepción de manera adecuada en tu aplicación.
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
                     } finally {
                         // Cierra el ResultSet si es necesario.
                         try {
                             if (rs != null) {
                                 rs.close();
                             }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
+                        } catch (Exception e) {
+                            System.out.println(e.toString());
                         }
                     }
 
