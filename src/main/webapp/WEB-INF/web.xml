@@ -22,7 +22,11 @@
     </servlet>
     <servlet>
         <servlet-name>ExportController</servlet-name>
-        <servlet-class>Controlador.ExportController</servlet-class>
+        <servlet-class>Utilidades.ExportController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ControladorRemito</servlet-name>
+        <servlet-class>Controlador.ControladorRemito</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ControladorTarjetas</servlet-name>
@@ -47,6 +51,10 @@
     <servlet-mapping>
         <servlet-name>ExportController</servlet-name>
         <url-pattern>/ExportController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControladorRemito</servlet-name>
+        <url-pattern>/ControladorRemito</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

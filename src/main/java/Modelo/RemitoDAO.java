@@ -69,6 +69,7 @@ public class RemitoDAO {
             rs = ps.executeQuery();
             while (rs.next()) {
                 numero = rs.getString("Auto_increment");
+                System.out.println("Autoincrement obtenido:" + numero);
             }
         } catch (Exception e) {
             System.out.println(e.toString());

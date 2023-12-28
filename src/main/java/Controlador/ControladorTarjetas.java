@@ -7,18 +7,21 @@ import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
+import Modelo.RemitoDAO;
 import Modelo.Reporte;
 import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
 import Modelo.UbicacionDAO;
 import Utilidades.GestionarPDF;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +39,6 @@ public class ControladorTarjetas extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String accion = request.getParameter("accion");
         PrintWriter out = response.getWriter();
         out.println("Llamada a servlet no valida");
     }
@@ -78,8 +80,8 @@ public class ControladorTarjetas extends HttpServlet {
                 try {
                     fechaFormateada = convertirFecha(request.getParameter(parametro));
                     fechas[indiceFechas++] = fechaFormateada;
-                } catch (ParseException ex) {
-                    Logger.getLogger(ControladorTarjetas.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
             } else if (parametro.startsWith("accion")) {
                 accion = request.getParameter("accion");
@@ -89,7 +91,7 @@ public class ControladorTarjetas extends HttpServlet {
                 estados[indiceCuentas - 1] = request.getParameter(parametro);
             }
         }
-
+        
         //Mostrar los resultados
         /*
         out.println("<html>");
@@ -203,6 +205,7 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "recibir":
+                
                 out.println("RECIBIR");
                 String correo2 = request.getParameter("correo");
                 String fechaRendicion = request.getParameter("frend");
@@ -341,8 +344,8 @@ public class ControladorTarjetas extends HttpServlet {
                         meses.add(rs2.getString("mes"));
                         efectividad.add(rs2.getString("porcentaje_entregadas"));
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    System.out.println(e.toString());
                 }
 
                 // Obtener valores de rapidez
@@ -356,8 +359,8 @@ public class ControladorTarjetas extends HttpServlet {
                         meses2.add(rs2.getString("mes"));
                         rapidez.add(rs2.getString("rapidez"));
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    System.out.println(e.toString());
                 }
 
                 // Convertir los arreglos a JSON 
@@ -467,30 +470,6 @@ public class ControladorTarjetas extends HttpServlet {
                 response.setStatus(200);
                 response.getWriter().println("Cambio registrado correctamente");
                 request.getRequestDispatcher("cambiar.jsp").forward(request, response);
-
-            case "remito":
-                // Obtener correo
-                String idCorreo = request.getParameter("correo");                
-                UbicacionDAO correoDAO = new UbicacionDAO();
-                String correo3 = correoDAO.buscar(idCorreo);
-                
-                // Obtener fecha de envío
-                String fechaEnvio2 = request.getParameter("fenvio");
-                String fechaEnvio3 ="";
-                try {
-                    fechaEnvio3 = convertirFecha2(fechaEnvio2);
-                } catch (ParseException ex) {
-                    Logger.getLogger(ControladorTarjetas.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
-                // Obtener ruta de desgliegue
-                ServletContext servletContext = getServletContext();
-                String rutaDespliegue = servletContext.getRealPath("/");
-                
-                // Generar remito
-                GestionarPDF remito = new GestionarPDF();
-                remito.crearRemito(fechaEnvio3, correo3, cuentas, indiceCuentas, rutaDespliegue);
-                break;
 
             default:
                 out.println("No se especificó una acción válida");

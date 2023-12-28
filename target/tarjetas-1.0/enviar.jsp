@@ -94,7 +94,7 @@
                             Esperando ingreso de tarjetas...
                         </div>
 
-                        <form action="ControladorTarjetas" method="POST" id="frmEnviar">
+                        <form action="ControladorRemito" method="POST" id="frmEnviar">
                             <div class="row">
                                 <div class="col">
 
@@ -189,6 +189,17 @@
         </div>
 
         <script>
+
+            window.onload = iniciar;
+            function iniciar() {
+                var fechaActual = new Date();
+                // Formatear la fecha como DD/MM/AAAA
+                var formatoFecha = fechaActual.toISOString().split('T')[0];
+                // Obtener el elemento de entrada de texto por su ID
+                var inputFecha = document.getElementById('inputFechaEnvio');
+                // Establecer el valor por defecto del input text como la fecha formateada
+                inputFecha.value = formatoFecha;
+            }
 
 
             function agregarFila() {
@@ -303,9 +314,9 @@
             }
 
             function eliminarFila(indiceFila) {
-                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta "+indiceFila+"?");
+                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta " + indiceFila + "?");
                 if (confirmacion) {
-                    var row = document.getElementById("fila"+indiceFila);
+                    var row = document.getElementById("fila" + indiceFila);
                     row.remove();
                 }
             }

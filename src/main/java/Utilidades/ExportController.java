@@ -1,4 +1,4 @@
-package Controlador;
+package Utilidades;
 
 import java.io.IOException;
 import java.io.OutputStream;
