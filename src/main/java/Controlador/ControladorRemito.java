@@ -5,7 +5,9 @@ import Modelo.UbicacionDAO;
 import Utilidades.GestionarPDF;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -110,39 +112,42 @@ public class ControladorRemito extends HttpServlet {
         GestionarPDF remito = new GestionarPDF();
         File documentoPDF = remito.crearRemito(fechaEnvio3, correo3, cuentas, indiceCuentas, numeroRemito, rutaDespliegue);
 
-        // Configurar el tipo de contenido de la respuesta
-        response.setContentType("application/pdf");
-        // Configurar el encabezado de la respuesta para indicar la descarga del archivo
-        response.setHeader("Content-Disposition", "inline; filename=remito.pdf");
-        //response.setHeader("Content-Disposition", "inline; filename=" + documentoPDF.getName());
-/*
-        // Obtener el flujo de salida de la respuesta
-        FileInputStream fis = new FileInputStream(documentoPDF);
-        OutputStream out2 = response.getOutputStream();
+        // Construir la ruta completa hacia la carpeta "pdf"
+        String rutaPdf = rutaDespliegue + File.separator + "pdf";
+        
+        System.out.println("rutaPdf:" + rutaPdf);
 
-        // Escribir el contenido del archivo PDF en el flujo de salida
+        // Verificar si la carpeta "pdf" existe, si no, crearla
+        File carpetaPdf = new File(rutaPdf);
+        if (!carpetaPdf.exists()) {
+            carpetaPdf.mkdirs(); // Crear la carpeta y sus directorios padres si no existen
+        }
+
+        // Generar el nombre del archivo
+        String nombreArchivo = "R" + String.format("%8s", numeroRemito).replace(' ', '0') + ".pdf";
+
+        // Crear el archivo pdf en la ruta de contexto, carpeta pdf
+        File archivoPDF = new File(rutaPdf, nombreArchivo);
+
+        // Configurar el tipo de contenido de la respuesta
+        // response.setContentType("application/pdf");
+        // Configurar el encabezado de la respuesta para indicar la descarga del archivo
+        // response.setHeader("Content-Disposition", "inline; filename=" + nombreArchivo);
+
+        // Guardar el archivo PDF en la carpeta "pdf"
+        FileOutputStream fos = new FileOutputStream(archivoPDF);
+        InputStream fis = new FileInputStream(documentoPDF);
         byte[] buffer = new byte[1024];
         int bytesRead;
         while ((bytesRead = fis.read(buffer)) != -1) {
-            out2.write(buffer, 0, bytesRead);
-        }
-*/
-        // Obtener el flujo de salida de la respuesta
-        OutputStream out2 = response.getOutputStream();
-
-        // Escribir el contenido del archivo PDF en el flujo de salida
-        try (FileInputStream fis = new FileInputStream(documentoPDF)) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                out2.write(buffer, 0, bytesRead);
-            }
+            fos.write(buffer, 0, bytesRead);
         }
 
         // Cerrar el flujo de saluda
-        out2.close();
-        
-        // Direccionar la salida a la capa de presentación        
+        // out2.close();
+
+        // Direccionar la salida a la capa de presentación
+        request.setAttribute("nombreArchivo", nombreArchivo);        
         request.getRequestDispatcher("enviar2.jsp").forward(request, response);
     }
 

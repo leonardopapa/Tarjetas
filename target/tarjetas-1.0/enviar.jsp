@@ -169,10 +169,7 @@
 
                                     <button type="button" class="btn btn-danger" onclick="generarRemito();">Generar Remito</button>
 
-                                    <button type="button" class="btn btn-danger">Firmar Remito</button>
-
                                     <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
-
 
                                 </div>
 

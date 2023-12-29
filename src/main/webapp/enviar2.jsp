@@ -91,22 +91,21 @@
                         <hr>
                         <div class="row">
 
-                            <iframe src="ControladorRemito" width="800" height="600" type="application/pdf">    
-                            </iframe>
+                            <%
+                                String nombreArchivo = (String) request.getAttribute("nombreArchivo");
+                            %>
 
+                            <embed src="pdf/<%=nombreArchivo%>" width="800" height="600" type="application/pdf">    
+                            
                             <input type="hidden" name="accion" value="firmar">
 
                         </div>
 
-                        <div class="row">
+                        <div class="row mt-5">
 
                             <div class="col">
 
                                 <button type="button" class="btn btn-danger" onclick="firmarRemito();">Firmar Remito</button>
-
-                            </div>
-
-                            <div class="col">
 
                                 <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
 
