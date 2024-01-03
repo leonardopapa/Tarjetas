@@ -89,29 +89,62 @@
                     <div class="card-body">
                         <h5 class="card-title">Enviar por Correo</h5>
                         <hr>
-                        <div class="row">
 
-                            <%
-                                String nombreArchivo = (String) request.getAttribute("nombreArchivo");
-                            %>
+                        <form action="ControladorRemito" method="post" name="frmFirmar" id="frmFirmar">
 
-                            <embed src="pdf/<%=nombreArchivo%>" width="800" height="600" type="application/pdf">    
-                            
-                            <input type="hidden" name="accion" value="firmar">
+                            <div class="row">
 
-                        </div>
+                                <%
+                                    String nombreArchivo = (String) request.getAttribute("nombreArchivo");
+                                %>
 
-                        <div class="row mt-5">
+                                <embed src="pdf/<%=nombreArchivo%>" width="800" height="600" type="application/pdf">    
 
-                            <div class="col">
 
-                                <button type="button" class="btn btn-danger" onclick="firmarRemito();">Firmar Remito</button>
-
-                                <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
 
                             </div>
 
-                        </div>
+                            <div class="row mt-5">
+
+                                <div class="col">
+
+                                    <input type="hidden" name="accion" value="firmar">
+
+                                    <input type="hidden" name="archivo" value="<%=nombreArchivo%>">
+
+                                    <input type="hidden" name="firma">
+
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Firmar Remito</button>
+
+                                    <button type="button" class="btn btn-danger" onClick="cancelar();">Cancelar</button>
+
+                                    <!-- Modal Ingresar alias y password -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Ingrese clave de firma</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <label for="alias" class="form-label">Alias:</label>
+                                                    <input type="text" class="form-control" name="alias" id="alias">
+                                                    <label for="password" class="form-label">Password:</label>
+                                                    <input type="password" class="form-control" name="password" id="password">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger" onclick="firmar();">Firmar</button>
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </form>
 
                     </div>
 
@@ -125,7 +158,17 @@
 
 <script>
 
-    function firmarRemito() {
+    function firmar() {
+        var alias = document.getElementById("alias").value;
+        var password = document.getElementById("password").value;
+        // Verificar si el usuario ingresó un valor
+        if (alias !== null && password !== null) {            
+            // enviar los datos el formulario al servlet
+            var frmFirmar = document.getElementById("frmFirmar");
+            frmFirmar.submit();
+        } else {
+            alert("Debe ingresar un alias y un password");
+        }
     }
 
     function cancelar() {

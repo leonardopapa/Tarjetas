@@ -2,8 +2,11 @@ package Utilidades;
 
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.StampingProperties;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.Cell;
@@ -14,23 +17,34 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import com.itextpdf.signatures.BouncyCastleDigest;
+import com.itextpdf.signatures.DigestAlgorithms;
+import com.itextpdf.signatures.IExternalDigest;
+import com.itextpdf.signatures.IExternalSignature;
+import com.itextpdf.signatures.PdfSigner;
+import com.itextpdf.signatures.PrivateKeySignature;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.Security;
+import java.security.cert.Certificate;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class GestionarPDF {
 
     public File crearRemito(String fechaRemito, String nombreCorreo, String[] cuentas, int cntCuentas, String numeroRemito, String rutaDespliegue) {
-        
-         PdfWriter writer = null;
+
+        PdfWriter writer = null;
         try {
             writer = new PdfWriter("remito.pdf");
         } catch (FileNotFoundException ex) {
-            System.out.println("No se puede crear el archivo remito.pdf");            
+            System.out.println("No se puede crear el archivo remito.pdf");
         }
-                
+
         // Crear un documento PDF 
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf, PageSize.A4);
@@ -41,7 +55,7 @@ public class GestionarPDF {
         try {
             logo = new Image(ImageDataFactory.create(rutaDespliegue + "img\\tarjeta.jpg"));
         } catch (Exception ex) {
-            System.out.println("No se puede encontrar la imagen tarjeta.jpg");            
+            System.out.println("No se puede encontrar la imagen tarjeta.jpg");
         }
 
         // Agregar una tabla para colocar allí el logo y el título del documento 
@@ -117,30 +131,80 @@ public class GestionarPDF {
                 .setTextAlignment(TextAlignment.RIGHT));
         document.close();
 
-        // Devolver el archivo PDF creado
-        
-        File archivoTemp = null;
-        
+        // Devolver el archivo PDF creado        
+        return devolver("remito.pdf");
+    }
+
+    public File firmarPDF(String nombreArchivo, String documentoPDF, String alias, String keystorePassword, String keyStore) {
+
+        // Ruta del archivo PDF de destino        
+        String outputFilePath = "remitoSigned.pdf";
+
+        // Configurar Bouncy Castle como proveedor de seguridad
+        BouncyCastleProvider provider = new BouncyCastleProvider();
+        Security.addProvider(provider);
+
+        // Cargar el archivo de almacén de claves (keystore) y obtener la clave privada y el certificado        
+        KeyStore keystore;
         try {
-            InputStream inputStream = new FileInputStream("remito.pdf");
+            keystore = KeyStore.getInstance("PKCS12");
+
+            keystore.load(new FileInputStream(keyStore), keystorePassword.toCharArray());
+            PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keystorePassword.toCharArray());
+            Certificate[] chain = keystore.getCertificateChain(alias);
+
+            // System.out.println("Firma obtenida correctamente");
+
+            // Crear un objeto PdfSigner para firmar el documento
+            // System.out.println("Documento PDF: " + documentoPDF);
+            PdfReader pdfReader = new PdfReader(documentoPDF);
+            // System.out.println("Pdf reader creado correctamente");
+
+            // PdfReader pdfReader = new PdfReader(inputFilePath);
+            PdfSigner pdfSigner = new PdfSigner(pdfReader, new FileOutputStream(outputFilePath), new StampingProperties());
+
+            // System.out.println("PdfSigner inicializado correctamente");
+
+            // Configurar apariencia de la firma
+            Rectangle rect = new Rectangle(36, 0, 200, 100);
+            pdfSigner.getSignatureAppearance()                    
+                    .setReuseAppearance(false)
+                    .setPageRect(rect)
+                    .setLayer2FontSize(8)
+                    .setPageNumber(1);
+
+            // Configurar contenedor de firma
+            pdfSigner.setFieldName("Firma");
+            String digestAlgorithm = DigestAlgorithms.SHA256;
+            IExternalSignature pks = new PrivateKeySignature(privateKey, digestAlgorithm, provider.getName());
+            IExternalDigest digest = new BouncyCastleDigest();
+            pdfSigner.signDetached(digest, pks, chain, null, null, null, 0, PdfSigner.CryptoStandard.CMS);
+            System.out.println("Firma electrónica aplicada correctamente.");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // Devolver el archivo PDF creado
+        return devolver(outputFilePath);
+    }
+
+    private File devolver(String origen) {
+        // Devolver el archivo PDF creado
+        File archivoTemp = null;
+
+        try {
+            InputStream inputStream = new FileInputStream(origen);
             archivoTemp = File.createTempFile("temp", ".pdf");
             FileOutputStream fos = new FileOutputStream(archivoTemp);
             byte[] buffer = new byte[1024];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 fos.write(buffer, 0, bytesRead);
-            }            
+            }
             inputStream.close();
         } catch (Exception e) {
             System.out.println(e.toString());
         }
         return archivoTemp;
-
     }
-
-    public File firmarPDF(File documentoPDF) {
-        File temp = new File("temp.pdf");
-        return temp;
-    }
-
 }
