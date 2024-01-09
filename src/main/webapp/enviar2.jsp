@@ -113,7 +113,17 @@
                                     <input type="hidden" name="archivo" value="<%=nombreArchivo%>">
 
                                     <input type="hidden" name="firma">
-
+                                    
+                                    <%                                     
+                                    String correo = (String) request.getAttribute("correoId");
+                                    String fechaRemito = (String) request.getAttribute("fechaRemito");
+                                    String ccuentas = (String) request.getAttribute("ccuentas");                                    
+                                    %>
+                                    
+                                    <input type="hidden" name="correo" value="<%= correo %>"> 
+                                    <input type="hidden" name="fenvio" value="<%= fechaRemito %>"> 
+                                    <input type="hidden" name="ccuentas" value="<%= ccuentas %>"> 
+                                    
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Firmar Remito</button>
 
                                     <button type="button" class="btn btn-danger" onClick="cancelar();">Cancelar</button>

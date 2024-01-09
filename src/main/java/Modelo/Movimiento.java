@@ -10,12 +10,12 @@ public class Movimiento {
     private Ubicacion ubicacion;
     private Motivo motivo;
     private Operador operador;
-    private Remito documento;
+    private String documento;
 
     public Movimiento() {
     }
 
-    public Movimiento(int id, int cliente, Date Fecha, Estado movimiento, Ubicacion ubicacion, Motivo motivo, Operador operador, Remito documento) {
+    public Movimiento(int id, int cliente, Date Fecha, Estado movimiento, Ubicacion ubicacion, Motivo motivo, Operador operador, String documento) {
         this.id = id;
         this.cliente = cliente;
         this.Fecha = Fecha;
@@ -82,11 +82,11 @@ public class Movimiento {
         this.operador = operador;
     }
 
-    public Remito getDocumento() {
+    public String getDocumento() {
         return documento;
     }
 
-    public void setDocumento(Remito documento) {
+    public void setDocumento(String documento) {
         this.documento = documento;
     }
     

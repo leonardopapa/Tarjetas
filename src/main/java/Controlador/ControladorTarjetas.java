@@ -7,16 +7,10 @@ import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
-import Modelo.RemitoDAO;
 import Modelo.Reporte;
 import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
-import Modelo.UbicacionDAO;
-import Utilidades.GestionarPDF;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Date;
@@ -27,9 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -151,7 +142,7 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "enviar":
-                // out.println("Enviar");
+                
                 String correo = request.getParameter("correo");
                 String fechaEnvio = request.getParameter("fenvio");
                 out.println("Correo: " + correo);

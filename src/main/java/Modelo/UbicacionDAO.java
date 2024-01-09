@@ -54,5 +54,24 @@ public class UbicacionDAO {
         cn.Desconectar();
         return nombre;
     }
+
+    public String obtenerEmail(String id) {
+        // Devuelve el nombre de una ubicación a partir de su Id
+        String sql = "SELECT email FROM ubicaciones where id="+id;
+        String email = null;
+        try {
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                email = rs.getString("email");                
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
+        cn.Desconectar();
+        return email;
+    }
     
 }
