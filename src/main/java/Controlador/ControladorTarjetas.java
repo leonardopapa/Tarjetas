@@ -7,9 +7,11 @@ import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
+import Modelo.RemitoDAO;
 import Modelo.Reporte;
 import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -204,7 +206,7 @@ public class ControladorTarjetas extends HttpServlet {
                 out.println("Correo: " + correo2);
                 out.println("Fecha de Rendición: " + fechaRendicion);
                 out.println("Numero de Rendicion: " + nroRendicion);
-
+                
                 // Iterar sobre los datos y guardarlos en la base de datos
                 boolean resultado2 = false;
                 for (int i = 0; i < indiceCuentas; i++) {
@@ -216,17 +218,13 @@ public class ControladorTarjetas extends HttpServlet {
                     Operador operador = new Operador();
                     operador.setId(11); // Operador ficticio
                     Ubicacion correo3 = new Ubicacion();
-                    correo3.setId(Integer.parseInt(correo2));
-                    //out.println("Llegué hasta aqui 0");
+                    correo3.setId(Integer.parseInt(correo2));                    
                     MovimientoDAO mdao3 = new MovimientoDAO();
-                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
-                    //out.println("Llegué hasta aqui 1");
-                    movimiento.setFecha(Date.valueOf(fechaRendicion));
-                    //out.println("Llegué hasta aqui 2");
-                    movimiento.setOperador(operador);
-                    //out.println("Llegué hasta aqui 3");
+                    movimiento.setCliente(Integer.parseInt(cuentas[i]));                    
+                    movimiento.setFecha(Date.valueOf(fechaRendicion));                    
+                    movimiento.setOperador(operador);                    
                     movimiento.setUbicacion(correo3);
-                    // out.println("Llegué hasta aqui 4");
+                    movimiento.setDocumento(nroRendicion);                    
 
                     if (!(motivos[i].isEmpty())) {
                         // out.println("Motivo no vacío:" + i);

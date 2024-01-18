@@ -95,12 +95,22 @@
                             <div class="row">
 
                                 <%
-                                    String nombreArchivo = (String) request.getAttribute("nombreArchivo");
+                                    String resultado = (String) request.getAttribute("resultado");
+                                    String nombreArchivo = (String) request.getAttribute("archivo");
+                                    String correo = (String) request.getAttribute("correo");
+                                    String fechaRemito = (String) request.getAttribute("fenvio");
+                                    String ccuentas = (String) request.getAttribute("ccuentas");   
+                                    if (resultado.equalsIgnoreCase("error")) {                                        
+                                %>
+                                
+                                <script>
+                                    alert("Error en el proceso de firma");
+                                </script>
+                                    <%
+                                    }
                                 %>
 
                                 <embed src="pdf/<%=nombreArchivo%>" width="800" height="600" type="application/pdf">    
-
-
 
                             </div>
 
@@ -113,13 +123,7 @@
                                     <input type="hidden" name="archivo" value="<%=nombreArchivo%>">
 
                                     <input type="hidden" name="firma">
-                                    
-                                    <%                                     
-                                    String correo = (String) request.getAttribute("correoId");
-                                    String fechaRemito = (String) request.getAttribute("fechaRemito");
-                                    String ccuentas = (String) request.getAttribute("ccuentas");                                    
-                                    %>
-                                    
+                                                                        
                                     <input type="hidden" name="correo" value="<%= correo %>"> 
                                     <input type="hidden" name="fenvio" value="<%= fechaRemito %>"> 
                                     <input type="hidden" name="ccuentas" value="<%= ccuentas %>"> 

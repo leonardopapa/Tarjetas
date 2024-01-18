@@ -104,22 +104,17 @@
                                     if (resultado.equalsIgnoreCase("ok")) {
                                         leyenda = "Cancelar";
                                 %>
-                                <embed src="pdf/<%=archivo%>" width="800" height="600" type="application/pdf">   
-                                <%
-                                    }
-                                    if (resultado.equalsIgnoreCase("error")) {
-                                        leyenda = "Retornar";
-                                %>
+                                <embed src="pdf/<%=archivo%>" width="800" height="600" type="application/pdf">
                                 <script>
-                                    alert("Error en el proceso de firma");
+                                    alert("Remito firmado electrónicamente con éxito");                                    
                                 </script>
                                 <%
-                                    }
-                                    if (resultado.equalsIgnoreCase("exito")) {
-                                        leyenda = "Continuar";
+                                    }                                    
+                                    if (resultado.equalsIgnoreCase("exito")) {                                        
                                 %>
                                 <script>
                                     alert("Remito grabado con éxito");
+                                    window.location.href = "index.jsp";
                                 </script>
                                 <%
                                     }

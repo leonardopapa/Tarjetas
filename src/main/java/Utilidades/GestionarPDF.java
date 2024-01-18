@@ -134,6 +134,33 @@ public class GestionarPDF {
         // Devolver el archivo PDF creado        
         return devolver("remito.pdf");
     }
+    
+    public boolean verificarFirma(String alias, String keystorePassword, String keyStore) {
+    
+        try {
+            // Cargar el archivo de almacén de claves (keystore)
+            KeyStore keystore2 = KeyStore.getInstance("PKCS12");
+            keystore2.load(new FileInputStream(keyStore), keystorePassword.toCharArray());
+
+            // Obtener la clave privada asociada con el alias
+            KeyStore.ProtectionParameter protectionParam = new KeyStore.PasswordProtection(keystorePassword.toCharArray());
+            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keystore2.getEntry(alias, protectionParam);
+
+            if (privateKeyEntry != null) {
+                // El alias y la contraseña son correctos
+                System.out.println("Alias y contraseña correctos.");
+                return true;
+            } else {
+                // El alias o la contraseña son incorrectos
+                System.out.println("Alias o contraseña incorrectos.");
+                return false;
+            }
+        } catch (Exception e) {
+            // Manejar excepciones, por ejemplo, si el archivo de keystore no es válido
+            System.out.println(e.getMessage());            
+            return false;
+        }
+    }
 
     public File firmarPDF(String nombreArchivo, String documentoPDF, String alias, String keystorePassword, String keyStore) {
 
@@ -148,7 +175,6 @@ public class GestionarPDF {
         KeyStore keystore;
         try {
             keystore = KeyStore.getInstance("PKCS12");
-
             keystore.load(new FileInputStream(keyStore), keystorePassword.toCharArray());
             PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keystorePassword.toCharArray());
             Certificate[] chain = keystore.getCertificateChain(alias);

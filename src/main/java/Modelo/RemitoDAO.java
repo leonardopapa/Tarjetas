@@ -59,8 +59,29 @@ public class RemitoDAO {
         cn.Desconectar();
         return remito;
     }
-
+    
     public String buscarNumero() {
+        String maxRemito = "";
+        String sql = "SELECT MAX(documento) AS max_remito FROM movimientos WHERE estado=2;";
+        try {
+            con = cn.Conexion();
+            PreparedStatement ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                maxRemito = rs.getString("max_remito");
+                System.out.println("Maximo remito obtenido:" + maxRemito);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        cn.Desconectar();
+        String numero = maxRemito.substring(1,9).replaceFirst("^0+", "");
+        System.out.println("Número extraído:" + numero);
+        int proximoRemito = Integer.parseInt(numero) + 1;
+        return String.valueOf(proximoRemito);        
+    }
+
+    public String buscarNumero2() {
         String numero = "";
         String sql = "SHOW TABLE STATUS LIKE 'documentos';";
         try {
@@ -76,6 +97,25 @@ public class RemitoDAO {
         }
         cn.Desconectar();
         return numero;
+    }
+
+    public boolean existe(String nroRendicion) {
+        boolean resultado = false;        
+        String sql = "SELECT COUNT(*) AS CANTIDAD FROM movimientos WHERE documento=?;";
+        try {
+            con = cn.Conexion();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, nroRendicion);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int cantidad = rs.getInt("CANTIDAD");
+                resultado = cantidad > 0;
+            }            
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        } 
+        cn.Desconectar();
+        return resultado;                
     }
 
 }

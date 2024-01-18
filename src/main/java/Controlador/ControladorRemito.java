@@ -2,6 +2,7 @@ package Controlador;
 
 import Modelo.Conexion;
 import Modelo.Estado;
+import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
@@ -134,9 +135,10 @@ public class ControladorRemito extends HttpServlet {
                 grabarArchivo(rutaPdf, nombreArchivo, documentoPDF);
 
                 // Direccionar la salida a la capa de presentación
-                request.setAttribute("nombreArchivo", nombreArchivo);
-                request.setAttribute("correoId", idCorreo);
-                request.setAttribute("fechaRemito", fechaEnvio2);
+                request.setAttribute("resultado", "ok");
+                request.setAttribute("archivo", nombreArchivo);
+                request.setAttribute("correo", idCorreo);
+                request.setAttribute("fenvio", fechaEnvio2);
                 request.setAttribute("ccuentas", concatenarCuentas(cuentas, indiceCuentas));
 
                 request.getRequestDispatcher("enviar2.jsp").forward(request, response);
@@ -163,27 +165,30 @@ public class ControladorRemito extends HttpServlet {
                 // Obtener el almacen de claves                
                 String rutaKeystore = rutaDespliegue + "keystore" + File.separator + "keystore.p12";
 
-                // Firmar el archivo PDF
-                File pdfFirmado = remito.firmarPDF(nombreArchivo2, rutaPdfOrigen, alias, firma, rutaKeystore);
-                
-                // Grabar el archivo PDF en la carpeta pdf del directorio de contexto                                                
-                String resultado = null;                
-                if (pdfFirmado.length() > 0) {
+                // Verificar alias y password
+                String resultado = null;
+                String destino = null;
+                if (remito.verificarFirma(alias, firma, rutaKeystore)) {
+                    // Firmar el archivo PDF
+                    File pdfFirmado = remito.firmarPDF(nombreArchivo2, rutaPdfOrigen, alias, firma, rutaKeystore);
+                    // Grabar el archivo PDF en la carpeta pdf del directorio de contexto
                     grabarArchivo(rutaPdf, nombreArchivo2, pdfFirmado);
                     System.out.println("PDF firmado grabado");
-                    resultado ="ok";
+                    resultado = "ok";
+                    destino = "enviar3.jsp";
                 } else {
-                    System.out.println("No se puedo grabar el archivo PDF firmado");
-                    resultado ="error";
+                    System.out.println("No se grabó el archivo PDF firmado");
+                    resultado = "error";
+                    destino = "enviar2.jsp";
                 }
-                
+
                 // Devolver el control a la capa de presentación
                 request.setAttribute("resultado", resultado);
                 request.setAttribute("archivo", nombreArchivo2);
                 request.setAttribute("correo", idCorreo3);
                 request.setAttribute("fenvio", fechaEnvio6);
                 request.setAttribute("ccuentas", ccuentas2);
-                request.getRequestDispatcher("enviar3.jsp").forward(request, response);
+                request.getRequestDispatcher(destino).forward(request, response);
                 break;
 
             case "grabarRemito":
@@ -198,7 +203,7 @@ public class ControladorRemito extends HttpServlet {
                 } catch (Exception e) {
                     System.out.println(e.toString());
                 }
-                
+
                 // Grabar movimiento "enviar" en BD
                 boolean resultadoGrabacion = grabarMovimientoEnviar(idCorreo2, fechaEnvio5, ccuentas, nombreArchivo3);
                 String resultado2 = (resultadoGrabacion ? "exito" : "error");
@@ -207,7 +212,7 @@ public class ControladorRemito extends HttpServlet {
                 UbicacionDAO correoDao = new UbicacionDAO();
                 String emailCorreo = correoDao.obtenerEmail(idCorreo2);
                 GestionarEmail mailer = new GestionarEmail();
-                String subject = "Envío de remito "+nombreArchivo3;
+                String subject = "Envío de remito " + nombreArchivo3;
                 String texto = "Se adjunta remito " + nombreArchivo3;
                 boolean resultadoEmail = mailer.enviarEmail(emailCorreo, subject, texto, rutaPdf + File.separator + nombreArchivo3, nombreArchivo3);
                 System.out.println("Resultado email:" + (resultadoEmail ? "OK" : "Fracaso"));
@@ -216,6 +221,59 @@ public class ControladorRemito extends HttpServlet {
                 request.setAttribute("resultado", resultado2);
                 request.setAttribute("archivo", nombreArchivo3);
                 request.getRequestDispatcher("enviar3.jsp").forward(request, response);
+                break;
+
+            case "recibir":
+                String correo2 = request.getParameter("correo");
+                String fechaRendicion = request.getParameter("frend");
+                String nroRendicion = request.getParameter("nrend");
+                out.println("Correo: " + correo2);
+                out.println("Fecha de Rendición: " + fechaRendicion);
+                out.println("Numero de Rendicion: " + nroRendicion);
+
+                // Comprobar si la recepción ya existe en la base de datos
+                RemitoDAO recepcion = new RemitoDAO();
+                String resultado4 = null;
+                String nombreArchivo4 = null;
+                if (recepcion.existe(nroRendicion)) {
+                    resultado4 = "error";
+                } else {
+                    // Generar remito de recepción
+                    File documentoPDF2 = remito.crearRemito(fechaRendicion, correo2, cuentas, indiceCuentas, nroRendicion, rutaDespliegue);
+
+                    // Verificar si la carpeta "pdf" existe, si no, crearla
+                    File carpetaPdf2 = new File(rutaPdf);
+                    if (!carpetaPdf2.exists()) {
+                        carpetaPdf2.mkdirs(); // Crear la carpeta y sus directorios padres si no existen
+                    }
+
+                    // Generar el nombre del archivo
+                    nombreArchivo4 = nroRendicion + ".pdf";
+
+                    // Guardar el archivo PDF en la carpeta "pdf"
+                    grabarArchivo(rutaPdf, nombreArchivo4, documentoPDF2);
+                    resultado4 = "ok";
+                }
+                // Direccionar la salida a la capa de presentación
+
+                request.setAttribute("resultado", resultado4);
+                request.setAttribute("archivo", nombreArchivo4);
+                request.setAttribute("correo", correo2);
+                request.setAttribute("frend", fechaRendicion);
+                request.setAttribute("ccuentas", concatenarCuentas(cuentas, indiceCuentas));
+
+                request.getRequestDispatcher("recibir2.jsp").forward(request, response);
+                break;
+
+            case "firmarRecepcion":
+                // Devolver remito de recepción a la capa de presentación
+                // Firmar remito
+                break;
+
+            
+            case "grabarRecepcion":
+
+                
                 break;
 
             default:
@@ -238,8 +296,8 @@ public class ControladorRemito extends HttpServlet {
             System.out.println(e.getMessage());
         }
     }
-    
-     private String convertirFecha(String fechaOrigen) throws ParseException {
+
+    private String convertirFecha(String fechaOrigen) throws ParseException {
         SimpleDateFormat formatoOrigen = new SimpleDateFormat("dd/MM/yyyy");
         // Convertir la fecha de origen de String a Date
         java.util.Date fechaOrigenDate = formatoOrigen.parse(fechaOrigen);
@@ -296,12 +354,12 @@ public class ControladorRemito extends HttpServlet {
             Ubicacion correo = new Ubicacion();
             correo.setId(Integer.parseInt(idCorreo));
             MovimientoDAO mdao = new MovimientoDAO();
-            movimiento.setCliente(Integer.parseInt(cuenta));            
-            movimiento.setFecha(Date.valueOf(fecha));            
+            movimiento.setCliente(Integer.parseInt(cuenta));
+            movimiento.setFecha(Date.valueOf(fecha));
             movimiento.setOperador(operador);
             movimiento.setUbicacion(correo);
-            System.out.println("Documento:<" + remito+">");
-            movimiento.setDocumento(remito);            
+            System.out.println("Documento:<" + remito + ">");
+            movimiento.setDocumento(remito);
             System.out.println("Llegué hasta acá");
             resultado = mdao.agregarEnviar(movimiento);
             if (resultado) {
