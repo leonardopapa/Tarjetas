@@ -241,8 +241,7 @@
                         fila.id = "fila" + cuenta;
 
                         // Insertar celdas con los valores de los input
-                        var celdaCuenta = fila.insertCell(0);
-                        // celdaCuenta.innerHTML = cuenta;
+                        var celdaCuenta = fila.insertCell(0);                        
                         celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
 
                         var celdaFecha = fila.insertCell(1);
@@ -296,7 +295,8 @@
 
                 // Cambiar tarjetas a estado enviada
                 formularioEnviar = document.getElementById("frmEnviar");
-                formularioEnviar.submit();
+                console.log("Todos los controles OK");
+                // formularioEnviar.submit();
             }
 
             function formatearFecha2(fecha) {

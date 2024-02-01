@@ -1,6 +1,6 @@
 package Controlador;
 
-import Modelo.TarjetaDAO;
+import Modelo.RemitoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -8,29 +8,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ControladorBuscar2 extends HttpServlet {
+public class ControladorBuscar3 extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Buscar si una tarjeta se encuenta en estado "En Distribución" para un determinado "correo"
-        // Devuelve "encontrado" o "no encontrado"
+        // Comprobar si la recepción ya existe en la base de datos
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        String cuenta = request.getParameter("cuenta");        
-        String correo = request.getParameter("correo");  
-        TarjetaDAO tdao = new TarjetaDAO();
-        String resultado = tdao.buscar(cuenta,"2", correo);     
-        if (resultado.isEmpty()) out.println("no encontrado");
-        else out.println(resultado);        
+        String nroRendicion = request.getParameter("nrend");
+        PrintWriter out = response.getWriter();        
+        RemitoDAO recepcion = new RemitoDAO();
+        String resultado4 = null;        
+        if (!recepcion.existe(nroRendicion)) resultado4 = "no encontrado";
+        else resultado4 = "encontado";        
+        out.println(resultado4);
+        request.setAttribute("resultado", resultado4);
     }
 
-     @Override
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

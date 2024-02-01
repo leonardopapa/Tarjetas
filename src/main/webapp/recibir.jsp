@@ -92,9 +92,8 @@
                         <div class="alert alert-danger" role="alert">
                             Esperando ingreso de tarjetas...
                         </div>
-                        <form action="ControladorTarjetas" method="POST" id="frmRecibir">
+                        <form action="ControladorRemito" method="POST" id="frmRecibir">
                             <div class="row">
-
 
                                 <div class="col">
 
@@ -104,11 +103,10 @@
                                         <div class="card-body">
 
                                             <div class="row">
-                                                <label for="inputPassword" class="col-form-label">Correo:</label>
+                                                <label for="selCorreo" class="col-form-label">Correo:</label>
                                                 <div class="col">
-                                                    <select class="form-select" name="correo" id="selCorreo">
-                                                        <option selected>Seleccione el Correo</option>
-                                                        <option selected>Seleccione el Correo</option>
+                                                    <select class="form-select" name="correo" id="selCorreo">                                                        
+                                                        <option selected value="0">Seleccione el Correo</option>
                                                         <option value="29">Servicios Modernos</option>
                                                         <option value="32">Dago</option>
                                                         <option value="30">Flash</option>
@@ -135,7 +133,7 @@
                                             <form action="ControladorBuscar2" method="get" name="addCuenta" id="addCuenta">
 
                                                 <div class="row">
-                                                    <label for="inputPassword" class="col-form-label">Ingreso Manual:</label>
+                                                    <label for="inputCuenta" class="col-form-label">Ingreso Manual:</label>
                                                     <div class="col">
                                                         <input type="text" class="form-control" id="inputCuenta" placeholder="Ingrese el número de cuenta">
                                                     </div>
@@ -173,8 +171,6 @@
 
                                     <button type="button" class="btn btn-danger" onclick="recibir();">Confirmar Recepción</button>
 
-                                    <button type="button" class="btn btn-danger">Firmar Comprobante</button>
-
                                     <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
 
                                 </div>
@@ -190,16 +186,33 @@
 
         <script>
 
-            var contadorFilas = 0;
+            window.onload = iniciar;
+
+            function iniciar() {
+                var fechaActual = new Date();
+                // Formatear la fecha como DD/MM/AAAA
+                var formatoFecha = fechaActual.toISOString().split('T')[0];
+                // Obtener el elemento de entrada de texto por su ID
+                var inputFecha = document.getElementById('inputFechaRendicion');
+                // Establecer el valor por defecto del input text como la fecha formateada
+                inputFecha.value = formatoFecha;
+            }
 
             function agregarFila() {
                 // Obtener los valores de los input
                 var cuenta = document.getElementById("inputCuenta").value;
+                var correo = document.getElementById("selCorreo").value;
+                
                 // Validar que los campos no estén vacíos
                 if (cuenta === '') {
                     alert('Por favor, ingrese una cuenta.');
                     return;
                 }
+                
+                if (correo === '0') {
+                    alert('Por favor, seleccione un correo.');
+                    return;
+                }                
 
                 // Validar el formato de la cuenta(número de 6 dígitos)
                 var cuentaRegex = /^\d{6}$/;
@@ -207,42 +220,49 @@
                     alert('Número de cuenta no válido. Debe ser un número de 6 dígitos.');
                     return;
                 }
-
-                // Verificar que la cuenta esté en estado "En Distribución"
-
+                
+                // Verificar que la cuenta no haya sido ingresada en el mismo formulario
+                if (document.getElementById("fila"+cuenta)) {
+                    alert('Número de cuenta no válido. Ya fue ingresado.');
+                    return;                    
+                }
+                
+                // Verificar que la cuenta esté en estado "En Distribución" y haya sido impuesta al correo seleccionado
                 console.log("Iniciando llamada Http - cuenta:" + cuenta);
                 var http = new XMLHttpRequest();
-                url = 'ControladorBuscar2?cuenta=' + cuenta;
+                url = 'ControladorBuscar2?cuenta=' + cuenta +'&correo=' + correo;
                 http.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
                         resultado = this.responseText.trim();
                         console.log("Response text:[" + resultado + "]");
                         if (resultado === "no encontrado") {
-                            alert("No existe una tarjeta en estado En Distribución con ese número");
+                            alert("La tarjeta ingresada no se encuentra en estado En Distribución con ese correo");
                             return;
                         }
 
                         // Obtener la referencia de la tabla
                         var tabla = document.getElementById("tblTarjetas");
 
+                        // Obtener la referencia al tbody
+                        var tbody = tabla.getElementsByTagName("tbody")[0];
+
                         // Crear una nueva fila
-                        var fila = tabla.insertRow();
-                        fila.id = "fila" + contadorFilas;
+                        var fila = tbody.insertRow();
+                        fila.id = "fila" + cuenta;
 
                         // Insertar celdas con los valores de los input
                         var celdaCuenta = fila.insertCell(0);
-
-                        celdaCuenta.innerHTML = '<input type="text" name="cuenta' + contadorFilas + '" value="' + cuenta + '" readonly>';
+                        celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
 
                         var celdaResultado = fila.insertCell(1);
-                        celdaResultado.innerHTML = '<select class="form-select" name="resultado' + contadorFilas +
+                        celdaResultado.innerHTML = '<select class="form-select" name="resultado' + cuenta +
                                 '"> <option selected value="">Seleccione el resultado</option>' +
                                 '<option value="7">Entregada</option>' +
                                 '<option value="3">Devuelta</option> </select>';
 
                         var celdaMotivo = fila.insertCell(2);
-                        celdaMotivo.innerHTML = '<select class="form-select" name="motivo' + contadorFilas +
-                                '"> <option selected value="">Seleccione el motivo</option>' +
+                        celdaMotivo.innerHTML = '<select class="form-select" name="motivo' + cuenta +
+                                '"> <option selected value="0">Seleccione el motivo</option>' +
                                 '<option value="1">Faltan datos</option>' +
                                 '<option value="2">Zona no atendida</option>' +
                                 '<option value="3">No existe número</option>' +
@@ -256,11 +276,12 @@
 
                         // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
                         var celdaEliminar = fila.insertCell(3);
-                        celdaEliminar.innerHTML = '<button onclick="eliminarFila2(' + contadorFilas + ')"><i class="fas fa-trash-alt"></i></button>';
+                        celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila2(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
 
-                        // Limpiar los valores de los input
+                        // Limpiar los valores de los input                        
                         document.getElementById("inputCuenta").value = '';
-                        contadorFilas++;
+                        var enfocar = document.getElementById("inputCuenta");
+                        enfocar.focus();
                     }
                 };
                 http.open('get', url);
@@ -271,8 +292,8 @@
             function eliminarFila2(indiceFila) {
                 var confirmacion = confirm("¿Está seguro de que desea eliminar esta fila?");
                 if (confirmacion) {
-                    var tabla = document.getElementById("tblTarjetas");
-                    tabla.deleteRow(indiceFila + 1); // +1 para tener en cuenta la fila de encabezado
+                    var row = document.getElementById("fila" + indiceFila);
+                    row.remove();
                 }
             }
 
@@ -283,15 +304,23 @@
                     window.location.href = "index.jsp";
                 }
             }
-            
+
             function recibir() {
-                // Validar Fecha de Envío
+                // Obtener parámetros generales
                 var fecha = document.getElementById("inputFechaRendicion").value;
                 var correo = document.getElementById("selCorreo").value;
                 var rendicion = document.getElementById("inputRendicion").value;
 
+                // Verificar que la rendición no exista en la BD
+                if (existeRendicion(rendicion)) {
+                    alert('La rendición ya existe en la base de datos.');
+                    return;
+                } else {
+                    console.log("OK: La rendición no existe en la base de datos");
+                }
+
                 // Validar que los campos no estén vacíos
-                if (fecha === '' || correo === '' || rendicion === '') {
+                if (fecha === '' || correo === '0' || rendicion === '') {
                     alert('Por favor, ingrese correo, fecha de rendicón y número de rendición.');
                     return;
                 }
@@ -299,7 +328,6 @@
                 // Validar la fecha
                 var fechaIngresada = new Date(fecha);
                 var fechaActual = new Date();
-
                 if (isNaN(fechaIngresada.getTime()) || fechaIngresada > fechaActual) {
                     alert('Fecha no válida. Debe ser una fecha no futura.');
                     return;
@@ -308,16 +336,56 @@
                 // Validar que la fecha no tenga más de un año atrás
                 var unAnioAtras = new Date();
                 unAnioAtras.setFullYear(unAnioAtras.getFullYear() - 1);
-
                 if (fechaIngresada < unAnioAtras) {
                     alert('Fecha no válida. Debe ser una fecha dentro del último año.');
                     return;
                 }
 
-                // Cambiar tarjetas a estado enviada
+                // Verificar que estén completos los campos Resultado y Motivo cuando corresponda                
+                var tabla = document.getElementById('tblTarjetas');
+                var filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < filas.length; i++) {
+                    var selects = filas[i].getElementsByTagName('select');
+                    // Verificar el valor seleccionado en el combo "resultado"
+                    var resultado = parseInt(selects[0].value);
+                    if (resultado !== 3 && resultado !== 7) {
+                        alert("Error en la fila " + (i + 1) + ": El valor seleccionado en 'resultado' debe ser Entregada o Devuelta.");
+                        return;                     
+                    }
+                    // Verificar el valor seleccionado en el combo "motivo" si el resultado es 3
+                    if (resultado === 3) {
+                        var motivo = parseInt(selects[1].value);
+                        if (motivo < 1 || motivo > 10) {
+                            alert("Error en la fila " + (i + 1) + ": Falta indicar el motivo de la devolución.");
+                            return; 
+                        }                    
+                    }
+                }
+                
+                // Si se llega aquí, todas las filas cumplen con las condiciones
+                console.log("Validación de datos entrada exitosa");
+
+                // Confeccionar el remito de recepción
                 formularioRecibir = document.getElementById("frmRecibir");
                 formularioRecibir.submit();
-            }
+                }
+
+                function existeRendicion(rendicion) {
+                    url = 'ControladorBuscar3?cuenta=' + rendicion;
+                    var http = new XMLHttpRequest();
+                    http.onreadystatechange = function () {
+                        if (this.readyState === 4 && this.status === 200) {
+                            resultado = this.responseText.trim();
+                            console.log("Rendicion response text:[" + resultado + "]");
+                            if (resultado === "no encontrado")
+                                return false;
+                            else
+                                return true;
+                        }
+                    };
+                    http.open('get', url);
+                    http.send();
+                }
 
         </script>
 

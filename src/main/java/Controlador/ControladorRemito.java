@@ -1,8 +1,6 @@
 package Controlador;
 
-import Modelo.Conexion;
 import Modelo.Estado;
-import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
@@ -17,17 +15,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -82,6 +73,7 @@ public class ControladorRemito extends HttpServlet {
                 cuentas[indiceCuentas++] = request.getParameter(parametro);
             } else if (parametro.startsWith("accion")) {
                 accion = request.getParameter("accion");
+                System.out.println("Acción:" + accion);
             }
         }
 
@@ -224,9 +216,23 @@ public class ControladorRemito extends HttpServlet {
                 break;
 
             case "recibir":
-                String correo2 = request.getParameter("correo");
-                String fechaRendicion = request.getParameter("frend");
+                // Obtener correo
+                String idCorreo4 = request.getParameter("correo");
+                UbicacionDAO correoDAO2 = new UbicacionDAO();
+                String correo2 = correoDAO2.buscar(idCorreo4);
+                
+                // Obtener fecha de rendición
+                String fechaRend = request.getParameter("frend");
+                String fechaRendicion = "";
+                try {
+                    fechaRendicion = convertirFecha2(fechaRend);
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+                
+                // Obtener número de rendición
                 String nroRendicion = request.getParameter("nrend");
+                
                 out.println("Correo: " + correo2);
                 out.println("Fecha de Rendición: " + fechaRendicion);
                 out.println("Numero de Rendicion: " + nroRendicion);
@@ -239,7 +245,7 @@ public class ControladorRemito extends HttpServlet {
                     resultado4 = "error";
                 } else {
                     // Generar remito de recepción
-                    File documentoPDF2 = remito.crearRemito(fechaRendicion, correo2, cuentas, indiceCuentas, nroRendicion, rutaDespliegue);
+                    File documentoPDF2 = remito.crearRecepcion(fechaRendicion, correo2, cuentas, indiceCuentas, nroRendicion, rutaDespliegue);
 
                     // Verificar si la carpeta "pdf" existe, si no, crearla
                     File carpetaPdf2 = new File(rutaPdf);

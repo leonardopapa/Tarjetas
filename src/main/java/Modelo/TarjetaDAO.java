@@ -144,6 +144,29 @@ public class TarjetaDAO {
         return resultado;
     }
     
+    public String buscar(String cuenta, String estado, String correo) {
+        String resultado = "";        
+        try {            
+            con = cn.Conexion();
+            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and estado=? and ubicacion=?");
+            ps.setInt(1, Integer.parseInt(cuenta));
+            ps.setInt(2, Integer.parseInt(estado));
+            ps.setInt(3, Integer.parseInt(correo));
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                resultado = "encontrado";
+                System.out.println("Se encontró la tarjeta "+cuenta+" en distribución para el correo "+correo);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            resultado = "error";
+        }
+        cn.Desconectar();
+        return resultado;
+    }
+    
     public String buscar3(String cuenta, String atributo) {
         String resultado = "";        
         try {            

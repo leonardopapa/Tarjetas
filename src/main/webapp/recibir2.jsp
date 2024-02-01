@@ -87,7 +87,7 @@
 
                 <div class="card" style="margin:20px">
                     <div class="card-body">
-                        <h5 class="card-title">Recibir rendición del correo</h5>
+                        <h5 class="card-title">Recibir Rendición</h5>
                         <hr>
 
                         <form action="ControladorRemito" method="post" name="frmFirmar" id="frmFirmar">
@@ -98,7 +98,7 @@
                                     String resultado = (String) request.getAttribute("resultado");
                                     String nombreArchivo = (String) request.getAttribute("archivo");
                                     String correo = (String) request.getAttribute("correo");
-                                    String fechaRemito = (String) request.getAttribute("frend");
+                                    String fechaRemito = (String) request.getAttribute("fenvio");
                                     String ccuentas = (String) request.getAttribute("ccuentas");   
                                     if (resultado.equalsIgnoreCase("error")) {                                        
                                 %>
@@ -122,7 +122,7 @@
 
                                     <input type="hidden" name="archivo" value="<%=nombreArchivo%>">
 
-                                    <input type="hidden" name="firmaRecepcion">
+                                    <input type="hidden" name="firma">
                                                                         
                                     <input type="hidden" name="correo" value="<%= correo %>"> 
                                     <input type="hidden" name="fenvio" value="<%= fechaRemito %>"> 

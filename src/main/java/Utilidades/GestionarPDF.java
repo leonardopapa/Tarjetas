@@ -135,6 +135,87 @@ public class GestionarPDF {
         return devolver("remito.pdf");
     }
     
+    public File crearRecepcion(String fechaRemito, String nombreCorreo, String[] cuentas, int cntCuentas, String numeroRemito, String rutaDespliegue) {
+
+        PdfWriter writer = null;
+        try {
+            writer = new PdfWriter("remito.pdf");
+        } catch (FileNotFoundException ex) {
+            System.out.println("No se puede crear el archivo remito.pdf");
+        }
+
+        // Crear un documento PDF 
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf, PageSize.A4);
+        document.setMargins(50, 50, 50, 50);
+
+        // Obtener la imagen del logo
+        Image logo = null;
+        try {
+            logo = new Image(ImageDataFactory.create(rutaDespliegue + "img\\tarjeta.jpg"));
+        } catch (Exception ex) {
+            System.out.println("No se puede encontrar la imagen tarjeta.jpg");
+        }
+
+        // Agregar una tabla para colocar allí el logo y el título del documento 
+        Table table = new Table(new float[]{1, 8})
+                .setBorder(null)
+                .useAllAvailableWidth();
+        table.addCell(new Cell()
+                .setBorder(null)
+                .add(new Paragraph("")
+                        .add(logo)));
+        table.addCell(new Cell()
+                .setBorder(null)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                .add(new Paragraph("INFORME DE RECEPCION DE TARJETAS")
+                        .setBold()
+                        .setTextAlignment(TextAlignment.CENTER)
+                ));
+        document.add(table);
+
+        // Agregar una tabla para colocar allí el número de remito, el nombre del correo y la fecha
+        table = new Table(new float[]{1, 1})
+                .setBorder(Border.NO_BORDER);
+        table.addCell(new Cell()
+                .setBorder(Border.NO_BORDER)
+                .add(new Paragraph("Rendición Nº:")
+                        .setBold()));
+        table.addCell(new Cell()
+                .setBorder(Border.NO_BORDER)
+                .add(new Paragraph(numeroRemito)));
+        
+        table.addCell(new Cell()
+                .setBorder(Border.NO_BORDER)
+                .add(new Paragraph("Fecha:")
+                        .setBold()));
+        table.addCell(new Cell()
+                .setBorder(Border.NO_BORDER)
+                .add(new Paragraph(fechaRemito)));
+
+        document.add(new Paragraph(""));
+        document.add(table);
+
+        // Agregar un párrafo
+        document.add(new Paragraph("En el día de la fecha, se reciben del correo " + nombreCorreo + " las tarjetas que se indican a continuación:").setMarginTop(10));
+        document.add(new Paragraph(""));
+
+        // Agregar el listado de cuentas
+        com.itextpdf.layout.element.List cuentasPDF = new com.itextpdf.layout.element.List()
+                .setListSymbol("\u2022")
+                .setSymbolIndent(12);
+
+        for (int i = 0; i < cntCuentas; i++) {
+            cuentasPDF.add(new ListItem(cuentas[i]));
+        }
+        document.add(cuentasPDF);        
+        document.close();
+
+        // Devolver el archivo PDF creado        
+        return devolver("remito.pdf");
+    }
+    
     public boolean verificarFirma(String alias, String keystorePassword, String keyStore) {
     
         try {

@@ -28,6 +28,10 @@
         <servlet-name>ControladorRemito</servlet-name>
         <servlet-class>Controlador.ControladorRemito</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ControladorBuscar3</servlet-name>
+        <servlet-class>Controlador.ControladorBuscar3</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ControladorTarjetas</servlet-name>
         <url-pattern>/ControladorTarjetas</url-pattern>
@@ -55,6 +59,10 @@
     <servlet-mapping>
         <servlet-name>ControladorRemito</servlet-name>
         <url-pattern>/ControladorRemito</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControladorBuscar3</servlet-name>
+        <url-pattern>/ControladorBuscar3</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
