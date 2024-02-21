@@ -38,6 +38,7 @@ public class GestionarPDF {
 
     public File crearRemito(String fechaRemito, String nombreCorreo, String[] cuentas, int cntCuentas, String numeroRemito, String rutaDespliegue) {
 
+        // Crea un remito de entrega de tarjetas al correo
         PdfWriter writer = null;
         try {
             writer = new PdfWriter("remito.pdf");
@@ -134,9 +135,10 @@ public class GestionarPDF {
         // Devolver el archivo PDF creado        
         return devolver("remito.pdf");
     }
-    
-    public File crearRecepcion(String fechaRemito, String nombreCorreo, String[] cuentas, int cntCuentas, String numeroRemito, String rutaDespliegue) {
 
+    public File crearRecepcion(String fechaRemito, String nombreCorreo, String[] cuentas, String[] estados, String [] motivos, int cntCuentas, String numeroRemito, String rutaDespliegue) {
+
+        // Crear un Comprobante de Recepción de Tarjetas del Correo
         PdfWriter writer = null;
         try {
             writer = new PdfWriter("remito.pdf");
@@ -185,7 +187,7 @@ public class GestionarPDF {
         table.addCell(new Cell()
                 .setBorder(Border.NO_BORDER)
                 .add(new Paragraph(numeroRemito)));
-        
+
         table.addCell(new Cell()
                 .setBorder(Border.NO_BORDER)
                 .add(new Paragraph("Fecha:")
@@ -201,23 +203,51 @@ public class GestionarPDF {
         document.add(new Paragraph("En el día de la fecha, se reciben del correo " + nombreCorreo + " las tarjetas que se indican a continuación:").setMarginTop(10));
         document.add(new Paragraph(""));
 
-        // Agregar el listado de cuentas
-        com.itextpdf.layout.element.List cuentasPDF = new com.itextpdf.layout.element.List()
-                .setListSymbol("\u2022")
-                .setSymbolIndent(12);
+        // Agregar una tabla para agregar el listado de cuentas, estados y motivos
+        table = new Table(new float[]{75, 100, 250});
+        // .setBorder(Border.NO_BORDER);
+        table.addCell(new Cell()
+                // .setBorder(Border.NO_BORDER)
+                .add(new Paragraph("Cuenta")
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setBold()));
+        table.addCell(new Cell()
+                // .setBorder(Border.NO_BORDER)                
+                .setPaddingLeft(10F)
+                .add(new Paragraph("Resultado")
+                        .setBold()));
+        table.addCell(new Cell()
+                // .setBorder(Border.NO_BORDER)                
+                .setPaddingLeft(10F)
+                .add(new Paragraph("Motivo")
+                        .setBold()));
 
         for (int i = 0; i < cntCuentas; i++) {
-            cuentasPDF.add(new ListItem(cuentas[i]));
+            table.addCell(new Cell()
+                    // .setBorder(Border.NO_BORDER)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .add(new Paragraph(cuentas[i])));
+            table.addCell(new Cell()
+                    // .setBorder(Border.NO_BORDER)
+                    .setPaddingLeft(10F)
+                    .add(new Paragraph(estados[i])));
+            table.addCell(new Cell()
+                    // .setBorder(Border.NO_BORDER)
+                    .setPaddingLeft(10F)
+                    .add(new Paragraph(motivos[i])));
         }
-        document.add(cuentasPDF);        
+
+        document.add(new Paragraph(""));
+        document.add(table);
+        document.add(new Paragraph(""));
         document.close();
 
         // Devolver el archivo PDF creado        
         return devolver("remito.pdf");
     }
-    
+
     public boolean verificarFirma(String alias, String keystorePassword, String keyStore) {
-    
+
         try {
             // Cargar el archivo de almacén de claves (keystore)
             KeyStore keystore2 = KeyStore.getInstance("PKCS12");
@@ -238,7 +268,7 @@ public class GestionarPDF {
             }
         } catch (Exception e) {
             // Manejar excepciones, por ejemplo, si el archivo de keystore no es válido
-            System.out.println(e.getMessage());            
+            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -261,7 +291,6 @@ public class GestionarPDF {
             Certificate[] chain = keystore.getCertificateChain(alias);
 
             // System.out.println("Firma obtenida correctamente");
-
             // Crear un objeto PdfSigner para firmar el documento
             // System.out.println("Documento PDF: " + documentoPDF);
             PdfReader pdfReader = new PdfReader(documentoPDF);
@@ -271,10 +300,9 @@ public class GestionarPDF {
             PdfSigner pdfSigner = new PdfSigner(pdfReader, new FileOutputStream(outputFilePath), new StampingProperties());
 
             // System.out.println("PdfSigner inicializado correctamente");
-
             // Configurar apariencia de la firma
             Rectangle rect = new Rectangle(36, 0, 200, 100);
-            pdfSigner.getSignatureAppearance()                    
+            pdfSigner.getSignatureAppearance()
                     .setReuseAppearance(false)
                     .setPageRect(rect)
                     .setLayer2FontSize(8)

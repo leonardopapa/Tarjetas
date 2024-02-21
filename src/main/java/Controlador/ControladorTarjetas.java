@@ -7,11 +7,9 @@ import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
-import Modelo.RemitoDAO;
 import Modelo.Reporte;
 import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -52,11 +50,11 @@ public class ControladorTarjetas extends HttpServlet {
         // Obtener los parámetros del formulario
         Enumeration<String> parametros = request.getParameterNames();
 
-        // Arrays para almacenar cuentas y fechas
+        // Arrays para almacenar cuentas, fechas, motivos y estados
         String[] cuentas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
         String[] fechas = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] motivos = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] estados = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
+        String[] motivos = new String[10];  // Innecesario, movido a ControladorRemito
+        String[] estados = new String[10];  // Innecesario, movido a ControladorRemito
 
         int indiceCuentas = 0;
         int indiceFechas = 0;

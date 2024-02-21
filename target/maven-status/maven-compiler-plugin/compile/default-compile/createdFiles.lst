@@ -24,4 +24,5 @@ Modelo\RemitoDAO.class
 Modelo\Remito.class
 Controlador\Controlador.class
 Modelo\ReporteEfectividad.class
+Controlador\ControladorBuscar3.class
 Modelo\Motivo.class

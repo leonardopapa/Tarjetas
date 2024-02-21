@@ -2,8 +2,10 @@ D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\ControladorTarj
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Utilidades\GestionarEmail.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\TarjetaDAO.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\ReporteEfectividad.java
+D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\ControladorBuscar3.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\Controlador2.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\ControladorRemito.java
+D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\MotivoDAO.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\EstadoDAO.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Utilidades\ExportController.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Utilidades\GestionarPDF.java

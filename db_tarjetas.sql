@@ -121,18 +121,17 @@ CREATE TABLE `movimientos` (
   `ubicacion` int DEFAULT NULL,
   `operador` int NOT NULL,
   `motivo` int DEFAULT NULL,
-  `documento` int DEFAULT NULL,
+  `documento` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_tarjeta_idx` (`tarjeta`),
   KEY `fk_ubicacion_idx` (`ubicacion`),
   KEY `fk_operador_idx` (`operador`),
   KEY `fk_motivo_idx` (`motivo`),
   KEY `fk_documento_idx` (`documento`),
-  CONSTRAINT `fk_documento` FOREIGN KEY (`documento`) REFERENCES `documentos` (`id`),
   CONSTRAINT `fk_motivo` FOREIGN KEY (`motivo`) REFERENCES `motivos` (`id`),
   CONSTRAINT `fk_operador` FOREIGN KEY (`operador`) REFERENCES `operadores` (`id`),
   CONSTRAINT `fk_ubicacion` FOREIGN KEY (`ubicacion`) REFERENCES `ubicaciones` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +140,7 @@ CREATE TABLE `movimientos` (
 
 LOCK TABLES `movimientos` WRITE;
 /*!40000 ALTER TABLE `movimientos` DISABLE KEYS */;
-INSERT INTO `movimientos` VALUES (6,'2023-11-16',821659,1,NULL,11,NULL,NULL),(7,'2023-11-17',821660,1,NULL,11,NULL,NULL),(12,'2023-11-17',333333,1,NULL,11,NULL,NULL),(13,'2023-11-16',222222,1,NULL,11,NULL,NULL),(14,'2023-11-17',444444,1,NULL,11,NULL,NULL),(15,'2023-11-15',111111,1,NULL,11,NULL,NULL),(16,'2023-11-18',123456,1,NULL,11,NULL,NULL),(17,'2023-11-18',654321,1,NULL,11,NULL,NULL),(20,'2023-11-22',888888,1,NULL,11,NULL,NULL),(21,'2023-11-22',222222,2,29,11,NULL,NULL),(22,'2023-11-22',888888,2,29,11,NULL,NULL),(23,'2023-11-22',821659,2,30,11,NULL,NULL),(34,'2023-11-26',222222,7,NULL,11,NULL,NULL),(35,'2023-11-26',821659,3,NULL,11,8,NULL);
+INSERT INTO `movimientos` VALUES (6,'2023-11-16',821659,1,NULL,11,NULL,NULL),(7,'2023-11-17',821660,1,NULL,11,NULL,NULL),(12,'2023-11-17',333333,1,NULL,11,NULL,NULL),(13,'2023-11-16',222222,1,NULL,11,NULL,NULL),(14,'2023-11-17',444444,1,NULL,11,NULL,NULL),(15,'2023-11-15',111111,1,NULL,11,NULL,NULL),(16,'2023-11-18',123456,1,NULL,11,NULL,NULL),(17,'2023-11-18',654321,1,NULL,11,NULL,NULL),(20,'2023-11-22',888888,1,NULL,11,NULL,NULL),(21,'2023-11-22',222222,2,29,11,NULL,NULL),(22,'2023-11-22',888888,2,29,11,NULL,NULL),(23,'2023-11-22',821659,2,30,11,NULL,NULL),(34,'2023-11-26',222222,7,NULL,11,NULL,NULL),(35,'2023-11-26',821659,3,NULL,11,8,NULL),(36,'2023-12-02',111111,4,19,11,NULL,NULL),(37,'2023-12-02',444444,4,19,11,NULL,NULL),(38,'2023-12-04',270206,1,NULL,11,NULL,NULL),(39,'2023-12-04',270207,1,NULL,11,NULL,NULL),(40,'2023-12-05',270206,2,30,11,NULL,NULL),(41,'2023-12-05',270207,2,30,11,NULL,NULL),(42,'2023-12-05',821660,2,33,11,NULL,NULL),(43,'2024-01-09',333333,2,31,11,NULL,'R00000001.pdf'),(44,'2024-01-09',654321,2,31,11,NULL,'R00000001.pdf'),(45,'2024-01-09',123456,2,32,11,NULL,'R00000001.pdf'),(46,'2024-01-09',821659,8,17,11,NULL,NULL),(47,'2023-12-17',113336,1,NULL,11,NULL,NULL),(48,'2024-01-18',113336,2,29,11,NULL,'R00000002.pdf'),(49,'2024-01-17',555555,1,NULL,11,NULL,NULL),(50,'2024-01-18',555555,2,30,11,NULL,'R00000003.pdf'),(51,'2024-01-30',143203,1,NULL,11,NULL,NULL),(53,'2024-02-21',113336,3,29,11,1,'A0001.pdf'),(54,'2024-02-21',888888,7,29,11,NULL,'A0001.pdf');
 /*!40000 ALTER TABLE `movimientos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -292,7 +291,7 @@ CREATE TABLE `tarjetas` (
   `motivo` int DEFAULT NULL,
   `ubicacion` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -301,7 +300,7 @@ CREATE TABLE `tarjetas` (
 
 LOCK TABLES `tarjetas` WRITE;
 /*!40000 ALTER TABLE `tarjetas` DISABLE KEYS */;
-INSERT INTO `tarjetas` VALUES (1,821659,'2023-11-16','2023-11-22','2023-11-26',3,'2023-11-26',8,NULL),(2,821660,'2023-11-17',NULL,NULL,1,'2023-11-17',NULL,NULL),(3,333333,'2023-11-17',NULL,NULL,1,'2023-11-17',NULL,NULL),(4,222222,'2023-11-16','2023-11-22',NULL,7,'2023-11-26',NULL,NULL),(5,444444,'2023-11-17',NULL,NULL,1,'2023-11-17',NULL,NULL),(6,111111,'2023-11-15',NULL,NULL,1,'2023-11-15',NULL,NULL),(7,123456,'2023-11-18',NULL,NULL,1,'2023-11-18',NULL,NULL),(8,654321,'2023-11-18',NULL,NULL,1,'2023-11-18',NULL,NULL),(11,888888,'2023-11-22','2023-11-22',NULL,2,'2023-11-22',NULL,29);
+INSERT INTO `tarjetas` VALUES (1,821659,'2023-11-16','2023-11-22','2023-11-26',8,'2024-01-09',NULL,17),(2,821660,'2023-11-17','2023-12-05',NULL,2,'2023-12-05',NULL,33),(3,333333,'2023-11-17','2024-01-09',NULL,2,'2024-01-09',NULL,31),(4,222222,'2023-11-16','2023-11-22',NULL,7,'2023-11-26',NULL,NULL),(5,444444,'2023-11-17',NULL,NULL,4,'2023-12-02',NULL,19),(6,111111,'2023-11-15',NULL,NULL,4,'2023-12-02',NULL,19),(7,123456,'2023-11-18','2024-01-09',NULL,2,'2024-01-09',NULL,32),(8,654321,'2023-11-18','2024-01-09',NULL,2,'2024-01-09',NULL,31),(11,888888,'2023-11-22','2023-11-22',NULL,7,'2024-02-21',NULL,29),(12,270206,'2023-12-04','2023-12-05',NULL,2,'2023-12-05',NULL,30),(13,270207,'2023-12-04','2023-12-05',NULL,2,'2023-12-05',NULL,30),(14,113336,'2023-12-17','2024-01-18','2024-02-21',3,'2024-02-21',1,29),(15,555555,'2024-01-17','2024-01-18',NULL,2,'2024-01-18',NULL,30),(16,143203,'2024-01-30',NULL,NULL,1,'2024-01-30',NULL,NULL);
 /*!40000 ALTER TABLE `tarjetas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -340,6 +339,7 @@ CREATE TABLE `ubicaciones` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) COLLATE utf8_bin NOT NULL,
   `tipo` int NOT NULL,
+  `email` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_tipos` (`tipo`),
   CONSTRAINT `fk_tipos` FOREIGN KEY (`tipo`) REFERENCES `tipos` (`id`)
@@ -352,7 +352,7 @@ CREATE TABLE `ubicaciones` (
 
 LOCK TABLES `ubicaciones` WRITE;
 /*!40000 ALTER TABLE `ubicaciones` DISABLE KEYS */;
-INSERT INTO `ubicaciones` VALUES (17,'Tucuman',1),(18,'Banda Rio Sali',1),(19,'Concepcion',1),(20,'Santiago',1),(21,'La Banda',1),(22,'Salta',1),(23,'Orán',1),(24,'Tartagal',1),(25,'Jujuy',1),(26,'San Pedro',1),(27,'Libretador',1),(28,'Yerba Buena',1),(29,'Servicios Modernos',2),(30,'Flash',2),(31,'Coprisa',2),(32,'Dago',2),(33,'La Veloz',2);
+INSERT INTO `ubicaciones` VALUES (17,'Tucuman',1,'leonardo_papa@hotmail.com'),(18,'Banda Rio Sali',1,'leonardo_papa@hotmail.com'),(19,'Concepcion',1,'leonardo_papa@hotmail.com'),(20,'Santiago',1,'leonardo_papa@hotmail.com'),(21,'La Banda',1,'leonardo_papa@hotmail.com'),(22,'Salta',1,'leonardo_papa@hotmail.com'),(23,'Orán',1,'leonardo_papa@hotmail.com'),(24,'Tartagal',1,'leonardo_papa@hotmail.com'),(25,'Jujuy',1,'leonardo_papa@hotmail.com'),(26,'San Pedro',1,'leonardo_papa@hotmail.com'),(27,'Libretador',1,'leonardo_papa@hotmail.com'),(28,'Yerba Buena',1,'leonardo_papa@hotmail.com'),(29,'Servicios Modernos',2,'leonardo_papa@hotmail.com'),(30,'Flash',2,'leonardo_papa@hotmail.com'),(31,'Coprisa',2,'leonardo_papa@hotmail.com'),(32,'Dago',2,'leonardo_papa@hotmail.com'),(33,'La Veloz',2,'leonardo_papa@hotmail.com');
 /*!40000 ALTER TABLE `ubicaciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -605,4 +605,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-29  1:43:50
+-- Dump completed on 2024-02-21  0:28:24

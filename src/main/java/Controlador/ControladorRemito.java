@@ -1,6 +1,9 @@
 package Controlador;
 
 import Modelo.Estado;
+import Modelo.EstadoDAO;
+import Modelo.Motivo;
+import Modelo.MotivoDAO;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
@@ -59,21 +62,37 @@ public class ControladorRemito extends HttpServlet {
         // Obtener los parámetros del formulario
         Enumeration<String> parametros = request.getParameterNames();
 
-        // Arrays para almacenar cuentas y fechas
-        String[] cuentas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades        
+        // Arrays para almacenar cuentas, motivos y estados
+        String[] cuentas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
+        String[] motivos = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
+        String[] estados = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades        
+        String[] motivosn = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
+        String[] estadosn = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades  
         int indiceCuentas = 0;
 
         // Procesar los parámetros
         String accion = "";
+        EstadoDAO estadoDao = new EstadoDAO();
+        MotivoDAO motivoDao = new MotivoDAO();
         while (parametros.hasMoreElements()) {
             String parametro = parametros.nextElement();
 
-            // Verificar si el parámetro es de tipo "cuenta o "accion"
+            // Verificar si el parámetro es de tipo "cuenta", "accion", "motivo" o "resultado"
             if (parametro.startsWith("cuenta")) {
                 cuentas[indiceCuentas++] = request.getParameter(parametro);
             } else if (parametro.startsWith("accion")) {
                 accion = request.getParameter("accion");
                 System.out.println("Acción:" + accion);
+            } else if (parametro.startsWith("motivo")) {
+                motivos[indiceCuentas - 1] = request.getParameter(parametro);
+                if (motivos[indiceCuentas - 1] == "0") {
+                    motivosn[indiceCuentas - 1] =" ";
+                } else {
+                    motivosn[indiceCuentas - 1] = motivoDao.buscar(motivos[indiceCuentas - 1]);
+                }
+            } else if (parametro.startsWith("resultado")) {
+                estados[indiceCuentas - 1] = request.getParameter(parametro);
+                estadosn[indiceCuentas - 1] = estadoDao.buscar(estados[indiceCuentas - 1]);
             }
         }
 
@@ -132,7 +151,6 @@ public class ControladorRemito extends HttpServlet {
                 request.setAttribute("correo", idCorreo);
                 request.setAttribute("fenvio", fechaEnvio2);
                 request.setAttribute("ccuentas", concatenarCuentas(cuentas, indiceCuentas));
-
                 request.getRequestDispatcher("enviar2.jsp").forward(request, response);
                 break;
 
@@ -245,7 +263,7 @@ public class ControladorRemito extends HttpServlet {
                     resultado4 = "error";
                 } else {
                     // Generar remito de recepción
-                    File documentoPDF2 = remito.crearRecepcion(fechaRendicion, correo2, cuentas, indiceCuentas, nroRendicion, rutaDespliegue);
+                    File documentoPDF2 = remito.crearRecepcion(fechaRendicion, correo2, cuentas, estadosn, motivosn, indiceCuentas, nroRendicion, rutaDespliegue);
 
                     // Verificar si la carpeta "pdf" existe, si no, crearla
                     File carpetaPdf2 = new File(rutaPdf);
@@ -264,22 +282,100 @@ public class ControladorRemito extends HttpServlet {
 
                 request.setAttribute("resultado", resultado4);
                 request.setAttribute("archivo", nombreArchivo4);
-                request.setAttribute("correo", correo2);
+                request.setAttribute("correo", idCorreo4);
                 request.setAttribute("frend", fechaRendicion);
                 request.setAttribute("ccuentas", concatenarCuentas(cuentas, indiceCuentas));
-
+                request.setAttribute("cresultados", concatenarCuentas(estados, indiceCuentas));
+                request.setAttribute("cmotivos", concatenarCuentas(motivos, indiceCuentas));
                 request.getRequestDispatcher("recibir2.jsp").forward(request, response);
                 break;
 
             case "firmarRecepcion":
-                // Devolver remito de recepción a la capa de presentación
-                // Firmar remito
-                break;
+                // Obtener los parámetros                
+                String nombreArchivo5 = request.getParameter("archivo");
+                String alias2 = request.getParameter("alias");
+                String firma2 = request.getParameter("password");
+                String idCorreo5 = request.getParameter("correo");
+                String fechaRendicion2 = request.getParameter("frend");
+                String ccuentas3 = request.getParameter("ccuentas");
+                String cresultados2 = request.getParameter("cresultados");
+                String cmotivos2 = request.getParameter("cmotivos");
 
+                // Mostrar por consola los parámetros recibidos
+                System.out.println("Archivo:" + nombreArchivo5);
+                System.out.println("Alias:" + alias2);
+                System.out.println("Password:" + firma2);
+
+                // Obtener la ruta del archivo PDF a firmar                                                
+                String rutaPdfOrigen2 = rutaPdf + File.separator + nombreArchivo5;
+                // System.out.println("Ruta PDF origen = " + rutaPdfOrigen);
+
+                // Obtener el almacen de claves                
+                String rutaKeystore2 = rutaDespliegue + "keystore" + File.separator + "keystore.p12";
+
+                // Verificar alias y password
+                String resultado3 = null;
+                String destino2 = null;
+                if (remito.verificarFirma(alias2, firma2, rutaKeystore2)) {
+                    // Firmar el archivo PDF
+                    File pdfFirmado = remito.firmarPDF(nombreArchivo5, rutaPdfOrigen2, alias2, firma2, rutaKeystore2);
+                    // Grabar el archivo PDF en la carpeta pdf del directorio de contexto
+                    grabarArchivo(rutaPdf, nombreArchivo5, pdfFirmado);
+                    System.out.println("PDF firmado grabado");
+                    resultado3 = "ok";
+                    destino2 = "recibir3.jsp";
+                } else {
+                    System.out.println("No se grabó el archivo PDF firmado");
+                    resultado3 = "error";
+                    destino2 = "recibir2.jsp";
+                }
+
+                // Devolver el control a la capa de presentación
+                request.setAttribute("resultado", resultado3);
+                request.setAttribute("archivo", nombreArchivo5);
+                request.setAttribute("correo", idCorreo5);
+                request.setAttribute("frend", fechaRendicion2);
+                request.setAttribute("ccuentas", ccuentas3);
+                request.setAttribute("cresultados", cresultados2);
+                request.setAttribute("cmotivos", cmotivos2);
+                request.getRequestDispatcher(destino2).forward(request, response);
+                break;
             
             case "grabarRecepcion":
+                // Obtener los parámetros                
+                String nombreArchivo6 = request.getParameter("archivo");
+                String ccuentas4 = request.getParameter("ccuentas");
+                String cresultados3 = request.getParameter("cresultados");
+                String cmotivos3 = request.getParameter("cmotivos");
+                String idCorreo6 = request.getParameter("correo");
+                String fechaRecep2 = request.getParameter("frend");                
+                String fechaRecepcion3 = "";
+                System.out.println("Fecha a convertir: " + fechaRecep2);
+                try {
+                    fechaRecepcion3 = convertirFecha(fechaRecep2);
+                } catch (Exception e) {
+                    System.out.println("Error de conversión de fecha");
+                    System.out.println(e.toString());
+                }
+                System.out.println("Fecha convertida: " + fechaRecepcion3);
 
-                
+                // Grabar movimiento "recibir" en BD
+                boolean resultadoGrabacion2 = grabarMovimientoRecibir(idCorreo6, fechaRecepcion3, ccuentas4, nombreArchivo6, cresultados3, cmotivos3);
+                String resultado5 = (resultadoGrabacion2 ? "exito" : "error");
+
+                // email Informe de Recepcion a correos por email
+                UbicacionDAO correoDao2 = new UbicacionDAO();
+                String emailCorreo2 = correoDao2.obtenerEmail(idCorreo6);
+                GestionarEmail mailer2 = new GestionarEmail();
+                String subject2 = "Recepcion Tarjetas Remito " + nombreArchivo6;
+                String texto2 = "Se adjunta informe de recepción de remito " + nombreArchivo6;
+                boolean resultadoEmail2 = mailer2.enviarEmail(emailCorreo2, subject2, texto2, rutaPdf + File.separator + nombreArchivo6, nombreArchivo6);
+                System.out.println("Resultado email:" + (resultadoEmail2 ? "OK" : "Fracaso"));
+
+                // Devolver el control a la capa de presentación
+                request.setAttribute("resultado", resultado5);
+                request.setAttribute("archivo", nombreArchivo6);
+                request.getRequestDispatcher("recibir3.jsp").forward(request, response);
                 break;
 
             default:
@@ -378,6 +474,72 @@ public class ControladorRemito extends HttpServlet {
         resultado = exitos > 0;
 
         System.out.println("Resultados de la grabación del movimiento de envío:");
+        System.out.println("Exitos:" + exitos);
+        System.out.println("Fracasos:" + fracasos);
+        System.out.println("Resultado general:" + resultado);
+
+        return resultado;
+    }
+
+    private boolean grabarMovimientoRecibir(String idCorreo2, String fechaRecepcion, String ccuentas, String nombreArchivo3, String cresultados, String cmotivos) {
+        // Iterar sobre los datos y guardarlos en la base de datos
+        boolean resultado;
+        String[] cuentas = ccuentas.split(",");
+        String[] resultados = cresultados.split(",");
+        String[] motivos = cmotivos.split(",");
+        /*
+        String fecha = null;
+        try {
+            fecha = convertirFecha(fechaRecepcion);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+        }
+        */
+        int exitos = 0;
+        int fracasos = 0;
+        for (int i=0; i < cuentas.length; i++) {        
+            Movimiento movimiento = new Movimiento();
+            Estado estado = new Estado();
+            estado.setId(Integer.parseInt(resultados[i])); 
+            movimiento.setMovimiento(estado);
+            
+            // Motivo motivo = new Motivo();
+            // motivo.setId(Integer.parseInt(motivos[i]));
+            // movimiento.setMotivo(motivo);
+            
+            Operador operador = new Operador();
+            operador.setId(11); // Operador ficticio
+            Ubicacion correo = new Ubicacion();
+            correo.setId(Integer.parseInt(idCorreo2));
+            MovimientoDAO mdao = new MovimientoDAO();
+            movimiento.setCliente(Integer.parseInt(cuentas[i]));
+            movimiento.setFecha(Date.valueOf(fechaRecepcion));
+            movimiento.setOperador(operador);
+            movimiento.setUbicacion(correo);
+            System.out.println("Documento:<" + nombreArchivo3 + ">");
+            movimiento.setDocumento(nombreArchivo3);
+            System.out.println("Motivo ("+i+"):" + motivos[i]+".");
+            if ("0".equals(motivos[i])) {
+                        System.out.println("Motivo vacío:" + i);
+                        resultado = mdao.agregarRecibir2(movimiento);                        
+                    } else {
+                        System.out.println("Motivo no vacío:" + i);
+                        Motivo motivo = new Motivo();
+                        motivo.setId(Integer.parseInt(motivos[i]));
+                        movimiento.setMotivo(motivo);
+                        resultado = mdao.agregarRecibir(movimiento);
+                    }
+            // resultado = mdao.agregarRecibir(movimiento);
+            if (resultado) {
+                exitos++;
+            } else {
+                fracasos++;
+            }
+        }
+
+        resultado = exitos > 0;
+
+        System.out.println("Resultados de la grabación del movimiento de recepción:");
         System.out.println("Exitos:" + exitos);
         System.out.println("Fracasos:" + fracasos);
         System.out.println("Resultado general:" + resultado);

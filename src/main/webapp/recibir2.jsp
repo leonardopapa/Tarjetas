@@ -98,8 +98,10 @@
                                     String resultado = (String) request.getAttribute("resultado");
                                     String nombreArchivo = (String) request.getAttribute("archivo");
                                     String correo = (String) request.getAttribute("correo");
-                                    String fechaRemito = (String) request.getAttribute("fenvio");
-                                    String ccuentas = (String) request.getAttribute("ccuentas");   
+                                    String frend = (String) request.getAttribute("frend");
+                                    String ccuentas = (String) request.getAttribute("ccuentas");
+                                    String cresultados = (String) request.getAttribute("cresultados");
+                                    String cmotivos = (String) request.getAttribute("cmotivos");
                                     if (resultado.equalsIgnoreCase("error")) {                                        
                                 %>
                                 
@@ -118,15 +120,17 @@
 
                                 <div class="col">
 
-                                    <input type="hidden" name="accion" value="firmar">
+                                    <input type="hidden" name="accion" value="firmarRecepcion">
 
                                     <input type="hidden" name="archivo" value="<%=nombreArchivo%>">
 
                                     <input type="hidden" name="firma">
                                                                         
                                     <input type="hidden" name="correo" value="<%= correo %>"> 
-                                    <input type="hidden" name="fenvio" value="<%= fechaRemito %>"> 
+                                    <input type="hidden" name="frend" value="<%= frend %>"> 
                                     <input type="hidden" name="ccuentas" value="<%= ccuentas %>"> 
+                                    <input type="hidden" name="cresultados" value="<%= cresultados %>"> 
+                                    <input type="hidden" name="cmotivos" value="<%= cmotivos %>"> 
                                     
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Firmar Remito</button>
 
