@@ -98,7 +98,7 @@
                                     String resultado = (String) request.getAttribute("resultado");
                                     String nombreArchivo = (String) request.getAttribute("archivo");
                                     String correo = (String) request.getAttribute("correo");
-                                    String fechaRemito = (String) request.getAttribute("frend");
+                                    String fechaRemito = (String) request.getAttribute("fenvio");
                                     String ccuentas = (String) request.getAttribute("ccuentas");   
                                     if (resultado.equalsIgnoreCase("error")) {                                        
                                 %>

@@ -37,7 +37,7 @@ public class MovimientoDAO {
     public boolean agregarEnviar(Movimiento movimiento) {
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO) VALUES(?,?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO) VALUES(?,?, ?, ?, ?, ?);";
         try {
             ps = con.prepareStatement(sql);
             ps.setDate(1, movimiento.getFecha());

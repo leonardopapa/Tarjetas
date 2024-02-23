@@ -85,7 +85,7 @@ public class ControladorRemito extends HttpServlet {
                 System.out.println("Acción:" + accion);
             } else if (parametro.startsWith("motivo")) {
                 motivos[indiceCuentas - 1] = request.getParameter(parametro);
-                if (motivos[indiceCuentas - 1] == "0") {
+                if ("0".equals(motivos[indiceCuentas - 1])) {
                     motivosn[indiceCuentas - 1] =" ";
                 } else {
                     motivosn[indiceCuentas - 1] = motivoDao.buscar(motivos[indiceCuentas - 1]);
@@ -116,11 +116,13 @@ public class ControladorRemito extends HttpServlet {
                 // Obtener fecha de envío
                 String fechaEnvio2 = request.getParameter("fenvio");
                 String fechaEnvio3 = "";
+                System.out.println("Fecha de envío antes de convertir:" + fechaEnvio2);
                 try {
                     fechaEnvio3 = convertirFecha2(fechaEnvio2);
                 } catch (Exception e) {
                     System.out.println(e.toString());
                 }
+                System.out.println("Fecha de envío convertida:" + fechaEnvio3);
 
                 // Obtener número de remito
                 RemitoDAO remitoDAO = new RemitoDAO();
@@ -208,11 +210,13 @@ public class ControladorRemito extends HttpServlet {
                 String idCorreo2 = request.getParameter("correo");
                 String fechaEnvio4 = request.getParameter("fenvio");
                 String fechaEnvio5 = "";
+                System.out.println("Fecha a convertir:" + fechaEnvio4);
                 try {
                     fechaEnvio5 = convertirFecha2(fechaEnvio4);
                 } catch (Exception e) {
                     System.out.println(e.toString());
                 }
+                System.out.println("Fecha convertida:" + fechaEnvio5);
 
                 // Grabar movimiento "enviar" en BD
                 boolean resultadoGrabacion = grabarMovimientoEnviar(idCorreo2, fechaEnvio5, ccuentas, nombreArchivo3);
@@ -461,8 +465,7 @@ public class ControladorRemito extends HttpServlet {
             movimiento.setOperador(operador);
             movimiento.setUbicacion(correo);
             System.out.println("Documento:<" + remito + ">");
-            movimiento.setDocumento(remito);
-            System.out.println("Llegué hasta acá");
+            movimiento.setDocumento(remito);            
             resultado = mdao.agregarEnviar(movimiento);
             if (resultado) {
                 exitos++;

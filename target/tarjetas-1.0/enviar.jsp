@@ -295,7 +295,7 @@
                 // Cambiar tarjetas a estado enviada
                 formularioEnviar = document.getElementById("frmEnviar");
                 console.log("Todos los controles OK");
-                // formularioEnviar.submit();
+                formularioEnviar.submit();
             }
 
             function formatearFecha2(fecha) {

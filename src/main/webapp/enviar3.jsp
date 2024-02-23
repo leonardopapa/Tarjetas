@@ -115,6 +115,14 @@
                                 <script>
                                     alert("Remito grabado con éxito");
                                     window.location.href = "index.jsp";
+                                </script>                                
+                                <%
+                                    }
+                                    if (resultado.equalsIgnoreCase("error")) {                                    
+                                %>
+                                <script>
+                                    alert("Error en la Grabación del Remito. No se grabaron los movimientos");
+                                    window.location.href = "index.jsp";
                                 </script>
                                 <%
                                     }
