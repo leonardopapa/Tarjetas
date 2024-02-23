@@ -32,6 +32,10 @@
         <servlet-name>ControladorBuscar3</servlet-name>
         <servlet-class>Controlador.ControladorBuscar3</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ControladorMenu</servlet-name>
+        <servlet-class>Controlador.ControladorMenu</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ControladorTarjetas</servlet-name>
         <url-pattern>/ControladorTarjetas</url-pattern>
@@ -63,6 +67,10 @@
     <servlet-mapping>
         <servlet-name>ControladorBuscar3</servlet-name>
         <url-pattern>/ControladorBuscar3</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControladorMenu</servlet-name>
+        <url-pattern>/ControladorMenu</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

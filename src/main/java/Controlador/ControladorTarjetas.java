@@ -82,7 +82,7 @@ public class ControladorTarjetas extends HttpServlet {
                 estados[indiceCuentas - 1] = request.getParameter(parametro);
             }
         }
-        
+
         //Mostrar los resultados
         /*
         out.println("<html>");
@@ -142,7 +142,7 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "enviar":
-                
+
                 String correo = request.getParameter("correo");
                 String fechaEnvio = request.getParameter("fenvio");
                 out.println("Correo: " + correo);
@@ -196,7 +196,7 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "recibir":
-                
+
                 out.println("RECIBIR");
                 String correo2 = request.getParameter("correo");
                 String fechaRendicion = request.getParameter("frend");
@@ -204,7 +204,7 @@ public class ControladorTarjetas extends HttpServlet {
                 out.println("Correo: " + correo2);
                 out.println("Fecha de Rendición: " + fechaRendicion);
                 out.println("Numero de Rendicion: " + nroRendicion);
-                
+
                 // Iterar sobre los datos y guardarlos en la base de datos
                 boolean resultado2 = false;
                 for (int i = 0; i < indiceCuentas; i++) {
@@ -216,13 +216,13 @@ public class ControladorTarjetas extends HttpServlet {
                     Operador operador = new Operador();
                     operador.setId(11); // Operador ficticio
                     Ubicacion correo3 = new Ubicacion();
-                    correo3.setId(Integer.parseInt(correo2));                    
+                    correo3.setId(Integer.parseInt(correo2));
                     MovimientoDAO mdao3 = new MovimientoDAO();
-                    movimiento.setCliente(Integer.parseInt(cuentas[i]));                    
-                    movimiento.setFecha(Date.valueOf(fechaRendicion));                    
-                    movimiento.setOperador(operador);                    
+                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
+                    movimiento.setFecha(Date.valueOf(fechaRendicion));
+                    movimiento.setOperador(operador);
                     movimiento.setUbicacion(correo3);
-                    movimiento.setDocumento(nroRendicion);                    
+                    movimiento.setDocumento(nroRendicion);
 
                     if (!(motivos[i].isEmpty())) {
                         // out.println("Motivo no vacío:" + i);
@@ -390,8 +390,8 @@ public class ControladorTarjetas extends HttpServlet {
                 }
 
                 // Combinar las 3 respuestas en un único objeto JSON
-                String jsonResponse2 = String.format("{\"resultado\":\"%s\",\"fechaEmision\":\"%s\",\"estado\":\"%s\"}",
-                        resultado3, fechaEmision, estado);
+                String jsonResponse2 = String.format("{\"resultado\":\"%s\",\"fechaEmision\":\"%s\",\"estado\":\"%s\",\"estadoid\":\"%s\"}",
+                        resultado3, fechaEmision, estado, estadoId);
 
                 // Set content type and write the JSON response
                 response.setContentType("application/json");
@@ -400,62 +400,79 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "cambiar":
+
                 // Validar que todos los estados sean iguales
+                boolean cambioValido = true;
                 String estadoActual = estados[0];
-                boolean cambioValido = false;
+                System.out.println("Estado actual: " + estadoActual);
                 for (int i = 1; i < indiceCuentas; i++) {
                     if (!estados[i].equals(estadoActual)) {
-                        response.setStatus(501);
-                        // response.getWriter().println("Los estados no son iguales");
-                        // request.getRequestDispatcher("cambiar.jsp").forward(request, response);
-                    } else {
-                        // response.getWriter().println("Los estados son iguales");
+                        request.setAttribute("accion", "error");
+                        request.setAttribute("error", "Los estados no son iguales");
+                        System.out.println("Estados no son iguales");
+                        cambioValido = false;
                     }
                 }
 
                 // Validar que el nuevo estado sea válido, dado el estado actual
-                String nuevoEstado = request.getParameter("selEstado");
+                if (cambioValido) {
+                    cambioValido = false;
+                    String nuevoEstado = request.getParameter("selEstado");
+                    System.out.println("Nuevo estado: " + nuevoEstado);
 
-                if (nuevoEstado.equals("7") && (estadoActual.equals("2") || estadoActual.equals("4"))) {
-                    cambioValido = true;
-                }
-                if (nuevoEstado.equals("8") && estadoActual.equals("4")) {
-                    cambioValido = true;
-                }
-                if (nuevoEstado.equals("5") && estadoActual.equals("4")) {
-                    cambioValido = true;
-                }
-                if (nuevoEstado.equals("6") && (estadoActual.equals("2") || estadoActual.equals("4"))) {
-                    cambioValido = true;
-                }
-                if (!(cambioValido)) {
-                    response.setStatus(502);
-                    response.getWriter().println("Fallo en la precedencia de los estados");
-                    request.getRequestDispatcher("cambiar.jsp").forward(request, response);
-                }
+                    if ((nuevoEstado.equals("7") || nuevoEstado.equals("8") || nuevoEstado.equals("5") || nuevoEstado.equals("6")) && estadoActual.equals("4")) {
+                        cambioValido = true;
+                        // "En Sucursal" a "Entregada", "Reenvío" o "Destruida" o "Enviada a Sucursal"
+                    }
+                    if (nuevoEstado.equals("6") && (estadoActual.equals("1") || estadoActual.equals("3"))) {
+                        cambioValido = true;
+                        // "Devuelta" o "Impresa" a "Enviada a Sucursal"
+                    }
+                    if (nuevoEstado.equals("4") && estadoActual.equals("6")) {
+                        cambioValido = true;
+                        // "Enviada a Sucursal" a "En Sucursal"
+                    }
+                    if (!(cambioValido)) {
+                        request.setAttribute("accion", "error");
+                        request.setAttribute("error", "Fallo en la precedencia de los estados");
+                        System.out.println("Fallo en la precedencia de los estados");
 
-                // Registrar el cambio
-                String nuevaUbicacion = request.getParameter("selUbicacion");
-                String fecha = request.getParameter("fcambio");
-                for (int i = 0; i < indiceCuentas; i++) {
-                    Movimiento m = new Movimiento();
-                    m.setCliente(Integer.parseInt(cuentas[i]));
-                    m.setFecha(Date.valueOf(fecha));
-                    Estado estado2 = new Estado();
-                    estado2.setId(Integer.parseInt(nuevoEstado));
-                    m.setMovimiento(estado2);
-                    Ubicacion ubicacion2 = new Ubicacion();
-                    ubicacion2.setId(Integer.parseInt(nuevaUbicacion));
-                    m.setUbicacion(ubicacion2);
-                    Operador operador = new Operador();
-                    operador.setId(11); // Operador ficticio                    
-                    m.setOperador(operador);
-                    MovimientoDAO mdao2 = new MovimientoDAO();
-                    mdao2.agregarRecibir(m);
-                }
+                    } else {
 
-                response.setStatus(200);
-                response.getWriter().println("Cambio registrado correctamente");
+                        // Registrar el cambio
+                        System.out.println("El cambio es válido");
+                        System.out.println("Cambio válido:" + cambioValido);
+                        String nuevaUbicacion = request.getParameter("selUbicacion");
+                        String fecha = request.getParameter("fcambio");
+                        int exitos2 = 0;
+                        int fracasos2 = 0;
+                        for (int i = 0; i < indiceCuentas; i++) {
+                            Movimiento m = new Movimiento();
+                            m.setCliente(Integer.parseInt(cuentas[i]));
+                            m.setFecha(Date.valueOf(fecha));
+                            Estado estado2 = new Estado();
+                            estado2.setId(Integer.parseInt(nuevoEstado));
+                            m.setMovimiento(estado2);
+                            Ubicacion ubicacion2 = new Ubicacion();
+                            ubicacion2.setId(Integer.parseInt(nuevaUbicacion));
+                            m.setUbicacion(ubicacion2);
+                            Operador operador = new Operador();
+                            operador.setId(11); // Operador ficticio                    
+                            m.setOperador(operador);
+                            MovimientoDAO mdao2 = new MovimientoDAO();
+                            resultado = mdao2.agregarCambiar(m);
+                            if (resultado) {
+                                exitos2++;
+                            } else {
+                                fracasos2++;
+                            }
+                        }
+                        System.out.println("Exitos: " + exitos2);
+                        System.out.println("Fracasos: " + fracasos2);
+
+                        request.setAttribute("accion", "ok");
+                    }
+                }
                 request.getRequestDispatcher("cambiar.jsp").forward(request, response);
 
             default:

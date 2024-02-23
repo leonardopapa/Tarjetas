@@ -66,13 +66,13 @@ public class MovimientoDAO {
         String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, MOTIVO, OPERADOR,DOCUMENTO) VALUES(?,?, ?, ?, ?, ?, ?);";
 
             System.out.println("Movimiento a agregar:");
-            System.out.println(movimiento.getFecha());
-            System.out.println(movimiento.getCliente());
-            System.out.println(movimiento.getMovimiento().getId());
-            System.out.println(movimiento.getUbicacion().getId());
-            System.out.println(movimiento.getMotivo().getId());
-            System.out.println(movimiento.getOperador().getId());
-            System.out.println(movimiento.getDocumento());
+            System.out.println("Fecha:" + movimiento.getFecha());
+            System.out.println("Cuenta: "+movimiento.getCliente());
+            System.out.println("Movimiento:" + movimiento.getMovimiento().getId());
+            System.out.println("Ubicacion:" + movimiento.getUbicacion().getId());
+            System.out.println("Motivo: " + movimiento.getMotivo().getId());
+            System.out.println("Operador: " + movimiento.getOperador().getId());
+            System.out.println("Documento: " + movimiento.getDocumento());
         
         try {
             ps = con.prepareStatement(sql);
@@ -118,6 +118,38 @@ public class MovimientoDAO {
             ps.setInt(4, movimiento.getUbicacion().getId());
             ps.setInt(5, movimiento.getOperador().getId());
             ps.setString(6, movimiento.getDocumento());
+            int filasAfectadas = ps.executeUpdate();
+            resultado = (filasAfectadas > 0);   
+            System.out.println("Resultado movimiento:" + resultado);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            System.out.println("Error al agregar el movimiento");
+            return resultado;
+        } finally {
+            cn.Desconectar();
+        }        
+        return resultado;
+    }
+    
+    public boolean agregarCambiar(Movimiento movimiento) {         
+        con = cn.Conexion();
+        boolean resultado = false;
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR) VALUES(?,?, ?, ?, ?);";
+
+        System.out.println("Movimiento a agregar:");
+            System.out.println(movimiento.getFecha());
+            System.out.println(movimiento.getCliente());
+            System.out.println(movimiento.getMovimiento().getId());
+            System.out.println(movimiento.getUbicacion().getId());            
+            System.out.println(movimiento.getOperador().getId());
+
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setDate(1, movimiento.getFecha());
+            ps.setInt(2, movimiento.getCliente());
+            ps.setInt(3, movimiento.getMovimiento().getId());
+            ps.setInt(4, movimiento.getUbicacion().getId());
+            ps.setInt(5, movimiento.getOperador().getId());
             int filasAfectadas = ps.executeUpdate();
             resultado = (filasAfectadas > 0);   
             System.out.println("Resultado movimiento:" + resultado);

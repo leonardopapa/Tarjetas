@@ -257,7 +257,6 @@
                         document.getElementById("inputCuenta").value = '';
                         var enfocar = document.getElementById("inputCuenta");
                         enfocar.focus();
-
                     }
                 };
                 http.open('get', url);

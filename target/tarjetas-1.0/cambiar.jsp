@@ -88,8 +88,31 @@
                 <div class="card" style="margin:20px">
                     <div class="card-body">
                         <h5 class="card-title">Cambiar Estado</h5>
-                        <hr>
 
+                        <%
+                            String accion = (String) request.getAttribute("accion");
+                            if (!(accion == null)) {
+                                if (accion.equalsIgnoreCase("ok")) {
+                        %>
+                        <script>
+                            alert("Se registró correctamente el cambio de estado");
+                            window.location.href = "index.jsp";
+                        </script>
+                        <%
+                            }
+                            if (accion.equalsIgnoreCase("error")) {
+                                String error = (String) request.getAttribute("error");
+                        %>
+                        <script>
+                            alert("<%=error%>");
+                            // window.location.href = "index.jsp";
+                        </script>
+                        <%
+                                }
+                            }
+                        %>
+
+                        <hr>
 
                         <div class="row">
                             <form action="ControladorTarjetas" method="post" id="frmCambiar">
@@ -101,7 +124,7 @@
 
                                             <div class="row">
                                                 <div class="col">
-                                                    <label for="inputFechaCambio" class="col-form-label">Fecha de Enví­o</label>
+                                                    <label for="inputFechaCambio" class="col-form-label">Fecha de nuevo estado:</label>
                                                 </div>
                                                 <div class="col">
                                                     <input type="date" class="form-control" id="inputFechaCambio" name="fcambio">
@@ -130,7 +153,7 @@
 
                                             <div class="row">
                                                 <div class="col">
-                                                <label for="selUbicacion" class="col-form-label">Nueva Ubicación:</label>
+                                                    <label for="selUbicacion" class="col-form-label">Nueva Ubicación:</label>
                                                 </div>
                                                 <div class="col">
                                                     <select class="form-select" id="selUbicacion" name="selUbicacion">
@@ -153,7 +176,7 @@
 
                                             <div class="row">
                                                 <div class="col">
-                                                <label for="inputCuenta" class="col-form-label">Cuenta:</label>
+                                                    <label for="inputCuenta" class="col-form-label">Cuenta:</label>
                                                 </div>
                                                 <div class="col">
                                                     <input type="text" class="form-control" name="inputCuenta" id="inputCuenta" placeholder="Ingrese el número de cuenta">
@@ -172,6 +195,7 @@
                                                 <tr>
                                                     <th>Cuenta</th>
                                                     <th>Fecha de Emisión</th>
+                                                    <th> </th>
                                                     <th>Estado</th>
                                                 </tr>
                                             </thead>
@@ -193,18 +217,18 @@
 
         <script>
 
-            var contadorFilas = 0;            
-            
+            // var contadorFilas = 0;
+
             window.onload = iniciar;
             function iniciar() {
-                InicializarFechas();                
+                InicializarFechas();
             }
 
             function InicializarFechas() {
                 var hoy = Date.now();
-                var fechaHoy = new Date(hoy);                
+                var fechaHoy = new Date(hoy);
                 var inputFechaCambio = document.getElementById('inputFechaCambio');
-                inputFechaCambio.value = fechaHoy.toISOString().split('T')[0];                
+                inputFechaCambio.value = fechaHoy.toISOString().split('T')[0];
             }
 
             function cambiarEstado() {
@@ -270,6 +294,7 @@
                             resultado = responseObject.resultado;
                             fechaEmision = responseObject.fechaEmision;
                             estado = responseObject.estado;
+                            estadoid = responseObject.estadoid;
                             if (resultado === "no encontrado") {
                                 alert("No se encuentra la cuenta");
                                 return;
@@ -281,29 +306,32 @@
                             var tbody = tabla.getElementsByTagName("tbody")[0];
                             // Crear una nueva fila
                             var fila = tbody.insertRow();
-                            fila.id = "fila" + contadorFilas;
+                            fila.id = "fila" + cuenta;
 
                             // Insertar celdas con los valores de los input
                             var celdaCuenta = fila.insertCell(0);
                             // celdaCuenta.innerHTML = cuenta;
-                            celdaCuenta.innerHTML = '<input type="text" name="cuenta' + contadorFilas + '" value="' + cuenta + '" readonly>';
+                            celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
 
                             var celdaFecha = fila.insertCell(1);
                             var fechaFormateada = new (Date);
                             fechaFormateada = formatearFecha2(fechaEmision);
-                            celdaFecha.innerHTML = '<input type="text" name="fecha' + contadorFilas + '" value="' + fechaFormateada + '" readonly>';
+                            celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + cuenta + '" value="' + fechaFormateada + '" readonly>';
 
-                            var celdaEstado = fila.insertCell(2);
-                            celdaEstado.innerHTML = '<input type="text" name="resultado' + contadorFilas + '" value="' + estado + '" readonly>';
+                            var celdaEstadoId = fila.insertCell(2);
+                            celdaEstadoId.innerHTML = '<input type="hidden" name="resultado' + cuenta + '" value="' + estadoid + '">';
+                            
+                            var celdaEstado = fila.insertCell(3);
+                            celdaEstado.innerHTML = '<input type="text" class="form-control-plaintext" ' + cuenta + '" value="' + estado + '" readonly>';
 
                             // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
-                            var celdaEliminar = fila.insertCell(3);
-                            celdaEliminar.innerHTML = '<button onclick="eliminarFila2(' + contadorFilas + ')"><i class="fas fa-trash-alt"></i></button>';
+                            var celdaEliminar = fila.insertCell(4);
+                            celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila2(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
 
                             // Limpiar los valores de los input
                             document.getElementById("inputCuenta").value = '';
-
-                            contadorFilas++;
+                            var enfocar = document.getElementById("inputCuenta");
+                            enfocar.focus();
 
                         } else {
                             console.error('Error:', xhr.status);
@@ -331,8 +359,8 @@
             function eliminarFila2(indiceFila) {
                 var confirmacion = confirm("¿Está seguro de que desea eliminar esta fila?");
                 if (confirmacion) {
-                    var tabla = document.getElementById("tblTarjetas");
-                    tabla.deleteRow(indiceFila + 1); // +1 para tener en cuenta la fila de encabezado
+                    var row = document.getElementById("fila" + indiceFila);
+                    row.remove();
                 }
             }
 
@@ -343,9 +371,6 @@
                 }
             }
 
-
         </script>
-
-
     </body>
 </html>
