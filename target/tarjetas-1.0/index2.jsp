@@ -1,3 +1,5 @@
+<%@page import="Modelo.Ubicacion"%>
+<%@page import="Modelo.Estado"%>
 <%@page import="Modelo.Tarjeta"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@page import="java.util.List"%>
@@ -97,8 +99,30 @@
                                     <br>
                                     <%
                                         String cuenta = (String) request.getAttribute("cuenta");
-                                        if (cuenta == null) cuenta= "";                                             
+                                        if (cuenta == null) {
+                                            cuenta = "";
+                                        }
+                                        String estado = (String) request.getAttribute("estado");
+                                        String enombre = (String) request.getAttribute("enombre");
+                                        if (estado == null) {
+                                            estado = "";
+                                            enombre = "";
+                                        }
+                                        String ubicacion = (String) request.getAttribute("ubicacion");
+                                        String unombre = (String) request.getAttribute("unombre");
+                                        if (ubicacion == null) {
+                                            ubicacion = "";
+                                            unombre = "";
+                                        }
+                                        String desde = (String) request.getAttribute("desde");
+                                        String hasta = (String) request.getAttribute("hasta");
+
+                                        List<Tarjeta> lista = (List<Tarjeta>) request.getAttribute("tlista");
+                                        List<Estado> listae = (List<Estado>) request.getAttribute("elista");
+                                        List<Ubicacion> listau = (List<Ubicacion>) request.getAttribute("ulista");
+
                                     %>
+
                                     <input type="text" class="form-control" name="cuenta" id="cuenta" value="<%=cuenta%>">
                                 </div>
 
@@ -106,15 +130,14 @@
                                     Estado
 
                                     <select class="form-select" name="selEstado" id="filtro-estado">
-                                        <option selected></option>
-                                        <option value="1">Impresa</option>
-                                        <option value="2">En Distribución</option>
-                                        <option value="3">Devuelta</option>
-                                        <option value="4">En Sucursal</option>
-                                        <option value="5">Reenvío</option>
-                                        <option value="6">Enviada a Sucursal</option>
-                                        <option value="7">Entregada</option>
-                                        <option value="8">Destruida</option>
+                                        <option selected value="<%= estado%>"> <%= enombre%> </option>
+                                        <%
+                                            if (!(estado.isEmpty())) {%>
+                                        <option ></option>
+                                        <%}
+                                            for (Estado estado2 : listae) {%>
+                                        <option value="<%= estado2.getId()%>"> <%= estado2.getNombre()%></option>                                                                        
+                                        <% }%>
                                     </select>
                                 </div>
 
@@ -122,24 +145,14 @@
                                     Ubicación
 
                                     <select class="form-select" name="selUbicacion" id="filtro-ubicacion">
-                                        <option selected></option>
-                                        <option value="17">Tucuman</option>
-                                        <option value="18">Banda Rio Sali</option>
-                                        <option value="19">Concepcion</option>
-                                        <option value="20">Santiago</option>
-                                        <option value="21">La Banda</option>
-                                        <option value="22">Salta</option>
-                                        <option value="23">Oran</option>
-                                        <option value="24">Tartagal</option>
-                                        <option value="25">Jujuy</option>
-                                        <option value="26">San Pedro</option>
-                                        <option value="27">Libertador</option>
-                                        <option value="28">Yerba Buena</option>
-                                        <option value="29">Servicios Modernos</option>
-                                        <option value="30">Flash</option>
-                                        <option value="31">Coprisa</option>
-                                        <option value="32">Dago</option>
-                                        <option value="33">La Veloz</option>
+                                        <option selected value="<%= ubicacion%>"> <%= unombre%> </option>
+                                        <%
+                                            if (!(ubicacion.isEmpty())) {%>
+                                        <option ></option>
+                                        <% }
+                                            for (Ubicacion ubicacion2 : listau) {%>
+                                        <option value="<%= ubicacion2.getId()%>"> <%= ubicacion2.getNombre()%></option>                                                                        
+                                        <% }%>
                                     </select>
                                 </div>
 
@@ -147,14 +160,14 @@
                                     Fecha Ultimo Estado Desde:
                                     <br>
 
-                                    <input type="date" class="form-control" id="desde" name="desde">
+                                    <input type="date" class="form-control" id="desde" name="desde" value="<%=desde%>">
                                 </div>
 
                                 <div class="col">
                                     Fecha Ultimo Estado Hasta:
                                     <br>
 
-                                    <input type="date" class="form-control" id="hasta" name="hasta">
+                                    <input type="date" class="form-control" id="hasta" name="hasta" value="<%=hasta%>">
                                 </div>
 
                             </div>
@@ -179,10 +192,6 @@
                     <div class="card-body">
                         <h5 class="card-title">Tarjetas</h5>
                         <hr>
-
-                        <%
-                            List<Tarjeta> lista = (List<Tarjeta>) request.getAttribute("tlista");
-                        %>
 
                         <table id="tarjetas" class="table table-striped" style="width:100%">
                             <thead>
@@ -238,8 +247,10 @@
                 fechaInicio.setMonth((fechaFin.getMonth() - 3));
                 var inputDesde = document.getElementById('desde');
                 var inputHasta = document.getElementById('hasta');
-                inputHasta.value = fechaFin.toISOString().split('T')[0];
-                inputDesde.value = fechaInicio.toISOString().split('T')[0];
+                if (inputHasta.value === "")
+                    inputHasta.value = fechaFin.toISOString().split('T')[0];
+                if (inputDesde.value === "")
+                    inputDesde.value = fechaInicio.toISOString().split('T')[0];
             }
 
             function aplicarFiltros() {

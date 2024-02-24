@@ -31,12 +31,12 @@ public class Controlador extends HttpServlet {
                             "Error en la conexion");
                 } else {
                     out.println("Conexion exitosa");
-                    
+
                     // Generar lista de estados
                     EstadoDAO edao = new EstadoDAO();
                     List<Estado> listae = edao.listar();
                     request.setAttribute("elista", listae);
-                    
+
                     // Mostrar lista de estados
                     for (Estado valor : listae) {
                         out.println("Id: " + valor.getId());
@@ -47,27 +47,27 @@ public class Controlador extends HttpServlet {
                     UbicacionDAO udao = new UbicacionDAO();
                     List<Ubicacion> listau = udao.listar();
                     request.setAttribute("ulista", listau);
-                    
+
                     // Mostrar lista de ubicaciones
                     for (Ubicacion valor : listau) {
                         out.println("Id: " + valor.getId());
                         out.println("Nombre: " + valor.getNombre());
                     }
-                                        
+
                     // Generar lista de tarjetas
                     TarjetaDAO tdao = new TarjetaDAO();
                     List<Tarjeta> listat = tdao.listar();
                     request.setAttribute("tlista", listat);
-                    
+
                     // Mostrar lista de tarjetas
                     for (Tarjeta valort : listat) {
                         out.println("Cuenta: " + valort.getCliente());
-                        out.println("Fecha de Emisión: " +valort.getFechaEmision());
+                        out.println("Fecha de Emisión: " + valort.getFechaEmision());
                     }
                 }
                 // request.getRequestDispatcher("index.jsp").forward(request, response);
                 break;
-                            
+
             case "filtrar":
                 // Obtener parámetros de filtrado
                 System.out.println("Filtrar");
@@ -76,23 +76,39 @@ public class Controlador extends HttpServlet {
                 String ubicacion = request.getParameter("selUbicacion");
                 String desde = request.getParameter("desde");
                 String hasta = request.getParameter("hasta");
-                
+
                 // Mostrar parámetros de filtrado
                 System.out.println("Cuenta:" + cuenta);
                 System.out.println("Estado:" + estado);
                 System.out.println("Ubicacion:" + ubicacion);
                 System.out.println("Desde:" + desde);
                 System.out.println("Hasta:" + hasta);
-                
+
                 // Generar lista de tarjetas filtrada
                 TarjetaDAO tdao = new TarjetaDAO();
-                List<Tarjeta> listat = tdao.filtrar(cuenta, estado,ubicacion, desde, hasta);
+                List<Tarjeta> listat = tdao.filtrar(cuenta, estado, ubicacion, desde, hasta);
+
+                // Generar lista de estados
+                EstadoDAO edao = new EstadoDAO();
+                List<Estado> listae = edao.listar();
+                request.setAttribute("elista", listae);
+                String eNombre = edao.buscar(estado);
+
+                // Generar lista de ubicaciones
+                UbicacionDAO udao = new UbicacionDAO();
+                List<Ubicacion> listau = udao.listar();
+                request.setAttribute("ulista", listau);
+                String uNombre = udao.buscar(ubicacion);
+
+                // Devolver valores a la capa de presentación
                 request.setAttribute("tlista", listat);
                 request.setAttribute("cuenta", cuenta);
                 request.setAttribute("estado", estado);
                 request.setAttribute("ubicacion", ubicacion);
                 request.setAttribute("desde", desde);
                 request.setAttribute("hasta", hasta);
+                request.setAttribute("unombre", uNombre);
+                request.setAttribute("enombre", eNombre);
                 request.getRequestDispatcher("index2.jsp").forward(request, response);
                 break;
 

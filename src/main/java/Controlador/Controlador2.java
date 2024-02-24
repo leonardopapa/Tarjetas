@@ -23,12 +23,12 @@ public class Controlador2 extends HttpServlet {
         EstadoDAO edao = new EstadoDAO();
         List<Estado> listae = edao.listar();
         request.setAttribute("elista", listae);
-
+        
         // Generar lista de ubicaciones
         UbicacionDAO udao = new UbicacionDAO();
         List<Ubicacion> listau = udao.listar();
         request.setAttribute("ulista", listau);
-
+        
         // Generar lista de tarjetas
         TarjetaDAO tdao = new TarjetaDAO();
         List<Tarjeta> listat = tdao.listar();
