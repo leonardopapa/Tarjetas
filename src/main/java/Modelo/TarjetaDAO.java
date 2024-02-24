@@ -187,5 +187,62 @@ public class TarjetaDAO {
         cn.Desconectar();
         return resultado;
     }
+
+    public List<Tarjeta> filtrar(String cuenta, String estado, String ubicacion, String desde, String hasta) {
+    
+        // Devuelve la lista de tarjetas filtrada en el arraylist list
+        String select = "SELECT * FROM vista_tarjetas WHERE ";
+        String buscarCuenta = (cuenta.isEmpty()) ? "" : "cliente = " + cuenta + " AND ";
+        String buscarEstado = (estado.isEmpty()) ? "" : "estado_id = " + estado + " AND ";
+        String buscarUbicacion = (ubicacion.isEmpty()) ? "" : "ubicacion_id = " + ubicacion + " AND ";
+        String buscarFecha = "";
+        if (desde==null) {
+            if (!(hasta==null)) buscarFecha = "fecha_estado < '"+ hasta + "'";
+        } else {
+            if (hasta==null) buscarFecha = "fecha_estado > '"+ desde + "'";
+            else buscarFecha = "fecha_estado BETWEEN '"+ desde + "' AND '"+ hasta+ "'";
+        }
+        String sql = select + buscarCuenta + buscarEstado + buscarUbicacion + buscarFecha;
+        if (sql.endsWith("AND ")) sql = sql.substring(0, sql.length() -4);
+        System.out.println(sql);
+        List<Tarjeta> lista = new ArrayList<>();
+        try {
+            con = cn.Conexion();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            int regcount = 0;
+            while (rs.next()) {
+                regcount++;
+                Tarjeta tarjeta = new Tarjeta();
+                Estado estado2 = new Estado();
+                Motivo motivo = new Motivo();
+                Ubicacion ubicacion2 = new Ubicacion();
+                tarjeta.setCliente(rs.getInt("cliente"));
+                tarjeta.setFechaEmision(rs.getDate("fecha_emision"));
+                estado2.setNombre(rs.getString("estado"));
+                tarjeta.setEstado(estado2);
+                tarjeta.setFechaEstado(rs.getDate("fecha_estado"));
+                motivo.setNombre(rs.getString("motivo"));
+                if (motivo.getNombre() == null) {
+                    motivo.setNombre("");
+                }
+                tarjeta.setMotivo(motivo);
+                ubicacion2.setNombre(rs.getString("ubicacion"));
+                if (ubicacion2.getNombre() == null) {
+                    ubicacion2.setNombre("");
+                }
+                tarjeta.setUbicacion(ubicacion2);
+                lista.add(tarjeta);
+            }
+            System.out.println("Registros encontrados: " + regcount);
+
+        } catch (Exception e) {
+            System.out.println("Error en la consulta SQL de filtrado");
+            System.out.println(e.toString());
+        }
+
+        cn.Desconectar();
+        return lista;
+    }
     
 }

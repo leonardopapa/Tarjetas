@@ -88,19 +88,18 @@
             <section class="main">
 
                 <div class="card" style="margin:20px">
-                    <div class="card-body">
-                        <!-- 
-                        <form id="frmIniciar">
-                            <button type="submit"></button>
-                        </form>
-                        -->
-                        <form id="frmFiltros">                        
+                    <div class="card-body">                        
+                        <form id="frmFiltros" action="Controlador?accion=filtrar" method="post">                        
                             <div class="row">
 
                                 <div class="col">
                                     Cuenta:
                                     <br>
-                                    <input type="text" class="form-control" name="cuenta" id="cuenta">
+                                    <%
+                                        String cuenta = (String) request.getAttribute("cuenta");
+                                        if (cuenta == null) cuenta= "";                                             
+                                    %>
+                                    <input type="text" class="form-control" name="cuenta" id="cuenta" value="<%=cuenta%>">
                                 </div>
 
                                 <div class="col">
@@ -118,7 +117,6 @@
                                         <option value="8">Destruida</option>
                                     </select>
                                 </div>
-
 
                                 <div class="col">
                                     Ubicación

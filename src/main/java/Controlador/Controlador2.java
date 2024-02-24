@@ -18,33 +18,12 @@ public class Controlador2 extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
-        // response.setContentType("application/json;charset=UTF-8");
-
+        
         // Generar lista de estados
         EstadoDAO edao = new EstadoDAO();
         List<Estado> listae = edao.listar();
         request.setAttribute("elista", listae);
 
-        // Mostrar lista de estados
-        /*
-                    for (Estado valor : listae) {
-                        out.println("Id: " + valor.getId());
-                        out.println("Nombre: " + valor.getNombre());
-                    }
-                    
-                    // Mostrar lista de ubicaciones
-                    for (Ubicacion valor : listau) {
-                        out.println("Id: " + valor.getId());
-                        out.println("Nombre: " + valor.getNombre());
-                    }
-                    
-                    // Mostrar lista de tarjetas
-                    for (Tarjeta valort : listat) {
-                        out.println("Cuenta: " + valort.getCliente());
-                        out.println("Fecha de Emisión: " +valort.getFechaEmision());
-                    }
-         */
         // Generar lista de ubicaciones
         UbicacionDAO udao = new UbicacionDAO();
         List<Ubicacion> listau = udao.listar();

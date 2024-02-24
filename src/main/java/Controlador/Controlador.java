@@ -67,51 +67,34 @@ public class Controlador extends HttpServlet {
                 }
                 // request.getRequestDispatcher("index.jsp").forward(request, response);
                 break;
-                
-            case "prueba":
-                // Generar lista de estados
-                    EstadoDAO edao = new EstadoDAO();
-                    List<Estado> listae = edao.listar();
-                    request.setAttribute("elista", listae);
-                    
-                    // Mostrar lista de estados
-                    for (Estado valor : listae) {
-                        out.println("Id: " + valor.getId());
-                        out.println("Nombre: " + valor.getNombre());
-                    }
-
-                    // Generar lista de ubicaciones
-                    UbicacionDAO udao = new UbicacionDAO();
-                    List<Ubicacion> listau = udao.listar();
-                    request.setAttribute("ulista", listau);
-                    
-                    // Mostrar lista de ubicaciones
-                    for (Ubicacion valor : listau) {
-                        out.println("Id: " + valor.getId());
-                        out.println("Nombre: " + valor.getNombre());
-                    }
-                                        
-                    // Generar lista de tarjetas
-                    TarjetaDAO tdao = new TarjetaDAO();
-                    List<Tarjeta> listat = tdao.listar();
-                    request.setAttribute("tlista", listat);
-                    
-                    // Mostrar lista de tarjetas
-                    for (Tarjeta valort : listat) {
-                        out.println("Cuenta: " + valort.getCliente());
-                        out.println("Fecha de Emisión: " +valort.getFechaEmision());
-                    }
-                break;
                             
-            case "iniciar":
-
-                out.println("Variables cargadas");
-
-                request.setAttribute("respuesta", 200);
-
-
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-            break;
+            case "filtrar":
+                // Obtener parámetros de filtrado
+                System.out.println("Filtrar");
+                String cuenta = request.getParameter("cuenta");
+                String estado = request.getParameter("selEstado");
+                String ubicacion = request.getParameter("selUbicacion");
+                String desde = request.getParameter("desde");
+                String hasta = request.getParameter("hasta");
+                
+                // Mostrar parámetros de filtrado
+                System.out.println("Cuenta:" + cuenta);
+                System.out.println("Estado:" + estado);
+                System.out.println("Ubicacion:" + ubicacion);
+                System.out.println("Desde:" + desde);
+                System.out.println("Hasta:" + hasta);
+                
+                // Generar lista de tarjetas filtrada
+                TarjetaDAO tdao = new TarjetaDAO();
+                List<Tarjeta> listat = tdao.filtrar(cuenta, estado,ubicacion, desde, hasta);
+                request.setAttribute("tlista", listat);
+                request.setAttribute("cuenta", cuenta);
+                request.setAttribute("estado", estado);
+                request.setAttribute("ubicacion", ubicacion);
+                request.setAttribute("desde", desde);
+                request.setAttribute("hasta", hasta);
+                request.getRequestDispatcher("index2.jsp").forward(request, response);
+                break;
 
             case "inicializar":
 
@@ -148,63 +131,8 @@ public class Controlador extends HttpServlet {
 
                 break;
 
-            case "capturar":
-                request.getRequestDispatcher(
-                        "capturar.jsp").forward(request, response);
-                break;
-
-            case "consultar":
-                request.getRequestDispatcher(
-                        "consultar.jsp").forward(request, response);
-                break;
-
-            case "dashboard":
-                request.getRequestDispatcher(
-                        "dashboard.jsp").forward(request, response);
-                break;
-
-            case "enviar":
-                request.getRequestDispatcher(
-                        "enviar.jsp").forward(request, response);
-                break;
-
-            case "recibir":
-                request.getRequestDispatcher(
-                        "cambiar.jsp").forward(request, response);
-                break;
-
-            case "reportes":
-                /*
-                String desde = request.getParameter("fecha-desde");
-                String hasta = request.getParameter("fecha-hasta");
-                String reporte = request.getParameter("sel-reporte");
-                String respuesta = "";
-                switch (reporte) {
-                    case "0":
-                        request.setAttribute("tipoError", "Debe seleccionar un reporte de la lista");
-                        respuesta = "reportes/error-reporte.jsp";
-                        break;
-                    case "1":
-                        if (desde.isEmpty() || hasta.isEmpty()) {
-                            request.setAttribute("tipoError", "Debe indicar fechas de inicio y fin");
-                            respuesta = "reportes/error-reporte.jsp";
-                        } else {
-                            ReporteProspectoPorEstadoDAO reporteDAO = new ReporteProspectoPorEstadoDAO();
-                            List<ReporteProspectoPorEstado> reporteFinal = reporteDAO.listar(Date.valueOf(desde), Date.valueOf(hasta));
-                            request.setAttribute("reporte", reporteFinal);
-                            respuesta = "reportes/reporte_prospectos_por_estado.jsp";
-                        }
-                        break;
-                }
-                
-                request.getRequestDispatcher(respuesta).forward(request, response);
-                 */
-                break;
-
             default:
-                out.println(
-                        "No se especificó una acción válida");
-
+                out.println("No se especificó una acción válida");
                 break;
 
         }
