@@ -17,13 +17,7 @@
                 integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
         <link rel="stylesheet" href="css/estilos.css">
-        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
-        <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script>
-        <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script defer src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-        <script>
-            new DataTable('#tarjetas');
-        </script>
+        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">                
         <title>Tarjetas</title>
     </head>
 
@@ -89,6 +83,38 @@
 
             <section class="main">
 
+                <%
+                    // Recibir parámetros del servlet
+                    String cuenta = (String) request.getAttribute("cuenta");
+                    if (cuenta == null) {
+                        cuenta = "";
+                    }
+                    String estado = (String) request.getAttribute("estado");
+                    String enombre = (String) request.getAttribute("enombre");
+                    if (estado == null) {
+                        estado = "";
+                        enombre = "";
+                    }
+                    String ubicacion = (String) request.getAttribute("ubicacion");
+                    String unombre = (String) request.getAttribute("unombre");
+                    if (ubicacion == null) {
+                        ubicacion = "";
+                        unombre = "";
+                    }
+                    String desde = (String) request.getAttribute("desde");
+                    String hasta = (String) request.getAttribute("hasta");
+
+                    List<Tarjeta> listat = (List<Tarjeta>) request.getAttribute("tlista");
+                    List<Estado> listae = (List<Estado>) request.getAttribute("elista");
+                    List<Ubicacion> listau = (List<Ubicacion>) request.getAttribute("ulista");
+
+                    String tamanoLista = (String) request.getAttribute("tamanoLista");
+                    String inicioLista = (String) request.getAttribute("inicioLista");
+                    String tamanoSubLista = (String) request.getAttribute("tamanoSubLista");
+                    int inicio = Integer.parseInt(inicioLista) + 1;
+                    int fin = inicio + Integer.parseInt(tamanoSubLista) - 1;
+                %>
+
                 <div class="card" style="margin:20px">
                     <div class="card-body">                        
                         <form id="frmFiltros" action="Controlador?accion=filtrar" method="post">                        
@@ -97,32 +123,6 @@
                                 <div class="col">
                                     Cuenta:
                                     <br>
-                                    <%
-                                        String cuenta = (String) request.getAttribute("cuenta");
-                                        if (cuenta == null) {
-                                            cuenta = "";
-                                        }
-                                        String estado = (String) request.getAttribute("estado");
-                                        String enombre = (String) request.getAttribute("enombre");
-                                        if (estado == null) {
-                                            estado = "";
-                                            enombre = "";
-                                        }
-                                        String ubicacion = (String) request.getAttribute("ubicacion");
-                                        String unombre = (String) request.getAttribute("unombre");
-                                        if (ubicacion == null) {
-                                            ubicacion = "";
-                                            unombre = "";
-                                        }
-                                        String desde = (String) request.getAttribute("desde");
-                                        String hasta = (String) request.getAttribute("hasta");
-
-                                        List<Tarjeta> lista = (List<Tarjeta>) request.getAttribute("tlista");
-                                        List<Estado> listae = (List<Estado>) request.getAttribute("elista");
-                                        List<Ubicacion> listau = (List<Ubicacion>) request.getAttribute("ulista");
-
-                                    %>
-
                                     <input type="text" class="form-control" name="cuenta" id="cuenta" value="<%=cuenta%>">
                                 </div>
 
@@ -172,16 +172,9 @@
 
                             </div>
 
-
                             <button class="btn btn-secondary mt-2" id="filtrar" name=btnFiltrar" type="submit" value="filtrar">
                                 Aplicar filtros
                             </button>
-
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                 class="bi bi-funnel" viewBox="0 0 16 16">
-                            <path
-                                d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z" />
-                            </svg>
 
                         </form>
 
@@ -206,8 +199,8 @@
                                     <th>Ubicación</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <% for (Tarjeta tarjeta : lista) {%>
+                            <tbody id="body">
+                                <% for (Tarjeta tarjeta : listat) {%>
                                 <tr id="fila<%= tarjeta.getCliente()%>">
                                     <td> <input class="form-check-input" type="checkbox" value="" id="check<%= tarjeta.getCliente()%>">
                                     </td>
@@ -220,12 +213,20 @@
                                 </tr>
                                 <% }%>
                             </tbody>
-
-
                         </table>
+                        <p id="registros"> Mostrando registros <%= inicio%> a <%= fin%> de <%= tamanoLista%> registros </p>
+                        
+                        <input type="hidden" form="frmFiltros" value="<%=inicioLista%>" name="inicioLista" />
+                        
+                        <input type="hidden" form="frmFiltros" value="<%=tamanoSubLista%>" name="tamanoSubLista" />
+                        
 
-
-                        <a href="ControladorTarjetas?accion=primero">Primero</a> <a href="ControladorTarjetas?accion=anterior">Anterior</a> <a href="ControladorTarjetas?accion=siguiente">Siguiente</a> <a href="ControladorTarjetas?accion=ultimo">Último</a>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="primero();">Primero</button>
+                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="anterior();">Anterior</button>
+                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="siguiente();">Siguiente</button>
+                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="ultimo();">Ultimo</button>
+                        </div>
 
                     </div>
                 </div>
@@ -241,16 +242,18 @@
             }
 
             function InicializarFechas() {
-                var hoy = Date.now();
-                var fechaFin = new Date(hoy);
-                var fechaInicio = new Date(hoy);
-                fechaInicio.setMonth((fechaFin.getMonth() - 3));
-                var inputDesde = document.getElementById('desde');
-                var inputHasta = document.getElementById('hasta');
-                if (inputHasta.value === "")
-                    inputHasta.value = fechaFin.toISOString().split('T')[0];
-                if (inputDesde.value === "")
-                    inputDesde.value = fechaInicio.toISOString().split('T')[0];
+                /*
+                 var hoy = Date.now();
+                 var fechaFin = new Date(hoy);
+                 var fechaInicio = new Date(hoy);
+                 fechaInicio.setMonth((fechaFin.getMonth() - 3));
+                 var inputDesde = document.getElementById('desde');
+                 var inputHasta = document.getElementById('hasta');
+                 if (inputHasta.value === "")
+                 inputHasta.value = fechaFin.toISOString().split('T')[0];
+                 if (inputDesde.value === "")
+                 inputDesde.value = fechaInicio.toISOString().split('T')[0];
+                 * */
             }
 
             function aplicarFiltros() {
@@ -258,6 +261,31 @@
                 formulario.action = "Controlador?accion=filtrar";
                 formulario.submit();
             }
+
+            function primero() {
+                var formulario = document.getElementById("frmFiltros");
+                formulario.action = "Controlador?accion=primero";
+                formulario.submit();
+            }
+            
+            function anterior() {
+                var formulario = document.getElementById("frmFiltros");
+                formulario.action = "Controlador?accion=anterior";
+                formulario.submit();
+            }
+
+            function siguiente() {
+                var formulario = document.getElementById("frmFiltros");
+                formulario.action = "Controlador?accion=siguiente";
+                formulario.submit();
+            }
+
+            function ultimo() {
+                var formulario = document.getElementById("frmFiltros");
+                formulario.action = "Controlador?accion=ultimo";
+                formulario.submit();
+            }
+
 
         </script>
     </body>
