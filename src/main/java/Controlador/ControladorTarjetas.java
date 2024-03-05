@@ -313,25 +313,30 @@ public class ControladorTarjetas extends HttpServlet {
             case "dashboard":
                 String desde2 = request.getParameter("desde");
                 String hasta2 = request.getParameter("hasta");
-                //out.println("Desde:" + desde2);
-                //out.println("Hasta:" + hasta2);
+                String correo3 = request.getParameter("correo");
+                System.out.println("Desde:" + desde2);
+                System.out.println("Hasta:" + hasta2);
+                System.out.println("Correo:" + correo3);
                 Conexion cn2 = new Conexion();
                 Connection con2 = cn2.Conexion();
                 PreparedStatement ps2;
                 ResultSet rs2;
 
                 // Obtener valores de efectividad
-                String sql2 = "select * from efectividad";
+                String sql2 = "CALL efectiv (?, ?)";
                 List<String> meses = new ArrayList<>();
                 List<String> efectividad = new ArrayList<>();
                 try {
                     ps2 = con2.prepareStatement(sql2);
+                    ps2.setDate(1, Date.valueOf(desde2));
+                    ps2.setDate(2, Date.valueOf(hasta2));
                     rs2 = ps2.executeQuery();
                     while (rs2.next()) {
                         meses.add(rs2.getString("mes"));
                         efectividad.add(rs2.getString("porcentaje_entregadas"));
                     }
                 } catch (Exception e) {
+                    System.out.println("Error en la consulta SQL de efectividad");
                     System.out.println(e.toString());
                 }
 
@@ -347,6 +352,7 @@ public class ControladorTarjetas extends HttpServlet {
                         rapidez.add(rs2.getString("rapidez"));
                     }
                 } catch (Exception e) {
+                    System.out.println("Error en la consulta SQL de rapidez");
                     System.out.println(e.toString());
                 }
 

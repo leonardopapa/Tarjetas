@@ -97,6 +97,7 @@
                                         <option value="30">Flash</option>
                                         <option value="33">La Veloz</option>
                                         <option value="31">Coprisa</option>
+                                        <option value="34">Oca</option>
                                     </select>
 
                                 </div>
@@ -195,6 +196,7 @@
             var efectividad = [50.00, 60.00, 70.00, 76.00, 80.00, 65.00];
             var meses2 = ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'];
             var rapidez = [7.5, 8, 10, 15, 9, 12];
+            var correo = null;
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -217,7 +219,7 @@
                 }
             };
 
-            var url = 'ControladorTarjetas?desde=' + desde_init + '&hasta=' + hasta_init + '&accion=dashboard';
+            var url = 'ControladorTarjetas?desde=' + desde_init + '&hasta=' + hasta_init + '&correo=' + correo + '&accion=dashboard';
             // console.log(url);
             xhr.open('post', url);
             xhr.send();            
@@ -266,9 +268,12 @@
                     }
                 });
 
-                function filtrar() {
+            }
+            
+            function filtrar() {
                     var desde = document.getElementById("fecha-desde");
                     var hasta = document.getElementById("fecha-hasta");
+                    var correo = document.getElementById("selCorreo");
                     if (desde === "" || hasta === "") {
                         alert("Debe indicar un rango de fechas válido");
                         return;
@@ -277,8 +282,6 @@
                     var formularioDashboard = document.getElementById("frmDashboard");
                     formularioDashboard.submit();
                 }
-
-            }
 
         </script>
 

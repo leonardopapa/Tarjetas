@@ -91,6 +91,7 @@ public class TarjetaDAO {
             }
 
         } catch (Exception e) {
+            System.out.println("Error en el método listar tarjetas");
             System.out.println(e.toString());
         }
 
