@@ -341,11 +341,13 @@ public class ControladorTarjetas extends HttpServlet {
                 }
 
                 // Obtener valores de rapidez
-                sql2 = "SELECT * FROM tarjetas.rapidez_x_fecha_imposicion";
+                sql2 = "CALL rapidez (?, ?)";
                 List<String> meses2 = new ArrayList<>();
                 List<String> rapidez = new ArrayList<>();
                 try {
                     ps2 = con2.prepareStatement(sql2);
+                    ps2.setDate(1, Date.valueOf(desde2));
+                    ps2.setDate(2, Date.valueOf(hasta2));
                     rs2 = ps2.executeQuery();
                     while (rs2.next()) {
                         meses2.add(rs2.getString("mes"));
