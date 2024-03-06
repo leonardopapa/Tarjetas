@@ -120,7 +120,7 @@
 
                                     <input type="hidden" name="accion" value="dashboard">
 
-                                    <button type="button" class="btn btn-info btn-lg" onclick="filtrar();">Confirmar</button>
+                                    <button type="button" class="btn btn-info btn-lg" onclick="graficar();">Confirmar</button>
                                 </div>
 
                             </div>
@@ -188,47 +188,56 @@
 
         <script>
 
-            // Obtener los KPI para el rango de fechas por defecto
+            window.onload = graficar;
 
-            var desde_init = '2023-01-01';
-            var hasta_init = '2023-12-31';
-            var meses = ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'];
-            var efectividad = [50.00, 60.00, 70.00, 76.00, 80.00, 65.00];
-            var meses2 = ['Abr-23', 'May-23', 'Jun-23', 'Jul-23', 'Ago-23', 'Sept-23'];
-            var rapidez = [7.5, 8, 10, 15, 9, 12];
-            var correo = null;
+            function graficar() {
 
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        // Parse the JSON response
-                        var responseObject = JSON.parse(xhr.responseText);
-                        // var jsonArray = xhr.responseText;
-                        meses = responseObject.meses;
-                        efectividad = responseObject.efectividad;
-                        meses2 = responseObject.meses2;
-                        rapidez = responseObject.rapidez;
-                        drawCharts();
+                // Obtener los KPI para el rango de fechas por defecto
 
-                        // Process the array as needed
-                        //console.log("Desde el JS:" + responseObjetct);
-                    } else {
-                        console.error('Error:', xhr.status);
-                    }
+                var desde = document.getElementById("fecha-desde").value;
+                var hasta = document.getElementById("fecha-hasta").value;
+                var correo = document.getElementById("selCorreo").value;
+                if (desde === "" || hasta === "") {
+                    alert("Debe indicar un rango de fechas válido");
+                    return;
                 }
-            };
+                if (desde >= hasta) {
+                    alert("La fecha de inicio debe ser anterior a la fecha de fin");
+                    return;
+                }
 
-            var url = 'ControladorTarjetas?desde=' + desde_init + '&hasta=' + hasta_init + '&correo=' + correo + '&accion=dashboard';
-            // console.log(url);
-            xhr.open('post', url);
-            xhr.send();            
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            // Parse the JSON response
+                            var responseObject = JSON.parse(xhr.responseText);
+                            // var jsonArray = xhr.responseText;
+                            meses = responseObject.meses;
+                            efectividad = responseObject.efectividad;
+                            meses2 = responseObject.meses2;
+                            rapidez = responseObject.rapidez;
+                            drawCharts(meses, efectividad, meses2, rapidez);
+                        } else {
+                            console.error('Error:', xhr.status);
+                        }
+                    }
+                };
 
-            function drawCharts() {
+                var url = 'ControladorTarjetas?desde=' + desde + '&hasta=' + hasta + '&correo=' + correo + '&accion=dashboard';
+                // console.log(url);
+                xhr.open('post', url);
+                xhr.send();
+            }
+
+            function drawCharts(meses, efectividad, meses2, rapidez) {
 
                 const ctx = document.getElementById('efectividad');
-
-                new Chart(ctx, {
+                
+                let chartStatus = Chart.getChart('efectividad');
+                if ( chartStatus != undefined) chartStatus.destroy();
+                
+                var chart1 = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: meses,
@@ -248,8 +257,11 @@
                 });
 
                 const ctx2 = document.getElementById('rapidez');
+                
+                chartStatus = Chart.getChart('rapidez');
+                if ( chartStatus != undefined) chartStatus.destroy();
 
-                new Chart(ctx2, {
+                var chart2 = new Chart(ctx2, {
                     type: 'bar',
                     data: {
                         labels: meses2,
@@ -267,21 +279,15 @@
                         }
                     }
                 });
-
             }
-            
+
             function filtrar() {
-                    var desde = document.getElementById("fecha-desde");
-                    var hasta = document.getElementById("fecha-hasta");
-                    var correo = document.getElementById("selCorreo");
-                    if (desde === "" || hasta === "") {
-                        alert("Debe indicar un rango de fechas válido");
-                        return;
-                    }
-                    console.log("Validaciones superadas");
-                    var formularioDashboard = document.getElementById("frmDashboard");
-                    formularioDashboard.submit();
-                }
+                var grafico1 = document.getElementById("efectividad");
+                var grafico2 = document.getElementById("rapidez");
+                grafico1.destroy();
+                grafico2.destroy();
+                graficar;
+            }
 
         </script>
 

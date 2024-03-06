@@ -15,13 +15,7 @@
                 integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
         <link rel="stylesheet" href="css/estilos.css">
-        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
-        <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script>
-        <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script defer src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-        <script>
-            new DataTable('#tarjetas');
-        </script>
+        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">        
         <title>Tarjetas</title>
     </head>
 

@@ -31,11 +31,6 @@ public class ExportController extends HttpServlet {
         }
         response.setHeader("Content-Disposition", "attachment; filename=informe." + exportType.toLowerCase());
         
-        // PrintWriter out2 = response.getWriter();
-        //out2.println("Servlet iniciado");
-        //response.setContentType("application/vnd.ms-excel");        
-        // response.setHeader("Content-Disposition", "attachment; filename=tabla_exportada." + exportType.toLowerCase());
-
         Sheet sheet = workbook.createSheet("Hoja1");
 
         // Obtener los parámetros del formulario
