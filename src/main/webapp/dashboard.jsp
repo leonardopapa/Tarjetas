@@ -91,7 +91,7 @@
                                     <label for="selCorreo"> Correo: </label>
 
                                     <select class="form-select" id="selCorreo" name="correo">
-                                        <option selected>Seleccione el Correo</option>
+                                        <option selected value="">Seleccione el Correo</option>
                                         <option value="29">Servicios Modernos</option>
                                         <option value="32">Dago</option>
                                         <option value="30">Flash</option>

@@ -316,20 +316,22 @@ public class ControladorTarjetas extends HttpServlet {
                 String correo3 = request.getParameter("correo");
                 System.out.println("Desde:" + desde2);
                 System.out.println("Hasta:" + hasta2);
-                System.out.println("Correo:" + correo3);
+                System.out.print("Correo:");
+                System.out.println(correo3.isEmpty() ? "vacío" : correo3);
                 Conexion cn2 = new Conexion();
                 Connection con2 = cn2.Conexion();
                 PreparedStatement ps2;
                 ResultSet rs2;
 
                 // Obtener valores de efectividad
-                String sql2 = "CALL efectiv (?, ?)";
+                String sql2 = correo3.isEmpty() ? "CALL efectiv (?, ?)" : "CALL efectiv_correo (?, ?, ?)";
                 List<String> meses = new ArrayList<>();
                 List<String> efectividad = new ArrayList<>();
                 try {
                     ps2 = con2.prepareStatement(sql2);
                     ps2.setDate(1, Date.valueOf(desde2));
                     ps2.setDate(2, Date.valueOf(hasta2));
+                    if (!(correo3.isEmpty())) ps2.setInt(3, Integer.valueOf(correo3));
                     rs2 = ps2.executeQuery();
                     while (rs2.next()) {
                         meses.add(rs2.getString("mes"));
@@ -341,13 +343,14 @@ public class ControladorTarjetas extends HttpServlet {
                 }
 
                 // Obtener valores de rapidez
-                sql2 = "CALL rapidez (?, ?)";
+                sql2 = correo3.isEmpty() ? "CALL rapidez (?, ?)" : "CALL rapidez_correo (?, ?, ?)";
                 List<String> meses2 = new ArrayList<>();
                 List<String> rapidez = new ArrayList<>();
                 try {
                     ps2 = con2.prepareStatement(sql2);
                     ps2.setDate(1, Date.valueOf(desde2));
                     ps2.setDate(2, Date.valueOf(hasta2));
+                    if (!(correo3.isEmpty())) ps2.setInt(3, Integer.valueOf(correo3));
                     rs2 = ps2.executeQuery();
                     while (rs2.next()) {
                         meses2.add(rs2.getString("mes"));
@@ -363,20 +366,14 @@ public class ControladorTarjetas extends HttpServlet {
                 String json2 = listToJSON(efectividad);
                 String json3 = listToJSON(meses2);
                 String json4 = listToJSON(rapidez);
-
-                //out.println("json1:" + json1);
-                //out.println("json2:" + json2);
-                //out.println("json3:" + json3);
-                //out.println("json4:" + json4);
+                
                 // Combininar los arreglos JSON en un único objeto JSON
                 String jsonResponse = String.format("{\"meses\":%s,\"efectividad\":%s,\"meses2\":%s,\"rapidez\":%s}",
                         json1, json2, json3, json4);
-
-                //out.println("jsonresponse:" + jsonResponse);
+                
                 // Set content type and write the JSON response
                 response.setContentType("application/json");
                 response.getWriter().write(jsonResponse);
-                // request.getRequestDispatcher("dashboard.jsp").forward(request, response);
                 break;
 
             case "buscarCambiar":
