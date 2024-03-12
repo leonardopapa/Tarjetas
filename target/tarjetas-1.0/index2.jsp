@@ -17,7 +17,7 @@
                 integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
         <link rel="stylesheet" href="css/estilos.css">
-        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">                
+        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
         <title>Tarjetas</title>
     </head>
 
@@ -26,59 +26,7 @@
         <div class="contenedor">
 
             <aside class="menu-lateral">
-
-                <div class="logo">
-                    <img src="img/logo.png" width="75">
-                </div>
-
-                <br>
-                <br>
-                <br>
-                <ul class="menu flex-column mb-auto">
-
-                    <li class="item">
-                        <a href="index.jsp">
-                            Home
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="capturar.jsp">
-                            Capturar Tarjetas
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="enviar.jsp">
-
-                            Enviar por correo
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="recibir.jsp">
-                            Recibir Rendición
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="cambiar.jsp">
-                            Cambiar Estado
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="consultar.jsp">
-                            Consultar Estado
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="reportes.jsp">
-                            Reportes
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="dashboard.jsp">
-                            Dashboard
-                        </a>
-                    </li>
-                </ul>
-
+                <jsp:include page="menu_lateral.jsp" />
             </aside>
 
             <section class="main">
@@ -183,14 +131,19 @@
 
                 <div class="card" style="margin:20px">
                     <div class="card-body">
-                        <h5 class="card-title">Tarjetas</h5>
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="card-title">Tarjetas</h5>
+                            </div>
+                            <div class="col col-auto">
+                                <button >xls</button>
+                            </div>
+                        </div>
                         <hr>
 
                         <table id="tarjetas" class="table table-striped" style="width:100%">
                             <thead>
-                                <tr>
-                                    <th> <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                    </th>
+                                <tr>                                    
                                     <th>Cuenta</th>
                                     <th>Fecha de Emisión</th>
                                     <th>Estado</th>
@@ -201,9 +154,7 @@
                             </thead>
                             <tbody id="body">
                                 <% for (Tarjeta tarjeta : listat) {%>
-                                <tr id="fila<%= tarjeta.getCliente()%>">
-                                    <td> <input class="form-check-input" type="checkbox" value="" id="check<%= tarjeta.getCliente()%>">
-                                    </td>
+                                <tr id="fila<%= tarjeta.getCliente()%>">                                    
                                     <td><%= tarjeta.getCliente()%></td>
                                     <td><%= tarjeta.getFechaEmision()%></td>
                                     <td><%= tarjeta.getEstado().getNombre()%></td>
@@ -215,11 +166,11 @@
                             </tbody>
                         </table>
                         <p id="registros"> Mostrando registros <%= inicio%> a <%= fin%> de <%= tamanoLista%> registros </p>
-                        
+
                         <input type="hidden" form="frmFiltros" value="<%=inicioLista%>" name="inicioLista" />
-                        
+
                         <input type="hidden" form="frmFiltros" value="<%=tamanoSubLista%>" name="tamanoSubLista" />
-                        
+
 
                         <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
                             <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="primero();">Primero</button>
@@ -267,7 +218,7 @@
                 formulario.action = "Controlador?accion=primero";
                 formulario.submit();
             }
-            
+
             function anterior() {
                 var formulario = document.getElementById("frmFiltros");
                 formulario.action = "Controlador?accion=anterior";

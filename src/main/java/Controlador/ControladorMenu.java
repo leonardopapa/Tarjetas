@@ -45,12 +45,20 @@ public class ControladorMenu extends HttpServlet {
                 destino = "index.jsp";
                 break;
         }
-        System.out.println("Acción:" + accion);
-        System.out.println("Destino:" + destino);
-        request.setAttribute("accion", accion);        
+        System.out.println("Acción:" + accion + ".");
+        System.out.println("Destino:" + destino + ".");
+        request.setAttribute("accion", accion);
+        response.setStatus(200);
         request.getRequestDispatcher(destino).forward(request, response);
     }
+    
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+    
     private HttpServletRequest inicializar(HttpServletRequest request) {
         System.out.println("Inicializando");
 
@@ -70,12 +78,6 @@ public class ControladorMenu extends HttpServlet {
         request.setAttribute("tlista", listat);
 
         return request;
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
     }
 
 }

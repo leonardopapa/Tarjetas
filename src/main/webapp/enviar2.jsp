@@ -12,14 +12,7 @@
                 integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
         <link rel="stylesheet" href="css/estilos.css">
-        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
-        <script src="https://kit.fontawesome.com/842280e38e.js" crossorigin="anonymous"></script>
-        <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script>
-        <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script defer src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-        <script>
-            new DataTable('#tarjetas');
-        </script>
+        <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">        
         <title>Tarjetas</title>
     </head>
 
@@ -28,59 +21,7 @@
         <div class="contenedor">
 
             <aside class="menu-lateral">
-
-                <div class="logo">
-                    <img src="img/logo.png" width="75">
-                </div>
-
-                <br>
-                <br>
-                <br>
-                <ul class="menu flex-column mb-auto">
-                    <li class="item">
-                        <a href="index.jsp">
-                            Home
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="capturar.jsp">
-                            Capturar Tarjetas
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="enviar.jsp">
-
-                            Enviar por correo
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="recibir.jsp">
-
-                            Recibir Rendición
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="cambiar.jsp">
-                            Cambiar Estado
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="consultar.jsp">
-                            Consultar Estado
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="reportes.jsp">
-                            Reportes
-                        </a>
-                    </li>
-                    <li class="item">
-                        <a href="dashboard.jsp">
-                            Dashboard
-                        </a>
-                    </li>
-                </ul>
-
+                <jsp:include page="menu_lateral.jsp" />
             </aside>
 
             <section class="main">
@@ -99,14 +40,14 @@
                                     String nombreArchivo = (String) request.getAttribute("archivo");
                                     String correo = (String) request.getAttribute("correo");
                                     String fechaRemito = (String) request.getAttribute("fenvio");
-                                    String ccuentas = (String) request.getAttribute("ccuentas");   
-                                    if (resultado.equalsIgnoreCase("error")) {                                        
+                                    String ccuentas = (String) request.getAttribute("ccuentas");
+                                    if (resultado.equalsIgnoreCase("error")) {
                                 %>
-                                
+
                                 <script>
                                     alert("Error en el proceso de firma");
                                 </script>
-                                    <%
+                                <%
                                     }
                                 %>
 
@@ -123,11 +64,11 @@
                                     <input type="hidden" name="archivo" value="<%=nombreArchivo%>">
 
                                     <input type="hidden" name="firmaRecepcion">
-                                                                        
-                                    <input type="hidden" name="correo" value="<%= correo %>"> 
-                                    <input type="hidden" name="fenvio" value="<%= fechaRemito %>"> 
-                                    <input type="hidden" name="ccuentas" value="<%= ccuentas %>"> 
-                                    
+
+                                    <input type="hidden" name="correo" value="<%= correo%>"> 
+                                    <input type="hidden" name="fenvio" value="<%= fechaRemito%>"> 
+                                    <input type="hidden" name="ccuentas" value="<%= ccuentas%>"> 
+
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Firmar Remito</button>
 
                                     <button type="button" class="btn btn-danger" onClick="cancelar();">Cancelar</button>
@@ -176,7 +117,7 @@
         var alias = document.getElementById("alias").value;
         var password = document.getElementById("password").value;
         // Verificar si el usuario ingresó un valor
-        if (alias !== null && password !== null) {            
+        if (alias !== null && password !== null) {
             // enviar los datos el formulario al servlet
             var frmFirmar = document.getElementById("frmFirmar");
             frmFirmar.submit();
