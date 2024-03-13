@@ -223,6 +223,7 @@ public class TarjetaDAO {
                 estado2.setNombre(rs.getString("estado"));
                 tarjeta.setEstado(estado2);
                 tarjeta.setFechaEstado(rs.getDate("fecha_estado"));
+                tarjeta.setPieza(rs.getInt("pieza"));
                 motivo.setNombre(rs.getString("motivo"));
                 if (motivo.getNombre() == null) {
                     motivo.setNombre("");

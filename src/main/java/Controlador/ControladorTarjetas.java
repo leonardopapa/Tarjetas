@@ -247,6 +247,7 @@ public class ControladorTarjetas extends HttpServlet {
                 String reporte = request.getParameter("reporte");
                 String desde = request.getParameter("desde");
                 String hasta = request.getParameter("hasta");
+                String correo4 = request.getParameter("correo");
                 Conexion cn = new Conexion();
                 Connection con;
                 PreparedStatement ps;
@@ -257,6 +258,11 @@ public class ControladorTarjetas extends HttpServlet {
                 List<Reporte> reporte3 = new ArrayList();
                 String columna1 = "";
                 String columna2 = "cantidad";
+                String columna3 = "";
+                String columna4 = "";
+                String columna5 = "";
+                String columna6 = "";
+                String columna7 = "";
                 if (reporte.equalsIgnoreCase("1")) //tarjetas por estado
                 {
                     sql = "CALL tarjetas_x_estado_impos(?,?)";
@@ -265,15 +271,42 @@ public class ControladorTarjetas extends HttpServlet {
                     columna1 = "estado";
                 } else if (reporte.equalsIgnoreCase("2")) //motivos de rechazo
                 {
-                    sql = "CALL motivos(?,?)";
+                    sql = (correo4 ==null || correo4.isEmpty()) ? "CALL motivos2(?,?)" : "CALL motivos(?,?,?)" ;
                     titulos.add("Motivo");
                     titulos.add("Cantidad");
                     columna1 = "causa";
+                } else if (reporte.equalsIgnoreCase("3")) //rapidez en la entrega
+                {
+                    sql = (correo4 ==null || correo4.isEmpty()) ? "CALL rapidez(?,?)" : "CALL rapidez-correo(?,?,?)" ;
+                    titulos.add("Meses");
+                    titulos.add("Piezas");
+                    titulos.add("Días promedio");
+                    columna1 = "mes";
+                    columna2 = "total_piezas";
+                    columna3 = "rapidez";
+                    
+                } else if (reporte.equalsIgnoreCase("4")) //efectividad de la entrega
+                {
+                    sql = (correo4 ==null || correo4.isEmpty()) ? "CALL efectiv(?,?)" : "CALL efectiv_correo(?,?,?)" ;
+                    titulos.add("Meses");
+                    titulos.add("Piezas");
+                    titulos.add("Entregadas");
+                    titulos.add("Devueltas");
+                    titulos.add("% Entregadas");
+                    titulos.add("% Devueltas");
+                    columna1 = "mes";
+                    columna2 = "total_piezas";
+                    columna3 = "total_piezas";
+                    columna4 = "entregadas";
+                    columna5 = "devueltas";
+                    columna6 = "porcentaje_entregadas";
+                    columna7 = "devueltas";
                 }
                 try {
                     ps = con.prepareStatement(sql);
                     ps.setDate(1, Date.valueOf(desde));
                     ps.setDate(2, Date.valueOf(hasta));
+                    if (!(correo4 ==null || correo4.isEmpty()) && !reporte.equalsIgnoreCase("1")) ps.setInt(3, Integer.valueOf(correo4));
                     rs = ps.executeQuery();
 
                     // Convertir el resultset a lista

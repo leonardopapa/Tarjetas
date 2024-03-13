@@ -29,6 +29,7 @@ public class UbicacionDAO {
             }
 
         } catch (Exception e) {
+            System.out.println("Error en la lista de ubicaciones");
             System.out.println(e.toString());
         }
 

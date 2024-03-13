@@ -3,7 +3,9 @@ D:\Documents\NetBeansProjects\tarjetas\src\main\java\Utilidades\GestionarEmail.j
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\TarjetaDAO.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\ReporteEfectividad.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\ControladorBuscar3.java
+D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\ReporteRapidez.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\Controlador2.java
+D:\Documents\NetBeansProjects\tarjetas\src\main\java\Utilidades\ExportController2.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\ControladorRemito.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\MotivoDAO.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\EstadoDAO.java
@@ -21,6 +23,7 @@ D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\ControladorBusc
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\MovimientoDAO.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\Rol.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Controlador\ControladorBuscar2.java
+D:\Documents\NetBeansProjects\tarjetas\src\main\java\Utilidades\GestionarExcel.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\Remito.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\Conexion.java
 D:\Documents\NetBeansProjects\tarjetas\src\main\java\Modelo\UbicacionDAO.java

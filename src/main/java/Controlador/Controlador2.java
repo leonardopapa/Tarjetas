@@ -19,6 +19,13 @@ public class Controlador2 extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Generar las fechas iniciales
+        LocalDate fechaActual = LocalDate.now();
+        LocalDate fechaHaceTresMeses = fechaActual.minusMonths(3);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String hasta = fechaActual.format(formatter);
+        String desde = fechaHaceTresMeses.format(formatter);
 
         // Generar lista de estados
         EstadoDAO edao = new EstadoDAO();
@@ -30,19 +37,14 @@ public class Controlador2 extends HttpServlet {
 
         // Generar lista de tarjetas
         TarjetaDAO tdao = new TarjetaDAO();
-        List<Tarjeta> listat = tdao.listar();
+        List<Tarjeta> listat = tdao.filtrar("", "", "", desde, hasta);
         int tamanoLista = listat.size();
+        
+        // Generar la sublista
         int inicioLista = 0;
         int maxSize = 10;
         int tamanoSubLista = tamanoSubLista = (tamanoLista < maxSize ? tamanoLista : maxSize);
         List<Tarjeta> lista = listat.subList(inicioLista, tamanoSubLista);
-
-        // Generar las fechas iniciales
-        LocalDate fechaActual = LocalDate.now();
-        LocalDate fechaHaceTresMeses = fechaActual.minusMonths(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String hasta = fechaActual.format(formatter);
-        String desde = fechaHaceTresMeses.format(formatter);
 
         // Enviar parámetros a la capa de presentación
         request.setAttribute("tlista", lista);

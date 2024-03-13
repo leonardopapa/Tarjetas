@@ -36,6 +36,10 @@
         <servlet-name>ControladorMenu</servlet-name>
         <servlet-class>Controlador.ControladorMenu</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExportController2</servlet-name>
+        <servlet-class>Utilidades.ExportController2</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ControladorTarjetas</servlet-name>
         <url-pattern>/ControladorTarjetas</url-pattern>
@@ -71,6 +75,10 @@
     <servlet-mapping>
         <servlet-name>ControladorMenu</servlet-name>
         <url-pattern>/ControladorMenu</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExportController2</servlet-name>
+        <url-pattern>/ExportController2</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

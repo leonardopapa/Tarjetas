@@ -136,7 +136,7 @@
                                 <h5 class="card-title">Tarjetas</h5>
                             </div>
                             <div class="col col-auto">
-                                <button >xls</button>
+                                <button form="frmFiltros" onclick="exportar();">xls</button>                                
                             </div>
                         </div>
                         <hr>
@@ -144,6 +144,7 @@
                         <table id="tarjetas" class="table table-striped" style="width:100%">
                             <thead>
                                 <tr>                                    
+                                    <th>Pieza</th>
                                     <th>Cuenta</th>
                                     <th>Fecha de Emisión</th>
                                     <th>Estado</th>
@@ -154,7 +155,8 @@
                             </thead>
                             <tbody id="body">
                                 <% for (Tarjeta tarjeta : listat) {%>
-                                <tr id="fila<%= tarjeta.getCliente()%>">                                    
+                                <tr id="fila<%= tarjeta.getPieza()%>">
+                                    <td><%= tarjeta.getPieza()%></td>
                                     <td><%= tarjeta.getCliente()%></td>
                                     <td><%= tarjeta.getFechaEmision()%></td>
                                     <td><%= tarjeta.getEstado().getNombre()%></td>
@@ -170,7 +172,6 @@
                         <input type="hidden" form="frmFiltros" value="<%=inicioLista%>" name="inicioLista" />
 
                         <input type="hidden" form="frmFiltros" value="<%=tamanoSubLista%>" name="tamanoSubLista" />
-
 
                         <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
                             <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="primero();">Primero</button>
@@ -204,7 +205,7 @@
                  inputHasta.value = fechaFin.toISOString().split('T')[0];
                  if (inputDesde.value === "")
                  inputDesde.value = fechaInicio.toISOString().split('T')[0];
-                 * */
+                 */
             }
 
             function aplicarFiltros() {
@@ -236,7 +237,12 @@
                 formulario.action = "Controlador?accion=ultimo";
                 formulario.submit();
             }
-
+            
+            function exportar() {
+                var formulario = document.getElementById("frmFiltros");
+                formulario.action = "ExportController2?exportType=XLS";
+                formulario.submit();
+            }
 
         </script>
     </body>

@@ -7,7 +7,9 @@ import Modelo.EstadoDAO;
 import Modelo.Tarjeta;
 import Modelo.TarjetaDAO;
 import Modelo.UbicacionDAO;
+import Utilidades.GestionarExcel;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -20,14 +22,14 @@ public class Controlador extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String accion = request.getParameter("accion");
-        System.out.println("Accion:" + accion);
-        PrintWriter out = response.getWriter();
+        System.out.println("Accion:" + accion);        
         boolean acc1 = accion.equalsIgnoreCase("filtrar");
         boolean acc2 = accion.equalsIgnoreCase("primero");
         boolean acc3 = accion.equalsIgnoreCase("anterior");
         boolean acc4 = accion.equalsIgnoreCase("siguiente");
         boolean acc5 = accion.equalsIgnoreCase("ultimo");
-        if (acc1 || acc2 || acc3 || acc4 || acc5) {
+        boolean acc6 = accion.equalsIgnoreCase("exportar");
+        if (acc1 || acc2 || acc3 || acc4 || acc5 || acc6) {
             // Obtener parámetros de filtrado                
             String cuenta = request.getParameter("cuenta");
             String estado = request.getParameter("selEstado");
@@ -56,7 +58,7 @@ public class Controlador extends HttpServlet {
             if (accion.equalsIgnoreCase("siguiente")) {
                 if (inicioLista + maxSize < tamanoLista) {
                     inicioLista = inicioLista + maxSize;
-                    tamanoSubLista = inicioLista + maxSize > tamanoLista ? tamanoLista - inicioLista : maxSize;                    
+                    tamanoSubLista = inicioLista + maxSize > tamanoLista ? tamanoLista - inicioLista : maxSize;
                 }
             }
 
@@ -71,10 +73,23 @@ public class Controlador extends HttpServlet {
                     tamanoSubLista = inicioLista + maxSize > tamanoLista ? tamanoLista - inicioLista : maxSize;
                 } else {
                     tamanoSubLista = inicioLista;
-                    inicioLista = 0;                    
+                    inicioLista = 0;
                 }
             }
 
+            if (accion.equalsIgnoreCase("exportar")) {
+                GestionarExcel gestionarExcel = new Utilidades.GestionarExcel();
+                byte[] excelFile = gestionarExcel.exportar(listat, "XLS");
+
+                // Configurar la respuesta HTTP
+                response.setContentType("application/vnd.ms-excel");                                
+                response.setHeader("Content-Disposition", "attachment; filename=tarjetas-export.xls");
+
+                // Enviar el archivo Excel como respuesta                
+                response.getOutputStream().write(excelFile);
+            }
+
+            System.out.println("Luego del filtrado: ");
             System.out.println("Inicio Lista: " + inicioLista);
             System.out.println("Max Size: " + maxSize);
             System.out.println("Tamaño Lista: " + tamanoLista);
@@ -116,10 +131,10 @@ public class Controlador extends HttpServlet {
 
                 Conexion cn = new Conexion();
                 if (cn == null) {
-                    out.println(
+                    System.out.println(
                             "Error en la conexion");
                 } else {
-                    out.println("Conexion exitosa");
+                    System.out.println("Conexion exitosa");
 
                     // Generar lista de estados
                     EstadoDAO edao = new EstadoDAO();
@@ -128,8 +143,8 @@ public class Controlador extends HttpServlet {
 
                     // Mostrar lista de estados
                     for (Estado valor : listae) {
-                        out.println("Id: " + valor.getId());
-                        out.println("Nombre: " + valor.getNombre());
+                        System.out.println("Id: " + valor.getId());
+                        System.out.println("Nombre: " + valor.getNombre());
                     }
 
                     // Generar lista de ubicaciones
@@ -139,8 +154,8 @@ public class Controlador extends HttpServlet {
 
                     // Mostrar lista de ubicaciones
                     for (Ubicacion valor : listau) {
-                        out.println("Id: " + valor.getId());
-                        out.println("Nombre: " + valor.getNombre());
+                        System.out.println("Id: " + valor.getId());
+                        System.out.println("Nombre: " + valor.getNombre());
                     }
 
                     // Generar lista de tarjetas
@@ -150,8 +165,8 @@ public class Controlador extends HttpServlet {
 
                     // Mostrar lista de tarjetas
                     for (Tarjeta valort : listat) {
-                        out.println("Cuenta: " + valort.getCliente());
-                        out.println("Fecha de Emisión: " + valort.getFechaEmision());
+                        System.out.println("Cuenta: " + valort.getCliente());
+                        System.out.println("Fecha de Emisión: " + valort.getFechaEmision());
                     }
                 }
                 // request.getRequestDispatcher("index.jsp").forward(request, response);
@@ -193,9 +208,8 @@ public class Controlador extends HttpServlet {
                 break;
 
             default:
-                out.println("No se especificó una acción válida");
+                System.out.println("No se especificó una acción válida");                
                 break;
-
         }
     }
 

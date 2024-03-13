@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Tarjeta {
     
-    private int id, cliente;
+    private int id, cliente, pieza;
     private Date fechaEmision, fechaEstado, fechaImposicion, fechaRendicion;
     private Estado estado;
     private List<Movimiento> movimiento;
@@ -106,12 +106,13 @@ public class Tarjeta {
         this.ubicacion = ubicacion;
     }
 
-    @Override
-    public String toString() {
-        return "Tarjeta{" + "id=" + id + ", cliente=" + cliente + ", fechaEmision=" + fechaEmision + ", fechaEstado=" + fechaEstado + ", fechaImposicion=" + fechaImposicion + ", fechaRendicion=" + fechaRendicion + ", estado=" + estado + ", movimiento=" + movimiento + ", motivo=" + motivo + ", ubicacion=" + ubicacion + '}';
+    public int getPieza() {
+        return pieza;
     }
-    
-    
-    
+
+    public void setPieza(int pieza) {
+        this.pieza = pieza;
+    }
+        
 }
 

@@ -51,6 +51,8 @@
                                                         <option selected value="0">Seleccione el reporte</option>
                                                         <option value="1">Tarjetas por Estado</option>
                                                         <option value="2">Motivos de Rechazo</option>
+                                                        <option value="3">Rapidez en la entrega</option>
+                                                        <option value="4">Efectividad de la entrega</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -66,22 +68,23 @@
                                                         <option value="30">Flash</option>
                                                         <option value="33">La Veloz</option>
                                                         <option value="31">Coprisa</option>
+                                                        <option value="34">Oca</option>
                                                     </select>
                                                 </div>
 
                                             </div>
 
                                             <div class="row">
-                                                <label for="inputFechaD" class="col-form-label">Fecha Desde:</label>
+                                                <label for="desde" class="col-form-label">Fecha Desde:</label>
                                                 <div class="col">
-                                                    <input type="date" class="form-control" id="inputFechaD" name="desde" value="2023-01-01">
+                                                    <input type="date" class="form-control" id="desde" name="desde">
                                                 </div>
                                             </div>
 
                                             <div class="row">
-                                                <label for="inputFechaH" class="col-form-label">Fecha Hasta:</label>
+                                                <label for="hasta" class="col-form-label">Fecha Hasta:</label>
                                                 <div class="col">
-                                                    <input type="date" class="form-control" id="inputFechaH" name="hasta" value="2023-12-31">
+                                                    <input type="date" class="form-control" id="hasta" name="hasta">
                                                 </div>
                                             </div>
 
@@ -126,7 +129,7 @@
 
                                             <input type="hidden" name="accion" value="reportes">
 
-                                            <button type="button" class="btn btn-danger" onlick="obtenerReporte();">Obtener Reporte</button>
+                                            <button type="button" class="btn btn-danger" onclick="obtenerReporte();">Obtener Reporte</button>
 
                                             <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
 
@@ -216,7 +219,7 @@
                 // Validar datos de entreda                
                 var reporte = document.getElementById("selReporte");
                 var desde = document.getElementById("desde");
-                var hasta = document.getElementById("hasta");
+                var hasta = document.getElementById("hasta");                
                 if (reporte.value === "0") {
                     alert("Debe seleccionar un reporte");
                     return;

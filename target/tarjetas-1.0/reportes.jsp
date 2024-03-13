@@ -48,6 +48,8 @@
                                                         <option selected value="0">Seleccione el reporte</option>
                                                         <option value="1">Tarjetas por Estado</option>
                                                         <option value="2">Motivos de Rechazo</option>
+                                                        <option value="3">Rapidez en la entrega</option>
+                                                        <option value="4">Efectividad de la entrega</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -57,28 +59,29 @@
                                                 <label for="selCorreo" class="col-form-label">Correo:</label>
                                                 <div class="col">
                                                     <select class="form-select" id="selCorreo" name="correo">
-                                                        <option selected>Seleccione el Correo</option>
+                                                        <option selected">Seleccione el Correo</option>
                                                         <option value="29">Servicios Modernos</option>
                                                         <option value="32">Dago</option>
                                                         <option value="30">Flash</option>
                                                         <option value="33">La Veloz</option>
                                                         <option value="31">Coprisa</option>
+                                                        <option value="34">Oca</option>
                                                     </select>
                                                 </div>
 
                                             </div>
 
                                             <div class="row">
-                                                <label for="inputFechaD" class="col-form-label">Fecha Desde:</label>
+                                                <label for="desde" class="col-form-label">Fecha Desde:</label>
                                                 <div class="col">
-                                                    <input type="date" class="form-control" id="inputFechaD" name="desde" value="2023-01-01">
+                                                    <input type="date" class="form-control" id="desde" name="desde" >
                                                 </div>
                                             </div>
 
                                             <div class="row">
-                                                <label for="inputFechaH" class="col-form-label">Fecha Hasta:</label>
+                                                <label for="hasta" class="col-form-label">Fecha Hasta:</label>
                                                 <div class="col">
-                                                    <input type="date" class="form-control" id="inputFechaH" name="hasta" value="2023-12-31">
+                                                    <input type="date" class="form-control" id="hasta" name="hasta">
                                                 </div>
                                             </div>
 
@@ -120,7 +123,7 @@
                 
                                             <br>
                                             -->
-                                            
+
                                             <input type="hidden" name="accion" value="reportes">
 
                                             <button type="button" class="btn btn-danger" onclick="obtenerReporte();">Obtener Reporte</button>
@@ -141,22 +144,6 @@
 
                                     <div class="card-body"> 
                                         <h6>Resultados</h6>
-                                        <form id="exportForm" action="ExportController" method="post">
-                                        <input type="hidden" id="columnaInput" name="columna">
-                                            <input type="hidden" id="datoInput" name="dato">
-                                            <input type="hidden" id="exportTypeInput" name="exportType">
-                                                                                       
-                                            <button type="button" class="btn btn-success" onclick="submitForm('XLS')">
-                                                <img src="img/xls.png" width="25" height="25" alt="Exportar a XLS"/>
-                                                Exportar a XLS                                                
-                                            </button>
-                                            
-                                            <button type="button" class="btn btn-success" onclick="submitForm('XLSX')">
-                                                <img src="img/xlsx.png" width="25" height="25" alt="Exportar a XLSX"/>
-                                                Exportar a XLSX                                            
-                                            </button>  
-                                            
-                                        </form>
                                     </div>
                                 </div>
 
@@ -174,26 +161,26 @@
         <script>
 
             function obtenerReporte() {
-                
+
                 // Validar datos de entreda                
                 var reporte = document.getElementById("selReporte");
                 var desde = document.getElementById("desde");
-                var hasta  = document.getElementById("hasta");
-                if (reporte.value==="0") {
+                var hasta = document.getElementById("hasta");                
+                if (reporte.value === "0") {
                     alert("Debe seleccionar un reporte");
                     return;
                 }
-                
+
                 // Validar que los campos no estén vacíos
-                if (desde === ''|| hasta==='') {
+                if (desde === '' || hasta === '') {
                     alert('Por favor, ingrese un rango de fechas válido');
                     return;
                 }
-                
+
                 // Generar el reporte                
                 var formularioReporte = document.getElementById("frmReportes");
                 formularioReporte.submit();
-                
+
             }
 
             function cancelar() {
@@ -201,37 +188,7 @@
                 if (confirmacion) {
                     window.location.href = "index.jsp";
                 }
-            }
-            
-            function submitForm(exportType) {
-            var table = document.getElementById("tblaReporte");
-            var rows = table.getElementsByTagName("tr");
-            var columnas = [];
-
-            // Obtener encabezados
-            var headerRow = rows[0];
-            var cells = headerRow.getElementsByTagName("th");
-            for (var i = 0; i < cells.length; i++) {
-                columnas.push(cells[i].innerText);
-            }
-
-            // Construir datos
-            var datos = [];
-            for (var j = 1; j < rows.length; j++) {
-                var cells = rows[j].getElementsByTagName("td");
-                var rowData = [];
-                for (var k = 0; k < cells.length; k++) {
-                    rowData.push(cells[k].innerText);
-                }
-                datos.push(rowData.join(","));
-            }
-
-            // Crear campos ocultos y enviar formulario
-            document.getElementById("columnaInput").value = columnas.join(",");
-            document.getElementById("datoInput").value = datos.join(",");
-            document.getElementById("exportTypeInput").value = exportType;
-            document.forms["exportForm"].submit();
-        }
+            }           
 
         </script>
 

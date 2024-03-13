@@ -29,6 +29,7 @@ public class EstadoDAO {
             }
 
         } catch (Exception e) {
+            System.out.println("Error en la lista de estados");
             System.out.println(e.toString());
         }
 
