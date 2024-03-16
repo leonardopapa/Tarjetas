@@ -39,16 +39,18 @@ public class UbicacionDAO {
     
     public String buscar(String id) {
          // Devuelve el nombre de una ubicación a partir de su Id
-        String sql = "SELECT nombre FROM ubicaciones where id="+id;
+        String sql = "SELECT nombre FROM ubicaciones where id=?";
         String nombre = "";
         try {
             con = cn.Conexion();
             ps = con.prepareStatement(sql);
+            ps.setString(1, id);
             rs = ps.executeQuery();
             while (rs.next()) {                
                 nombre = rs.getString("nombre");                
             }
         } catch (Exception e) {
+            System.out.println("Error en la búsqueda del nombre de la ubicación");
             System.out.println(e.toString());
         }
 

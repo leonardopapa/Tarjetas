@@ -99,11 +99,45 @@ public class TarjetaDAO {
         return lista;
     }
 
+    public String buscar(List<String>piezas) {
+        
+        // Buscar si la pieza que se desea ingresar, existe ya en la base de datos
+        // Devuelve "ok" si no se encuentra.
+        // Devuelve el número de le pieza, si se encuentra
+
+        String resultado = "ok";
+        con = cn.Conexion();
+        try {
+            String sql = "SELECT pieza FROM tarjetas WHERE pieza IN (";
+            for (int i = 0; i < piezas.size(); i++) {
+                if (i > 0) {
+                    sql += ",";
+                }
+                sql += "?";
+            }
+            sql += ")";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                resultado = rs.getString("pieza");
+                System.out.println("Valor coincidente encontrado: " + resultado);
+                cn.Desconectar();
+                return resultado;
+            }
+        } catch (Exception e) {
+            System.out.println("Error en la búsqueda de pieza");
+            System.out.println(e.toString());
+            resultado = "error";
+        }
+        cn.Desconectar();
+        return resultado;
+    }
+
     public String buscar(String cuenta) {
 
         String resultado = "";
-        try {            
-            con = cn.Conexion();            
+        try {
+            con = cn.Conexion();
             ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and (estado=1 or estado=5)");
             ps.setInt(1, Integer.parseInt(cuenta));
             rs = ps.executeQuery();
@@ -122,19 +156,15 @@ public class TarjetaDAO {
 
     public String buscar2(String cuenta, String estado, String atributo) {
         String resultado = "";
-        // System.out.println("Buscando...");
-        // System.out.println("Cliente:" +cuenta);
-        // System.out.println("Estado:" +estado);
-        // System.out.println("Atributo:" +atributo);
-        try {            
+        try {
             con = cn.Conexion();
-            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and estado="+estado);
+            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and estado=" + estado);
             ps.setInt(1, Integer.parseInt(cuenta));
             rs = ps.executeQuery();
 
             if (rs.next()) {
                 resultado = rs.getString(atributo);
-                System.out.println("Resultado obtenido: "+resultado);
+                System.out.println("Resultado obtenido: " + resultado);
             }
 
         } catch (Exception e) {
@@ -144,10 +174,10 @@ public class TarjetaDAO {
         cn.Desconectar();
         return resultado;
     }
-    
+
     public String buscar(String cuenta, String estado, String correo) {
-        String resultado = "";        
-        try {            
+        String resultado = "";
+        try {
             con = cn.Conexion();
             ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=? and estado=? and ubicacion=?");
             ps.setInt(1, Integer.parseInt(cuenta));
@@ -157,7 +187,7 @@ public class TarjetaDAO {
 
             if (rs.next()) {
                 resultado = "encontrado";
-                System.out.println("Se encontró la tarjeta "+cuenta+" en distribución para el correo "+correo);
+                System.out.println("Se encontró la tarjeta " + cuenta + " en distribución para el correo " + correo);
             }
 
         } catch (Exception e) {
@@ -167,10 +197,10 @@ public class TarjetaDAO {
         cn.Desconectar();
         return resultado;
     }
-    
+
     public String buscar3(String cuenta, String atributo) {
-        String resultado = "";        
-        try {            
+        String resultado = "";
+        try {
             con = cn.Conexion();
             ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=?");
             ps.setInt(1, Integer.parseInt(cuenta));
@@ -190,21 +220,28 @@ public class TarjetaDAO {
     }
 
     public List<Tarjeta> filtrar(String cuenta, String estado, String ubicacion, String desde, String hasta) {
-    
+
         // Devuelve la lista de tarjetas filtrada en el arraylist list
         String select = "SELECT * FROM vista_tarjetas WHERE ";
         String buscarCuenta = (cuenta.isEmpty()) ? "" : "cliente = " + cuenta + " AND ";
         String buscarEstado = (estado.isEmpty()) ? "" : "estado_id = " + estado + " AND ";
         String buscarUbicacion = (ubicacion.isEmpty()) ? "" : "ubicacion_id = " + ubicacion + " AND ";
         String buscarFecha = "";
-        if (desde==null) {
-            if (!(hasta==null)) buscarFecha = "fecha_estado < '"+ hasta + "'";
+        if (desde == null) {
+            if (!(hasta == null)) {
+                buscarFecha = "fecha_estado < '" + hasta + "'";
+            }
         } else {
-            if (hasta==null) buscarFecha = "fecha_estado > '"+ desde + "'";
-            else buscarFecha = "fecha_estado BETWEEN '"+ desde + "' AND '"+ hasta+ "'";
+            if (hasta == null) {
+                buscarFecha = "fecha_estado > '" + desde + "'";
+            } else {
+                buscarFecha = "fecha_estado BETWEEN '" + desde + "' AND '" + hasta + "'";
+            }
         }
         String sql = select + buscarCuenta + buscarEstado + buscarUbicacion + buscarFecha;
-        if (sql.endsWith("AND ")) sql = sql.substring(0, sql.length() -4);
+        if (sql.endsWith("AND ")) {
+            sql = sql.substring(0, sql.length() - 4);
+        }
         System.out.println(sql);
         List<Tarjeta> lista = new ArrayList<>();
         try {
@@ -246,5 +283,5 @@ public class TarjetaDAO {
         cn.Desconectar();
         return lista;
     }
-    
+
 }

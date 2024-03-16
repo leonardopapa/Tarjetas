@@ -15,14 +15,16 @@ public class MovimientoDAO {
     ResultSet rs;
 
     public boolean agregarNuevo(Movimiento movimiento) {
+        // Agregar una nueva pieza (se supone que en estado impresa)
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, OPERADOR) VALUES(?,?, 1, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, PIEZA, ESTADO, OPERADOR) VALUES(?,?, 1, ?);";
         try {
             ps = con.prepareStatement(sql);
             ps.setDate(1, movimiento.getFecha());
             ps.setInt(2, movimiento.getCliente());
-            ps.setInt(3, movimiento.getOperador().getId());
+            ps.setInt(3, movimiento.getPieza());
+            ps.setInt(4, movimiento.getOperador().getId());
             resultado = ps.execute();
             System.out.println("Resultado movimiento:" + resultado);
         } catch (Exception e) {
@@ -35,6 +37,7 @@ public class MovimientoDAO {
     }
 
     public boolean agregarEnviar(Movimiento movimiento) {
+        // Agregar un movimiento "en distribución"
         con = cn.Conexion();
         boolean resultado = false;
         String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO) VALUES(?,?, ?, ?, ?, ?);";
@@ -65,15 +68,15 @@ public class MovimientoDAO {
         boolean resultado = false;
         String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, MOTIVO, OPERADOR,DOCUMENTO) VALUES(?,?, ?, ?, ?, ?, ?);";
 
-            System.out.println("Movimiento a agregar:");
-            System.out.println("Fecha:" + movimiento.getFecha());
-            System.out.println("Cuenta: "+movimiento.getCliente());
-            System.out.println("Movimiento:" + movimiento.getMovimiento().getId());
-            System.out.println("Ubicacion:" + movimiento.getUbicacion().getId());
-            System.out.println("Motivo: " + movimiento.getMotivo().getId());
-            System.out.println("Operador: " + movimiento.getOperador().getId());
-            System.out.println("Documento: " + movimiento.getDocumento());
-        
+        System.out.println("Movimiento a agregar:");
+        System.out.println("Fecha:" + movimiento.getFecha());
+        System.out.println("Cuenta: " + movimiento.getCliente());
+        System.out.println("Movimiento:" + movimiento.getMovimiento().getId());
+        System.out.println("Ubicacion:" + movimiento.getUbicacion().getId());
+        System.out.println("Motivo: " + movimiento.getMotivo().getId());
+        System.out.println("Operador: " + movimiento.getOperador().getId());
+        System.out.println("Documento: " + movimiento.getDocumento());
+
         try {
             ps = con.prepareStatement(sql);
             ps.setDate(1, movimiento.getFecha());
@@ -84,7 +87,7 @@ public class MovimientoDAO {
             ps.setInt(6, movimiento.getOperador().getId());
             ps.setString(7, movimiento.getDocumento());
             int filasAfectadas = ps.executeUpdate();
-            resultado = (filasAfectadas > 0);            
+            resultado = (filasAfectadas > 0);
             System.out.println("Resultado movimiento:" + resultado);
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -92,7 +95,7 @@ public class MovimientoDAO {
             return resultado;
         } finally {
             cn.Desconectar();
-        }        
+        }
         return resultado;
     }
 
@@ -103,12 +106,12 @@ public class MovimientoDAO {
         String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO) VALUES(?,?, ?, ?, ?, ?);";
 
         System.out.println("Movimiento a agregar:");
-            System.out.println(movimiento.getFecha());
-            System.out.println(movimiento.getCliente());
-            System.out.println(movimiento.getMovimiento().getId());
-            System.out.println(movimiento.getUbicacion().getId());            
-            System.out.println(movimiento.getOperador().getId());
-            System.out.println(movimiento.getDocumento());
+        System.out.println(movimiento.getFecha());
+        System.out.println(movimiento.getCliente());
+        System.out.println(movimiento.getMovimiento().getId());
+        System.out.println(movimiento.getUbicacion().getId());
+        System.out.println(movimiento.getOperador().getId());
+        System.out.println(movimiento.getDocumento());
 
         try {
             ps = con.prepareStatement(sql);
@@ -119,7 +122,7 @@ public class MovimientoDAO {
             ps.setInt(5, movimiento.getOperador().getId());
             ps.setString(6, movimiento.getDocumento());
             int filasAfectadas = ps.executeUpdate();
-            resultado = (filasAfectadas > 0);   
+            resultado = (filasAfectadas > 0);
             System.out.println("Resultado movimiento:" + resultado);
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -127,21 +130,23 @@ public class MovimientoDAO {
             return resultado;
         } finally {
             cn.Desconectar();
-        }        
+        }
         return resultado;
     }
-    
-    public boolean agregarCambiar(Movimiento movimiento) {         
+
+    public boolean agregarCambiar(Movimiento movimiento) {
+        // Modifica el estado de una pieza
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR) VALUES(?,?, ?, ?, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, PIEZA, ESTADO, UBICACION, OPERADOR) VALUES(?,?, ?, ?, ?);";
 
         System.out.println("Movimiento a agregar:");
-            System.out.println(movimiento.getFecha());
-            System.out.println(movimiento.getCliente());
-            System.out.println(movimiento.getMovimiento().getId());
-            System.out.println(movimiento.getUbicacion().getId());            
-            System.out.println(movimiento.getOperador().getId());
+        System.out.println(movimiento.getFecha());
+        System.out.println(movimiento.getCliente());
+        System.out.println(movimiento.getPieza());
+        System.out.println(movimiento.getMovimiento().getId());
+        System.out.println(movimiento.getUbicacion().getId());
+        System.out.println(movimiento.getOperador().getId());
 
         try {
             ps = con.prepareStatement(sql);
@@ -151,7 +156,7 @@ public class MovimientoDAO {
             ps.setInt(4, movimiento.getUbicacion().getId());
             ps.setInt(5, movimiento.getOperador().getId());
             int filasAfectadas = ps.executeUpdate();
-            resultado = (filasAfectadas > 0);   
+            resultado = (filasAfectadas > 0);
             System.out.println("Resultado movimiento:" + resultado);
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -159,7 +164,7 @@ public class MovimientoDAO {
             return resultado;
         } finally {
             cn.Desconectar();
-        }        
+        }
         return resultado;
     }
 
@@ -177,20 +182,21 @@ public class MovimientoDAO {
                 Motivo motivo = new Motivo();
                 Ubicacion ubicacion = new Ubicacion();
                 Operador operador = new Operador();
+                operador.setNombre(rs.getString("operador"));
+                movimiento.setOperador(operador);
+                movimiento.setDocumento(rs.getString("documento"));
+                if (movimiento.getDocumento()==null) movimiento.setDocumento("");
                 movimiento.setCliente(rs.getInt("cuenta"));
+                movimiento.setPieza(rs.getInt("pieza"));
                 movimiento.setFecha(rs.getDate("fecha"));
                 estado.setNombre(rs.getString("estado"));
                 movimiento.setMovimiento(estado);
                 motivo.setNombre(rs.getString("motivo"));
-                if (motivo.getNombre() == null) {
-                    motivo.setNombre("");
-                }
+                if (motivo.getNombre() == null) motivo.setNombre("");                
                 movimiento.setMotivo(motivo);
                 ubicacion.setNombre(rs.getString("ubicacion"));
-                if (ubicacion.getNombre() == null) {
-                    ubicacion.setNombre("");
-                }
-                movimiento.setUbicacion(ubicacion);
+                if (ubicacion.getNombre() == null) ubicacion.setNombre("");
+                movimiento.setUbicacion(ubicacion);                
                 lista.add(movimiento);
             }
 

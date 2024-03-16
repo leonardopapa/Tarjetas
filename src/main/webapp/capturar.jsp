@@ -27,6 +27,19 @@
 
             <section class="main">
 
+                <%
+                    String resultado = (String) request.getAttribute("resultado");
+                    String ccuentas = (String) request.getAttribute("ccuentas");
+                    String cantidad = (String) request.getAttribute("cantidad");
+                    if (!resultado.isEmpty()) {
+                %>
+                    <script>
+                        alert(resultado);
+                    </script>
+                <%                
+                    }
+                %>
+
                 <div class="card" style="margin:20px">
                     <div class="card-body">
                         <h5 class="card-title">Capturar Tarjetas</h5>
@@ -46,6 +59,13 @@
                                     </div>
 
                                     <div class="card-body">
+
+                                        <div class="row">
+                                            <label for="inputCuenta" class="col-form-label">Pieza:</label>
+                                            <div class="col">
+                                                <input type="text" class="form-control" id="inputPieza" name="inputPieza">
+                                            </div>
+                                        </div>
 
                                         <div class="row">
                                             <label for="inputCuenta" class="col-form-label">Cuenta:</label>
@@ -76,7 +96,7 @@
                                         <table id="tblTarjetas" class="table" style="width:100%">
                                             <thead>
                                                 <tr>
-
+                                                    <th>Pieza</th>
                                                     <th>Cuenta</th>
                                                     <th>Fecha de Emisión</th>
                                                     <th>Acciones</th>
@@ -99,24 +119,22 @@
                                 </form>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </section>
-
         </div>
 
         <script>
 
             function agregarFila() {
                 // Obtener los valores de los input
+                var pieza = document.getElementById("inputPieza").value;
                 var cuenta = document.getElementById("inputCuenta").value;
                 var fecha = document.getElementById("inputFecha").value;
 
                 // Validar que los campos no estén vacíos
-                if (cuenta === '' || fecha === '') {
-                    alert('Por favor, ingrese una cuenta.');
+                if (cuenta === '' || fecha === '' || pieza === '') {
+                    alert('Debe completar los campos Pieza, Cuenta y Fecha.');
                     return;
                 }
 
@@ -154,26 +172,29 @@
                 fila.id = "fila" + cuenta;
 
                 // Insertar celdas con los valores de los input
+
+                var celdaPieza = fila.insertCell(0);
+                celdaPieza.innerHTML = '<input type="text" class="form-control-plaintext" name="pieza' + pieza + '" value="' + pieza + '" readonly>';
+
                 var celdaCuenta = fila.insertCell(0);
                 // celdaCuenta.innerHTML = cuenta;
-                celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
+                celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + pieza + '" value="' + pieza + '" readonly>';
 
                 var celdaFecha = fila.insertCell(1);
                 var fechaFormateada = new (Date);
                 fechaFormateada = formatearFecha(fecha);
-                // celdaFecha.innerHTML = fechaFormateada;
-                celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + cuenta + '" value="' + fechaFormateada + '" readonly>';
+                celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + pieza + '" value="' + fechaFormateada + '" readonly>';
 
                 // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
                 var celdaEliminar = fila.insertCell(2);
-                celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
+                celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + pieza + ')"><i class="fas fa-trash-alt"></i></button>';
 
                 // Limpiar los valores de los input
+                document.getElementById("inputPieza").value = '';
                 document.getElementById("inputCuenta").value = '';
                 document.getElementById("inputFecha").value = '';
-                var enfocar = document.getElementById("inputCuenta");
+                var enfocar = document.getElementById("inputPieza");
                 enfocar.focus();
-
             }
 
             function formatearFecha(fecha) {
@@ -188,9 +209,9 @@
             }
 
             function eliminarFila(indiceFila) {
-                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta "+indiceFila+"?");
+                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta " + indiceFila + "?");
                 if (confirmacion) {
-                    var row = document.getElementById("fila"+indiceFila);
+                    var row = document.getElementById("fila" + indiceFila);
                     row.remove();
                 }
             }

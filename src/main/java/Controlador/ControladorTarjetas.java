@@ -44,145 +44,107 @@ public class ControladorTarjetas extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        PrintWriter out = response.getWriter();
         String accion = "";
-
+        
         // Obtener los parámetros del formulario
         Enumeration<String> parametros = request.getParameterNames();
 
         // Arrays para almacenar cuentas, fechas, motivos y estados
+        List<String> piezas = new ArrayList();
+        List<String> cuentas = new ArrayList();
+        List<String> fechas = new ArrayList();
+        List<String> motivos = new ArrayList();
+        List<String> estados = new ArrayList();
+        
+        /*
+        String[] piezas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
         String[] cuentas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
         String[] fechas = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
         String[] motivos = new String[10];  // Innecesario, movido a ControladorRemito
         String[] estados = new String[10];  // Innecesario, movido a ControladorRemito
-
-        int indiceCuentas = 0;
-        int indiceFechas = 0;
+        */
 
         // Procesar los parámetros
         while (parametros.hasMoreElements()) {
             String parametro = parametros.nextElement();
 
             // Verificar si el parámetro es de tipo "cuenta", "fecha", "accion, "motivo" o "resultado"
-            if (parametro.startsWith("cuenta")) {
-                cuentas[indiceCuentas++] = request.getParameter(parametro);
+            if (parametro.startsWith("pieza")) {
+                piezas.add(request.getParameter(parametro));
+            } else if (parametro.startsWith("cuenta")) {
+                cuentas.add(request.getParameter(parametro));
             } else if (parametro.startsWith("fecha")) {
                 String fechaFormateada;
                 try {
                     fechaFormateada = convertirFecha(request.getParameter(parametro));
-                    fechas[indiceFechas++] = fechaFormateada;
+                    fechas.add(fechaFormateada);
                 } catch (Exception e) {
+                    System.out.println("Error en la conversión de fechas");
                     System.out.println(e.getMessage());
                 }
             } else if (parametro.startsWith("accion")) {
                 accion = request.getParameter("accion");
             } else if (parametro.startsWith("motivo")) {
-                motivos[indiceCuentas - 1] = request.getParameter(parametro);
+                motivos.add(request.getParameter(parametro));
             } else if (parametro.startsWith("resultado")) {
-                estados[indiceCuentas - 1] = request.getParameter(parametro);
+                estados.add(request.getParameter(parametro));
             }
         }
 
         //Mostrar los resultados
         /*
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>Resultado</title>");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<h2>Cuentas:</h2>");
-        out.println("<ul>");
-        
+        System.out.println("Datos recibidos:");        
         for (int i = 0; i < indiceCuentas; i++) {
-            out.println("<li> " + i + " - Cuenta: " + cuentas[i] + " // Fecha: " + fechas[i] + " // Estado: " + estados[i] + " // Motivo:" + motivos[i] + "</li>");
+            System.out.println( i + " - Cuenta: " + cuentas[i] + " // Pieza: " + piezas[i]+ " // Fecha: " + fechas[i] + " // Estado: " + estados[i] + " // Motivo:" + motivos[i] );
         }
-
-        
-        out.println("</ul>");
-        out.println("Cantidad=" + indiceCuentas);
+        System.out.println("Cantidad=" + indiceCuentas);
          */
+        
         switch (accion) {
             case "capturar":
 
                 int exitos = 0;
                 int fracasos = 0;
 
-                // Iterar sobre los datos y guardarlos en la base de datos
-                for (int i = 0; i < indiceCuentas; i++) {
-                    out.println("<br> Indice:" + i);
-                    Movimiento movimiento = new Movimiento();
-                    Estado estado = new Estado();
-                    estado.setId(1); // Impresa
-                    movimiento.setMovimiento(estado);
-                    Operador operador = new Operador();
-                    operador.setId(11); // Operador ficticio
-                    MovimientoDAO mdao = new MovimientoDAO();
-                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
-                    movimiento.setFecha(Date.valueOf(fechas[i]));
-                    movimiento.setOperador(operador);
-                    boolean resultado = mdao.agregarNuevo(movimiento);
-                    if (resultado) {
-                        exitos++;
-
-                    } else {
-                        fracasos++;
+                // Verificar que no haya piezas duplicadas
+                TarjetaDAO td = new TarjetaDAO();
+                String duplicados = td.buscar(piezas);
+                String result = "";
+                if (duplicados.equalsIgnoreCase("ok")) {
+                    
+                    // Iterar sobre los datos y guardarlos en la base de datos
+                    for (int i = 0; i < piezas.size(); i++) {                        
+                        Movimiento movimiento = new Movimiento();
+                        Estado estado = new Estado();
+                        estado.setId(1); // Impresa
+                        movimiento.setMovimiento(estado);
+                        Operador operador = new Operador();
+                        operador.setId(11); // Operador ficticio
+                        MovimientoDAO mdao = new MovimientoDAO();
+                        movimiento.setCliente(Integer.parseInt(cuentas.get(i)));
+                        movimiento.setPieza(Integer.parseInt(piezas.get(i)));
+                        movimiento.setFecha(Date.valueOf(fechas.get(i)));
+                        movimiento.setOperador(operador);
+                        boolean resultado = mdao.agregarNuevo(movimiento);
+                        if (resultado) {
+                            exitos++;
+                        } else {
+                            fracasos++;
+                        }
                     }
+
+                    System.out.println("Resultados de la captura de tarjetas:");
+                    System.out.println("Exitos=" + exitos);
+                    System.out.println("Fracasos=" + fracasos);
+
+                    result = fracasos == 0 ? "Se grabaron con éxito " + exitos + " piezas" : "Se grabaron con éxito " + exitos + "piezas y fallaron " + fracasos;
+
+                } else {
+                    result = "La pieza " + result + " se encuentra duplicada. No se grabaron los cambios";
                 }
-                request.setAttribute("exitos", exitos);
-                request.setAttribute("fracasos", fracasos);
-                /*
-                out.println("<br> Exitos=" + exitos);
-                out.println("<br> Fracasos=" + fracasos);
-                out.println("</body>");
-                out.println("</html>");
-                 */
 
-                // out.println("<script>alert('Datos grabados');</script>");
-                request.getRequestDispatcher("Controlador2").forward(request, response);
-                break;
-
-            case "enviar":
-
-                String correo = request.getParameter("correo");
-                String fechaEnvio = request.getParameter("fenvio");
-                out.println("Correo: " + correo);
-                out.println("fechaEnvio: " + fechaEnvio);
-
-                // Iterar sobre los datos y guardarlos en la base de datos
-                boolean resultado = false;
-                for (int i = 0; i < indiceCuentas; i++) {
-                    // out.println("Indice:" + i);
-                    Movimiento movimiento = new Movimiento();
-                    Estado estado = new Estado();
-                    estado.setId(2); // En Distribución
-                    movimiento.setMovimiento(estado);
-                    Operador operador = new Operador();
-                    operador.setId(11); // Operador ficticio
-                    Ubicacion correo2 = new Ubicacion();
-                    correo2.setId(Integer.parseInt(correo));
-                    // out.println("Llegué hasta aqui 0");
-                    MovimientoDAO mdao = new MovimientoDAO();
-                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
-                    // out.println("Llegué hasta aqui 1");
-                    movimiento.setFecha(Date.valueOf(fechaEnvio));
-                    // out.println("Llegué hasta aqui 2");
-                    movimiento.setOperador(operador);
-                    // out.println("Llegué hasta aqui 3");
-                    movimiento.setUbicacion(correo2);
-                    // out.println("Llegué hasta aqui 4");
-                    resultado = mdao.agregarEnviar(movimiento);
-                }
-                request.setAttribute("resultado", resultado);
-                /*
-                out.println("<br> Exitos=" + exitos);
-                out.println("<br> Fracasos=" + fracasos);
-                out.println("</body>");
-                out.println("</html>");
-                 */
-
-                out.println("<script>alert('Datos grabados');</script>");
-
-                request.getRequestDispatcher("Controlador2").forward(request, response);
+                request.setAttribute("resultado", result);
+                request.getRequestDispatcher("capturar.jsp").forward(request, response);
                 break;
 
             case "consultar":
@@ -192,55 +154,7 @@ public class ControladorTarjetas extends HttpServlet {
                 List<Movimiento> lista = mdao.listar(cuenta);
                 request.setAttribute("mlista", lista);
                 request.setAttribute("cuentab", cuenta);
-                request.getRequestDispatcher("consultar2.jsp").forward(request, response);
-                break;
-
-            case "recibir":
-
-                out.println("RECIBIR");
-                String correo2 = request.getParameter("correo");
-                String fechaRendicion = request.getParameter("frend");
-                String nroRendicion = request.getParameter("nrend");
-                out.println("Correo: " + correo2);
-                out.println("Fecha de Rendición: " + fechaRendicion);
-                out.println("Numero de Rendicion: " + nroRendicion);
-
-                // Iterar sobre los datos y guardarlos en la base de datos
-                boolean resultado2 = false;
-                for (int i = 0; i < indiceCuentas; i++) {
-                    // out.println("Indice:" + i);
-                    Movimiento movimiento = new Movimiento();
-                    Estado estado = new Estado();
-                    estado.setId(Integer.parseInt(estados[i])); // Entregada o devuelta 
-                    movimiento.setMovimiento(estado);
-                    Operador operador = new Operador();
-                    operador.setId(11); // Operador ficticio
-                    Ubicacion correo3 = new Ubicacion();
-                    correo3.setId(Integer.parseInt(correo2));
-                    MovimientoDAO mdao3 = new MovimientoDAO();
-                    movimiento.setCliente(Integer.parseInt(cuentas[i]));
-                    movimiento.setFecha(Date.valueOf(fechaRendicion));
-                    movimiento.setOperador(operador);
-                    movimiento.setUbicacion(correo3);
-                    movimiento.setDocumento(nroRendicion);
-
-                    if (!(motivos[i].isEmpty())) {
-                        // out.println("Motivo no vacío:" + i);
-                        Motivo motivo = new Motivo();
-                        motivo.setId(Integer.parseInt(motivos[i]));
-                        movimiento.setMotivo(motivo);
-                        resultado2 = mdao3.agregarRecibir(movimiento);
-                    } else {
-                        // out.println("Motivo vacío:" + i);
-                        resultado2 = mdao3.agregarRecibir2(movimiento);
-                    }
-
-                }
-                request.setAttribute("resultado", resultado2);
-
-                out.println("<script>alert('Datos grabados');</script>");
-
-                request.getRequestDispatcher("Controlador2").forward(request, response);
+                request.getRequestDispatcher("consultar.jsp").forward(request, response);
                 break;
 
             case "reportes":
@@ -271,23 +185,23 @@ public class ControladorTarjetas extends HttpServlet {
                     columna1 = "estado";
                 } else if (reporte.equalsIgnoreCase("2")) //motivos de rechazo
                 {
-                    sql = (correo4 ==null || correo4.isEmpty()) ? "CALL motivos2(?,?)" : "CALL motivos(?,?,?)" ;
+                    sql = (correo4 == null || correo4.isEmpty()) ? "CALL motivos2(?,?)" : "CALL motivos(?,?,?)";
                     titulos.add("Motivo");
                     titulos.add("Cantidad");
                     columna1 = "causa";
                 } else if (reporte.equalsIgnoreCase("3")) //rapidez en la entrega
                 {
-                    sql = (correo4 ==null || correo4.isEmpty()) ? "CALL rapidez(?,?)" : "CALL rapidez-correo(?,?,?)" ;
+                    sql = (correo4 == null || correo4.isEmpty()) ? "CALL rapidez(?,?)" : "CALL rapidez-correo(?,?,?)";
                     titulos.add("Meses");
                     titulos.add("Piezas");
                     titulos.add("Días promedio");
                     columna1 = "mes";
                     columna2 = "total_piezas";
                     columna3 = "rapidez";
-                    
+
                 } else if (reporte.equalsIgnoreCase("4")) //efectividad de la entrega
                 {
-                    sql = (correo4 ==null || correo4.isEmpty()) ? "CALL efectiv(?,?)" : "CALL efectiv_correo(?,?,?)" ;
+                    sql = (correo4 == null || correo4.isEmpty()) ? "CALL efectiv(?,?)" : "CALL efectiv_correo(?,?,?)";
                     titulos.add("Meses");
                     titulos.add("Piezas");
                     titulos.add("Entregadas");
@@ -306,7 +220,9 @@ public class ControladorTarjetas extends HttpServlet {
                     ps = con.prepareStatement(sql);
                     ps.setDate(1, Date.valueOf(desde));
                     ps.setDate(2, Date.valueOf(hasta));
-                    if (!(correo4 ==null || correo4.isEmpty()) && !reporte.equalsIgnoreCase("1")) ps.setInt(3, Integer.valueOf(correo4));
+                    if (!(correo4 == null || correo4.isEmpty()) && !reporte.equalsIgnoreCase("1")) {
+                        ps.setInt(3, Integer.valueOf(correo4));
+                    }
                     rs = ps.executeQuery();
 
                     // Convertir el resultset a lista
@@ -364,7 +280,9 @@ public class ControladorTarjetas extends HttpServlet {
                     ps2 = con2.prepareStatement(sql2);
                     ps2.setDate(1, Date.valueOf(desde2));
                     ps2.setDate(2, Date.valueOf(hasta2));
-                    if (!(correo3.isEmpty())) ps2.setInt(3, Integer.valueOf(correo3));
+                    if (!(correo3.isEmpty())) {
+                        ps2.setInt(3, Integer.valueOf(correo3));
+                    }
                     rs2 = ps2.executeQuery();
                     while (rs2.next()) {
                         meses.add(rs2.getString("mes"));
@@ -383,7 +301,9 @@ public class ControladorTarjetas extends HttpServlet {
                     ps2 = con2.prepareStatement(sql2);
                     ps2.setDate(1, Date.valueOf(desde2));
                     ps2.setDate(2, Date.valueOf(hasta2));
-                    if (!(correo3.isEmpty())) ps2.setInt(3, Integer.valueOf(correo3));
+                    if (!(correo3.isEmpty())) {
+                        ps2.setInt(3, Integer.valueOf(correo3));
+                    }
                     rs2 = ps2.executeQuery();
                     while (rs2.next()) {
                         meses2.add(rs2.getString("mes"));
@@ -399,11 +319,11 @@ public class ControladorTarjetas extends HttpServlet {
                 String json2 = listToJSON(efectividad);
                 String json3 = listToJSON(meses2);
                 String json4 = listToJSON(rapidez);
-                
+
                 // Combininar los arreglos JSON en un único objeto JSON
                 String jsonResponse = String.format("{\"meses\":%s,\"efectividad\":%s,\"meses2\":%s,\"rapidez\":%s}",
                         json1, json2, json3, json4);
-                
+
                 // Set content type and write the JSON response
                 response.setContentType("application/json");
                 response.getWriter().write(jsonResponse);
@@ -431,20 +351,19 @@ public class ControladorTarjetas extends HttpServlet {
                 String jsonResponse2 = String.format("{\"resultado\":\"%s\",\"fechaEmision\":\"%s\",\"estado\":\"%s\",\"estadoid\":\"%s\"}",
                         resultado3, fechaEmision, estado, estadoId);
 
-                // Set content type and write the JSON response
+                // Devolver la respuesta en formato JSON al cliente
                 response.setContentType("application/json");
-                response.getWriter().write(jsonResponse2);
-                // request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+                response.getWriter().write(jsonResponse2);                
                 break;
 
             case "cambiar":
 
                 // Validar que todos los estados sean iguales
                 boolean cambioValido = true;
-                String estadoActual = estados[0];
+                String estadoActual = estados.get(0);
                 System.out.println("Estado actual: " + estadoActual);
-                for (int i = 1; i < indiceCuentas; i++) {
-                    if (!estados[i].equals(estadoActual)) {
+                for (int i = 1; i < piezas.size(); i++) {
+                    if (!estados.get(i).equals(estadoActual)) {
                         request.setAttribute("accion", "error");
                         request.setAttribute("error", "Los estados no son iguales");
                         System.out.println("Estados no son iguales");
@@ -484,9 +403,9 @@ public class ControladorTarjetas extends HttpServlet {
                         String fecha = request.getParameter("fcambio");
                         int exitos2 = 0;
                         int fracasos2 = 0;
-                        for (int i = 0; i < indiceCuentas; i++) {
+                        for (int i = 0; i < piezas.size(); i++) {
                             Movimiento m = new Movimiento();
-                            m.setCliente(Integer.parseInt(cuentas[i]));
+                            m.setCliente(Integer.parseInt(cuentas.get(i)));
                             m.setFecha(Date.valueOf(fecha));
                             Estado estado2 = new Estado();
                             estado2.setId(Integer.parseInt(nuevoEstado));
@@ -498,7 +417,7 @@ public class ControladorTarjetas extends HttpServlet {
                             operador.setId(11); // Operador ficticio                    
                             m.setOperador(operador);
                             MovimientoDAO mdao2 = new MovimientoDAO();
-                            resultado = mdao2.agregarCambiar(m);
+                            boolean resultado = mdao2.agregarCambiar(m);
                             if (resultado) {
                                 exitos2++;
                             } else {
@@ -514,7 +433,7 @@ public class ControladorTarjetas extends HttpServlet {
                 request.getRequestDispatcher("cambiar.jsp").forward(request, response);
 
             default:
-                out.println("No se especificó una acción válida");
+                System.out.println("No se especificó una acción válida");
                 break;
         }
     }

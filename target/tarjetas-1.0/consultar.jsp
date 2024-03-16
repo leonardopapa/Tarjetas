@@ -40,7 +40,7 @@
 
                                     <label for="inputCuenta" class="col-form-label">Cuenta:</label>
                                     <div class="col">
-                                        <input type="text" class="form-control" id="inputCuenta" name="bcuenta">
+                                        <input type="text" class="form-control" id="inputCuenta" name="bcuenta" value="${cuentab}">
                                     </div>
 
                                     <br>
@@ -60,19 +60,37 @@
                         <div class="card"> 
                             Movimientos  
 
+                            <%
+                                List<Movimiento> lista = (List<Movimiento>) request.getAttribute("mlista");
+                            %>
+
                             <table id=" tarjetas" class="table table-striped" style="width:100%">
                                 <thead>
                                     <tr>
-
                                         <th>Fecha</th>
-                                        <th>Movimiento</th>
+                                        <th>Pieza</th>
+                                        <th>Estado</th>
                                         <th>Ubicación</th>
                                         <th>Motivo</th>
-
+                                        <th>Operador</th>
+                                        <th>Documento</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-
+                                    <%
+                                        if (!(lista == null)) {
+                                            for (Movimiento movimiento : lista) {%>
+                                    <tr>                                        
+                                        <td><%= movimiento.getFecha()%></td>
+                                        <td><%= movimiento.getPieza()%></td>
+                                        <td><%= movimiento.getMovimiento().getNombre()%></td>
+                                        <td><%= movimiento.getUbicacion().getNombre()%></td>
+                                        <td><%= movimiento.getMotivo().getNombre()%></td>                                        
+                                        <td><%= movimiento.getOperador().getNombre()%></td>                                        
+                                        <td><a><a target="_blank" href="pdf/<%= movimiento.getDocumento()%>"><%= movimiento.getDocumento()%></a></td>
+                                    </tr>
+                                    <% }
+                                        }%>
                                 </tbody>
                             </table>
                         </div>
@@ -84,7 +102,7 @@
             </section>
 
         </div>
-        
+
         <script>
 
             function cancelar() {

@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Movimiento {
     
-    private int id,cliente;
+    private int id, cliente, pieza;
     private Date Fecha;
     private Estado movimiento;
     private Ubicacion ubicacion;
@@ -88,6 +88,19 @@ public class Movimiento {
 
     public void setDocumento(String documento) {
         this.documento = documento;
+    }
+
+    public int getPieza() {
+        return pieza;
+    }
+
+    public void setPieza(int pieza) {
+        this.pieza = pieza;
+    }
+
+    @Override
+    public String toString() {
+        return "Movimiento{" + "id=" + id + ", cliente=" + cliente + ", pieza=" + pieza + ", Fecha=" + Fecha + ", movimiento=" + movimiento + ", ubicacion=" + ubicacion + ", motivo=" + motivo + ", operador=" + operador + ", documento=" + documento + '}';
     }
     
     

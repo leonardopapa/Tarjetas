@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -29,7 +31,7 @@ public class ExportController2 extends HttpServlet {
         String estado = request.getParameter("selEstado");
         String ubicacion = request.getParameter("selUbicacion");
         String desde = request.getParameter("desde");
-        String hasta = request.getParameter("hasta");              
+        String hasta = request.getParameter("hasta");
 
         // Generar lista de tarjetas filtrada                                
         TarjetaDAO tdao = new TarjetaDAO();
@@ -49,43 +51,49 @@ public class ExportController2 extends HttpServlet {
                 break;
         }
         response.setHeader("Content-Disposition", "attachment; filename=piezas." + exportType.toLowerCase());
-
         Sheet sheet = workbook.createSheet("Hoja1");
-        
+
+        // Crear el formato de fecha
+        CellStyle dateStyle = workbook.createCellStyle();
+        CreationHelper creationHelper = workbook.getCreationHelper();
+        dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("dd/MM/yyyy"));
+
         // Crear las celdas de título
-            String [] titulos = {"Pieza", "Cuenta", "Fecha de Emisión", "Estado", "Fecha de Ultimo Estado", "Motivo", "Ubicacion"};
-            int rowNum = 0;
-            Row row = sheet.createRow(rowNum++);
-            Cell cell = null;
-            int cellNum = 0;            
-            for (String encabezados: titulos) {
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(encabezados);
-            }
-            
-            // Iterar sobre la lista de tarjetas y construir el Excel
-            for (Tarjeta pieza : listat) {
-                row = sheet.createRow(rowNum++);
-                cellNum = 0;                
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(pieza.getPieza());
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(pieza.getCliente());
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(pieza.getFechaEmision());
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(pieza.getEstado().getNombre());
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(pieza.getFechaEstado());
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(pieza.getMotivo().getNombre());
-                cell = row.createCell(cellNum++);
-                cell.setCellValue(pieza.getUbicacion().getNombre());
-                }
-            
+        String[] titulos = {"Pieza", "Cuenta", "Fecha de Emisión", "Estado", "Fecha de Ultimo Estado", "Motivo", "Ubicacion"};
+        int rowNum = 0;
+        Row row = sheet.createRow(rowNum++);
+        Cell cell = null;
+        int cellNum = 0;
+        for (String encabezados : titulos) {
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(encabezados);
+        }
+
+        // Iterar sobre la lista de tarjetas y construir el Excel
+        for (Tarjeta pieza : listat) {
+            row = sheet.createRow(rowNum++);
+            cellNum = 0;
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(pieza.getPieza());
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(pieza.getCliente());
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(pieza.getFechaEmision());
+            cell.setCellStyle(dateStyle);
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(pieza.getEstado().getNombre());
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(pieza.getFechaEstado());
+            cell.setCellStyle(dateStyle);
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(pieza.getMotivo().getNombre());
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(pieza.getUbicacion().getNombre());
+        }
+
         OutputStream out = response.getOutputStream();
         workbook.write(out);
         workbook.close();
     }
-    
+
 }

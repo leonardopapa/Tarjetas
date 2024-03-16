@@ -136,7 +136,12 @@
                                 <h5 class="card-title">Tarjetas</h5>
                             </div>
                             <div class="col col-auto">
-                                <button form="frmFiltros" onclick="exportar();">xls</button>                                
+
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                                    <button type="button" class="btn btn-outline-dark" form="frmFiltros" onclick="exportar();">xls</button>
+                                    <button type="button" class="btn btn-outline-dark" form="frmFiltros" onclick="exportar2();">xlsx</button>
+                                </div>
+                                                            
                             </div>
                         </div>
                         <hr>
@@ -174,10 +179,10 @@
                         <input type="hidden" form="frmFiltros" value="<%=tamanoSubLista%>" name="tamanoSubLista" />
 
                         <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="primero();">Primero</button>
-                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="anterior();">Anterior</button>
-                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="siguiente();">Siguiente</button>
-                            <button type="button" form="frmFiltros" class="btn btn-outline-danger" onclick="ultimo();">Ultimo</button>
+                            <button type="button" form="frmFiltros" class="btn btn-outline-dark" onclick="primero();">Primero</button>
+                            <button type="button" form="frmFiltros" class="btn btn-outline-dark" onclick="anterior();">Anterior</button>
+                            <button type="button" form="frmFiltros" class="btn btn-outline-dark" onclick="siguiente();">Siguiente</button>
+                            <button type="button" form="frmFiltros" class="btn btn-outline-dark" onclick="ultimo();">Ultimo</button>
                         </div>
 
                     </div>
@@ -237,10 +242,16 @@
                 formulario.action = "Controlador?accion=ultimo";
                 formulario.submit();
             }
-            
+
             function exportar() {
                 var formulario = document.getElementById("frmFiltros");
                 formulario.action = "ExportController2?exportType=XLS";
+                formulario.submit();
+            }
+            
+            function exportar2() {
+                var formulario = document.getElementById("frmFiltros");
+                formulario.action = "ExportController2?exportType=XLSX";
                 formulario.submit();
             }
 
