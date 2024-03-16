@@ -91,14 +91,21 @@ public class ControladorTarjetas extends HttpServlet {
             }
         }
 
-        //Mostrar los resultados
+        //Mostrar la cantidad de parámetros recibidos
+        System.out.println("Piezas:" + piezas.size());
+        System.out.println("Cuentas:" + cuentas.size());
+        System.out.println("Fechas:" + fechas.size());
+        
+        //Mostrar los parámetros recibidos
+        
         /*
+        
         System.out.println("Datos recibidos:");        
-        for (int i = 0; i < indiceCuentas; i++) {
-            System.out.println( i + " - Cuenta: " + cuentas[i] + " // Pieza: " + piezas[i]+ " // Fecha: " + fechas[i] + " // Estado: " + estados[i] + " // Motivo:" + motivos[i] );
+        for (int i = 0; i < piezas.size(); i++) {
+            System.out.println( i + " - Cuenta: " + cuentas.get(i) + " // Pieza: " + piezas.get(i)+ " // Fecha: " + fechas.get(i) + " // Estado: " + estados.get(i) + " // Motivo:" + motivos.get(i) );
         }
-        System.out.println("Cantidad=" + indiceCuentas);
-         */
+        System.out.println("Cantidad=" + piezas.size());
+        */
         
         switch (accion) {
             case "capturar":
@@ -113,6 +120,7 @@ public class ControladorTarjetas extends HttpServlet {
                 if (duplicados.equalsIgnoreCase("ok")) {
                     
                     // Iterar sobre los datos y guardarlos en la base de datos
+                    List<Movimiento> lista = new ArrayList<Movimiento>();
                     for (int i = 0; i < piezas.size(); i++) {                        
                         Movimiento movimiento = new Movimiento();
                         Estado estado = new Estado();
@@ -125,6 +133,7 @@ public class ControladorTarjetas extends HttpServlet {
                         movimiento.setPieza(Integer.parseInt(piezas.get(i)));
                         movimiento.setFecha(Date.valueOf(fechas.get(i)));
                         movimiento.setOperador(operador);
+                        lista.add(movimiento);
                         boolean resultado = mdao.agregarNuevo(movimiento);
                         if (resultado) {
                             exitos++;
@@ -132,17 +141,19 @@ public class ControladorTarjetas extends HttpServlet {
                             fracasos++;
                         }
                     }
+                    request.setAttribute("lista", lista);
 
                     System.out.println("Resultados de la captura de tarjetas:");
                     System.out.println("Exitos=" + exitos);
                     System.out.println("Fracasos=" + fracasos);
 
-                    result = fracasos == 0 ? "Se grabaron con éxito " + exitos + " piezas" : "Se grabaron con éxito " + exitos + "piezas y fallaron " + fracasos;
+                    result = fracasos == 0 ? "OK. "+ exitos + " piezas grabada/as con éxito" : "Se grabaron con éxito " + exitos + "piezas y fallaron " + fracasos;
 
                 } else {
                     result = "La pieza " + result + " se encuentra duplicada. No se grabaron los cambios";
                 }
-
+                
+                System.out.println("Resultado:" + result);
                 request.setAttribute("resultado", result);
                 request.getRequestDispatcher("capturar.jsp").forward(request, response);
                 break;

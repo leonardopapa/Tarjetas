@@ -1,3 +1,5 @@
+<%@page import="Modelo.Movimiento"%>
+<%@page import="java.util.List"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -29,14 +31,21 @@
 
                 <%
                     String resultado = (String) request.getAttribute("resultado");
-                    String ccuentas = (String) request.getAttribute("ccuentas");
-                    String cantidad = (String) request.getAttribute("cantidad");
-                    if (!resultado.isEmpty()) {
+                    List<Movimiento> lista = (List<Movimiento>) request.getAttribute("lista");
+
+                    if (!(resultado == null)) {
+                        System.out.println("Resultado recibido:" + resultado);
                 %>
-                    <script>
-                        alert(resultado);
-                    </script>
-                <%                
+                <script>                    
+                    alert("${resultado}");
+                </script>
+                <%
+                    if (resultado.startsWith("OK")) { %>
+                <script>
+                    window.location.href = "index.jsp";
+                </script>
+                <%
+                        }
                     }
                 %>
 
@@ -104,7 +113,14 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-
+                                                <% if (!(lista == null)) {
+                                                        for (Movimiento fila : lista) {
+                                                %>
+                                            <script>
+                                                crearFila("${fila.getPieza()}", "${fila.getCuenta()}", "${fila.getFecha()}");
+                                            </script>
+                                            <%}
+                                                }%>
                                             </tbody>
                                         </table>
 
@@ -112,9 +128,9 @@
                                     <br>
                                     <input type="hidden" name="accion" value="capturar">
 
-                                    <button type="submit" class="btn btn-danger" >Finalizar</button>
+                                    <button type="submit" class="btn btn-danger" >Capturar</button>
 
-                                    <button type="button" class="btn btn-danger" onclick="cancelar()">Cancelar</button>
+                                    <button type="button" class="btn btn-danger" onclick="cancelar()">Salir</button>
 
                                 </form>
                             </div>
@@ -167,26 +183,26 @@
                 var tabla = document.getElementById("tblTarjetas");
                 // Obtener la referencia al tbody
                 var tbody = tabla.getElementsByTagName("tbody")[0];
+
                 // Crear una nueva fila
                 var fila = tbody.insertRow();
-                fila.id = "fila" + cuenta;
+                fila.id = "fila" + pieza;
 
                 // Insertar celdas con los valores de los input
 
                 var celdaPieza = fila.insertCell(0);
                 celdaPieza.innerHTML = '<input type="text" class="form-control-plaintext" name="pieza' + pieza + '" value="' + pieza + '" readonly>';
 
-                var celdaCuenta = fila.insertCell(0);
-                // celdaCuenta.innerHTML = cuenta;
-                celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + pieza + '" value="' + pieza + '" readonly>';
+                var celdaCuenta = fila.insertCell(1);
+                celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + pieza + '" value="' + cuenta + '" readonly>';
 
-                var celdaFecha = fila.insertCell(1);
+                var celdaFecha = fila.insertCell(2);
                 var fechaFormateada = new (Date);
                 fechaFormateada = formatearFecha(fecha);
                 celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + pieza + '" value="' + fechaFormateada + '" readonly>';
 
                 // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
-                var celdaEliminar = fila.insertCell(2);
+                var celdaEliminar = fila.insertCell(3);
                 celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + pieza + ')"><i class="fas fa-trash-alt"></i></button>';
 
                 // Limpiar los valores de los input
@@ -195,6 +211,34 @@
                 document.getElementById("inputFecha").value = '';
                 var enfocar = document.getElementById("inputPieza");
                 enfocar.focus();
+            }
+
+            function crearFila(pieza, cuenta, fecha) {
+                // Obtener la referencia de la tabla
+                var tabla = document.getElementById("tblTarjetas");
+                // Obtener la referencia al tbody
+                var tbody = tabla.getElementsByTagName("tbody")[0];
+
+                // Crear una nueva fila
+                var fila = tbody.insertRow();
+                fila.id = "fila" + pieza;
+
+                // Insertar celdas con los valores de los input
+
+                var celdaPieza = fila.insertCell(0);
+                celdaPieza.innerHTML = '<input type="text" class="form-control-plaintext" name="pieza' + pieza + '" value="' + pieza + '" readonly>';
+
+                var celdaCuenta = fila.insertCell(1);
+                celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + pieza + '" value="' + cuenta + '" readonly>';
+
+                var celdaFecha = fila.insertCell(2);
+                var fechaFormateada = new (Date);
+                fechaFormateada = formatearFecha(fecha);
+                celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + pieza + '" value="' + fechaFormateada + '" readonly>';
+
+                // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
+                var celdaEliminar = fila.insertCell(3);
+                celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + pieza + ')"><i class="fas fa-trash-alt"></i></button>';
             }
 
             function formatearFecha(fecha) {
@@ -209,7 +253,7 @@
             }
 
             function eliminarFila(indiceFila) {
-                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta " + indiceFila + "?");
+                var confirmacion = confirm("¿Está seguro de que desea eliminar la pieza " + indiceFila + "?");
                 if (confirmacion) {
                     var row = document.getElementById("fila" + indiceFila);
                     row.remove();

@@ -15,17 +15,18 @@ public class MovimientoDAO {
     ResultSet rs;
 
     public boolean agregarNuevo(Movimiento movimiento) {
-        // Agregar una nueva pieza (se supone que en estado impresa)
+        // Agregar una nueva pieza en estado impresa
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, PIEZA, ESTADO, OPERADOR) VALUES(?,?, 1, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, PIEZA, ESTADO, OPERADOR) VALUES(?,?, ?, 1, ?);";
         try {
             ps = con.prepareStatement(sql);
             ps.setDate(1, movimiento.getFecha());
             ps.setInt(2, movimiento.getCliente());
             ps.setInt(3, movimiento.getPieza());
             ps.setInt(4, movimiento.getOperador().getId());
-            resultado = ps.execute();
+            int filasAfectadas = ps.executeUpdate();
+            resultado = filasAfectadas > 0;
             System.out.println("Resultado movimiento:" + resultado);
         } catch (Exception e) {
             System.out.println(e.toString());

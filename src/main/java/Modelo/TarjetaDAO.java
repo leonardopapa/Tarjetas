@@ -116,7 +116,15 @@ public class TarjetaDAO {
                 sql += "?";
             }
             sql += ")";
+            System.out.println("Verificando si la pieza se encuentra en la base de datos...");
+            System.out.println(sql);
             ps = con.prepareStatement(sql);
+            
+            // Establecer los valores de la lista como parámetros de la consulta preparada
+            for (int i = 0; i < piezas.size(); i++) {
+                ps.setString(i + 1, piezas.get(i));
+            }
+            
             rs = ps.executeQuery();
             if (rs.next()) {
                 resultado = rs.getString("pieza");
@@ -130,6 +138,8 @@ public class TarjetaDAO {
             resultado = "error";
         }
         cn.Desconectar();
+        
+        System.out.println("Resultado de la búsqueda de duplicados:" + resultado);
         return resultado;
     }
 
