@@ -47,7 +47,6 @@
                         %>
                         <script>
                             alert("<%=error%>");
-                            // window.location.href = "index.jsp";
                         </script>
                         <%
                                 }
@@ -56,9 +55,11 @@
 
                         <hr>
 
-                        <div class="row">
-                            <form action="ControladorTarjetas" method="post" id="frmCambiar">
-                                <div class="col">
+                        <form action="ControladorTarjetas" method="post" id="frmCambiar">
+
+                            <div class="row">
+
+                                <div class="col-4">
 
                                     <div class="card" >
 
@@ -66,19 +67,16 @@
 
                                             <div class="row">
                                                 <div class="col">
-                                                    <label for="inputFechaCambio" class="col-form-label">Fecha de nuevo estado:</label>
-                                                </div>
-                                                <div class="col">
+                                                    <label for="inputFechaCambio" class="col-form-label">Fecha de nuevo estado:</label>                                                
                                                     <input type="date" class="form-control" id="inputFechaCambio" name="fcambio">
                                                 </div>
-
                                             </div>
 
                                             <div class="row">
                                                 <div class="col">
+
                                                     <label for="selEstado" class="col-form-label">Nuevo Estado:</label>
-                                                </div>
-                                                <div class="col">
+
                                                     <select class="form-select" id="selEstado" name="selEstado">
                                                         <option selected>Seleccione el nuevo estado</option>
                                                         <option value="1">Impresa</option>
@@ -95,9 +93,9 @@
 
                                             <div class="row">
                                                 <div class="col">
+
                                                     <label for="selUbicacion" class="col-form-label">Nueva Ubicación:</label>
-                                                </div>
-                                                <div class="col">
+
                                                     <select class="form-select" id="selUbicacion" name="selUbicacion">
                                                         <option selected>Seleccione la nueva ubicación</option>
                                                         <option value="17">Tucuman</option>
@@ -118,27 +116,33 @@
 
                                             <div class="row">
                                                 <div class="col">
-                                                    <label for="inputCuenta" class="col-form-label">Cuenta:</label>
-                                                </div>
-                                                <div class="col">
-                                                    <input type="text" class="form-control" name="inputCuenta" id="inputCuenta" placeholder="Ingrese el número de cuenta">
+
+                                                    <label for="inputPieza" class="col-form-label">Pieza:</label>
+
+                                                    <input type="text" class="form-control" name="inputPieza" id="inputPieza" placeholder="Ingrese el número de pieza">
                                                 </div>
                                             </div>
                                             <br>
-                                            <button type="button" class="btn btn-danger" onclick="agregarFila();">Agregar</button>
-
+                                            <div class="row">
+                                                <div class="col">
+                                                    <button type="button" class="btn btn-danger" onclick="agregarFila();">Agregar</button>
+                                                </div>
+                                            </div>
                                         </div> <!-- card body -->
                                     </div> <!-- card -->
                                 </div> <!-- col -->
+
                                 <div class="col">
                                     <div class="card"">                                
                                         <table id="tblTarjetas" class="table table-striped" style="width:100%">
                                             <thead>
                                                 <tr>
+                                                    <th>Pieza</th>
                                                     <th>Cuenta</th>
                                                     <th>Fecha de Emisión</th>
-                                                    <th> </th>
+                                                    <th></th>    
                                                     <th>Estado</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -150,8 +154,9 @@
                                     <button type="button" class="btn btn-danger" onclick="cambiarEstado();">Confirmar</button>
                                     <button type="button" class="btn btn-danger" onclick="cancelar();">Cancelar</button>
                                 </div> <!-- col -->
-                            </form>
-                        </div> <!-- row -->
+
+                            </div> <!-- row -->
+                        </form>
                     </div> <!-- card body -->
                 </div> <!-- card -->
             </section> <!-- main -->
@@ -200,23 +205,16 @@
 
             function agregarFila() {
                 // Obtener los valores de los input
-                var cuenta = document.getElementById("inputCuenta").value;
+                var cuenta = document.getElementById("inputPieza").value;
+                var pieza = document.getElementById("inputPieza").value;
 
                 // Validar que los campos no estén vacíos
-                if (cuenta === '') {
-                    alert('Por favor, ingrese una cuenta.');
+                if (pieza === '') {
+                    alert('Por favor, ingrese una pieza.');
                     return;
                 }
 
-                // Validar el formato de la cuenta(número de 6 dígitos)
-                var cuentaRegex = /^\d{6}$/;
-
-                if (!cuenta.match(cuentaRegex)) {
-                    alert('Número de cuenta no válido. Debe ser un número de 6 dígitos.');
-                    return;
-                }
-
-                // Recuperar los datos de la cuenta (fecha emisión y estado)
+                // Recuperar los datos de la pieza (cuenta, fecha de emisión y estado)
 
                 var fechaEmision = "";
                 var estado = "";
@@ -231,14 +229,14 @@
                             var response = xhr.responseText;
                             console.log(response);
 
-                            var responseObject = JSON.parse(xhr.responseText);
-                            // var jsonArray = xhr.responseText;
-                            resultado = responseObject.resultado;
-                            fechaEmision = responseObject.fechaEmision;
-                            estado = responseObject.estado;
-                            estadoid = responseObject.estadoid;
+                            var responseObject = JSON.parse(xhr.responseText);                            
+                            var resultado = responseObject.resultado;
+                            var fechaEmision = responseObject.fechaEmision;
+                            var estado = responseObject.estado;
+                            var estadoid = responseObject.estadoid;
+                            var cuenta = responseObject.cuenta;
                             if (resultado === "no encontrado") {
-                                alert("No se encuentra la cuenta");
+                                alert("No se encuentra la pieza");
                                 return;
                             }
 
@@ -248,31 +246,34 @@
                             var tbody = tabla.getElementsByTagName("tbody")[0];
                             // Crear una nueva fila
                             var fila = tbody.insertRow();
-                            fila.id = "fila" + cuenta;
+                            fila.id = "fila" + pieza;
 
                             // Insertar celdas con los valores de los input
-                            var celdaCuenta = fila.insertCell(0);
-                            // celdaCuenta.innerHTML = cuenta;
-                            celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
+                            
+                            var celdaPieza = fila.insertCell(0);                            
+                            celdaPieza.innerHTML = '<input type="text" class="form-control-plaintext" name="pieza' + pieza + '" value="' + pieza + '" readonly>';                            
+                            
+                            var celdaCuenta = fila.insertCell(1);                            
+                            celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + pieza + '" value="' + cuenta + '" readonly>';
 
-                            var celdaFecha = fila.insertCell(1);
+                            var celdaFecha = fila.insertCell(2);
                             var fechaFormateada = new (Date);
                             fechaFormateada = formatearFecha2(fechaEmision);
-                            celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + cuenta + '" value="' + fechaFormateada + '" readonly>';
+                            celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + pieza + '" value="' + fechaFormateada + '" readonly>';
 
-                            var celdaEstadoId = fila.insertCell(2);
-                            celdaEstadoId.innerHTML = '<input type="hidden" name="resultado' + cuenta + '" value="' + estadoid + '">';
-                            
-                            var celdaEstado = fila.insertCell(3);
-                            celdaEstado.innerHTML = '<input type="text" class="form-control-plaintext" ' + cuenta + '" value="' + estado + '" readonly>';
+                            var celdaEstadoId = fila.insertCell(3);
+                            celdaEstadoId.innerHTML = '<input type="hidden" name="resultado' + pieza + '" value="' + estadoid + '">';
+
+                            var celdaEstado = fila.insertCell(4);
+                            celdaEstado.innerHTML = '<input type="text" class="form-control-plaintext" ' + pieza + '" value="' + estado + '" readonly>';
 
                             // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
-                            var celdaEliminar = fila.insertCell(4);
-                            celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila2(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
+                            var celdaEliminar = fila.insertCell(5);
+                            celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila2(' + pieza + ')"><i class="fas fa-trash-alt"></i></button>';
 
                             // Limpiar los valores de los input
-                            document.getElementById("inputCuenta").value = '';
-                            var enfocar = document.getElementById("inputCuenta");
+                            document.getElementById("inputPieza").value = '';
+                            var enfocar = document.getElementById("inputPieza");
                             enfocar.focus();
 
                         } else {
@@ -281,7 +282,7 @@
                     }
                 };
 
-                var url = 'ControladorTarjetas?cuenta=' + cuenta + '&accion=buscarCambiar';
+                var url = 'ControladorTarjetas?pieza=' + cuenta + '&accion=buscarCambiar';
                 xhr.open('post', url);
                 xhr.send();
             }

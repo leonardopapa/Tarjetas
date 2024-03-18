@@ -326,26 +326,22 @@ public class ControladorTarjetas extends HttpServlet {
                 break;
 
             case "buscarCambiar":
-                String cuenta1 = request.getParameter("cuenta");
+                String pieza = request.getParameter("pieza");
                 String resultado3;
-                TarjetaDAO tdao = new TarjetaDAO();
-                //out.println("Cuenta:"+cuenta1);
-                String fechaEmision = tdao.buscar3(cuenta1, "fecha_emision");
-                //out.println("Fecha Emisión:"+fechaEmision);
-                String estadoId = tdao.buscar3(cuenta1, "estado");
-                //out.println("Estado Id:"+estadoId);
+                TarjetaDAO tdao = new TarjetaDAO();                
+                String fechaEmision = tdao.buscar(pieza, "fecha_emision");                
+                String estadoId = tdao.buscar(pieza, "estado");
+                String cuenta1 = tdao.buscar(pieza, "cliente");                
                 EstadoDAO estDAO = new EstadoDAO();
-                String estado = estDAO.buscar(estadoId);
-                //out.println("Estado Nombre:"+estado);                
-                if (fechaEmision.isEmpty() || estadoId.isEmpty()) {
+                String estado = estDAO.buscar(estadoId);                         
+                if (cuenta1.isEmpty()) {
                     resultado3 = "no encontrado";
                 } else {
                     resultado3 = "encontrado";
                 }
-
-                // Combinar las 3 respuestas en un único objeto JSON
-                String jsonResponse2 = String.format("{\"resultado\":\"%s\",\"fechaEmision\":\"%s\",\"estado\":\"%s\",\"estadoid\":\"%s\"}",
-                        resultado3, fechaEmision, estado, estadoId);
+                // Combinar las respuestas en un único objeto JSON
+                String jsonResponse2 = String.format("{\"resultado\":\"%s\",\"cuenta\":\"%s\",\"fechaEmision\":\"%s\",\"estado\":\"%s\",\"estadoid\":\"%s\"}",
+                        resultado3, cuenta1, fechaEmision, estado, estadoId);
 
                 // Devolver la respuesta en formato JSON al cliente
                 response.setContentType("application/json");
@@ -401,6 +397,7 @@ public class ControladorTarjetas extends HttpServlet {
                         int fracasos2 = 0;
                         for (int i = 0; i < piezas.size(); i++) {
                             Movimiento m = new Movimiento();
+                            m.setPieza(Integer.parseInt(piezas.get(i)));
                             m.setCliente(Integer.parseInt(cuentas.get(i)));
                             m.setFecha(Date.valueOf(fecha));
                             Estado estado2 = new Estado();

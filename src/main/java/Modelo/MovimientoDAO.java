@@ -142,7 +142,7 @@ public class MovimientoDAO {
         // Modifica el estado de una pieza
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, PIEZA, ESTADO, UBICACION, OPERADOR) VALUES(?,?, ?, ?, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, PIEZA, ESTADO, UBICACION, OPERADOR) VALUES(?,?, ?, ?, ?, ?);";
 
         System.out.println("Movimiento a agregar:");
         System.out.println(movimiento.getFecha());
@@ -156,9 +156,10 @@ public class MovimientoDAO {
             ps = con.prepareStatement(sql);
             ps.setDate(1, movimiento.getFecha());
             ps.setInt(2, movimiento.getCliente());
-            ps.setInt(3, movimiento.getMovimiento().getId());
-            ps.setInt(4, movimiento.getUbicacion().getId());
-            ps.setInt(5, movimiento.getOperador().getId());
+            ps.setInt(3, movimiento.getPieza());
+            ps.setInt(4, movimiento.getMovimiento().getId());
+            ps.setInt(5, movimiento.getUbicacion().getId());
+            ps.setInt(6, movimiento.getOperador().getId());
             int filasAfectadas = ps.executeUpdate();
             resultado = (filasAfectadas > 0);
             System.out.println("Resultado movimiento:" + resultado);

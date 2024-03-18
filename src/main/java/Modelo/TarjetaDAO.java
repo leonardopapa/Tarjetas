@@ -212,13 +212,13 @@ public class TarjetaDAO {
         return resultado;
     }
 
-    public String buscar3(String cuenta, String atributo) {
-    // Busca una tarjeta por cuenta y devuelve un determinado atributo
+    public String buscar(String pieza, String atributo) {
+    // Busca una tarjeta por pieza y devuelve un determinado atributo
         String resultado = "";
         try {
             con = cn.Conexion();
-            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE cliente=?");
-            ps.setInt(1, Integer.parseInt(cuenta));
+            ps = con.prepareStatement("SELECT * FROM tarjetas WHERE pieza=?");
+            ps.setInt(1, Integer.parseInt(pieza));
             rs = ps.executeQuery();
 
             if (rs.next()) {

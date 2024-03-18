@@ -30,10 +30,7 @@
                 <div class="card" style="margin:20px">
                     <div class="card-body">
                         <h5 class="card-title">Recibir Rendición</h5>
-                        <hr>
-                        <div class="alert alert-danger" role="alert">
-                            Esperando ingreso de tarjetas...
-                        </div>
+                        <hr>                        
                         <form action="ControladorRemito" method="post" id="frmRecibir">
                             <div class="row">
 
@@ -89,7 +86,7 @@
                                 </div>
                                 <div class="col">
                                     <div class="card"">                                
-                                        <table id="tblTarjetas" class="table table-striped" style="width:100%">
+                                        <table id="tblTarjetas" class="table table-striped table-sm table-responsive" style="width:100%">
                                             <thead>
                                                 <tr>
                                                     <th>Pieza</th>
