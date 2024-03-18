@@ -41,6 +41,7 @@
                                     String correo = (String) request.getAttribute("correo");
                                     String fechaRemito = (String) request.getAttribute("fenvio");
                                     String ccuentas = (String) request.getAttribute("ccuentas");
+                                    String cpiezas = (String) request.getAttribute("cpiezas");
                                     if (resultado.equalsIgnoreCase("error")) {
                                 %>
 
@@ -67,7 +68,8 @@
 
                                     <input type="hidden" name="correo" value="<%= correo%>"> 
                                     <input type="hidden" name="fenvio" value="<%= fechaRemito%>"> 
-                                    <input type="hidden" name="ccuentas" value="<%= ccuentas%>"> 
+                                    <input type="hidden" name="ccuentas" value="<%= ccuentas%>">
+                                    <input type="hidden" name="cpiezas" value="<%= cpiezas%>"> 
 
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Firmar Remito</button>
 

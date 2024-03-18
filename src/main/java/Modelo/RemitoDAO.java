@@ -100,12 +100,13 @@ public class RemitoDAO {
     }
 
     public boolean existe(String nroRendicion) {
+        // Verifica si una determinada rendición existe en la BD
         boolean resultado = false;        
         String sql = "SELECT COUNT(*) AS CANTIDAD FROM movimientos WHERE documento=?;";
         try {
             con = cn.Conexion();
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, nroRendicion);
+            ps.setString(1, nroRendicion+".pdf");
             rs = ps.executeQuery();
             if (rs.next()) {
                 int cantidad = rs.getInt("CANTIDAD");

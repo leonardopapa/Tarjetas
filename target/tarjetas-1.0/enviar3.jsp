@@ -42,6 +42,7 @@
                                     String correo = (String) request.getAttribute("correo");
                                     String fenvio = (String) request.getAttribute("fenvio");
                                     String ccuentas = (String) request.getAttribute("ccuentas");
+                                    String cpiezas = (String) request.getAttribute("cpiezas");
                                     String leyenda = null;
                                     if (resultado.equalsIgnoreCase("ok")) {
                                         leyenda = "Cancelar";
@@ -80,7 +81,8 @@
                                     <input type="hidden" name="archivo" value="<%=archivo%>">
                                     <input type="hidden" name="correo" value="<%=correo%>"> 
                                     <input type="hidden" name="fenvio" value="<%=fenvio%>"> 
-                                    <input type="hidden" name="ccuentas" value="<%=ccuentas%>"> 
+                                    <input type="hidden" name="ccuentas" value="<%=ccuentas%>">
+                                    <input type="hidden" name="cpiezas" value="<%=cpiezas%>"> 
 
                                     <%
                                         if (resultado.equalsIgnoreCase("ok")) {

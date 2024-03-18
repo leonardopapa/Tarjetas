@@ -12,23 +12,21 @@ public class ControladorBuscar extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Llamado desde enviar.jsp
+        // Busca una pieza y devuelve la fecha de emisión y el número de cuenta.
+        // En caso de no encontrarse, devuelve "no encontrado" en ambos casos
+        
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-
-        String cuenta = request.getParameter("inputCuenta");
-        // out.println("Buscando cuenta:" + cuenta);
-        
+        String pieza = request.getParameter("pieza");                
         TarjetaDAO tdao = new TarjetaDAO();
-        String resultado = tdao.buscar(cuenta);
-        // out.println("resultado = "+resultado);
-        if (resultado.isEmpty()) {
-            request.setAttribute("fechaEmision", "no encontrado");
-            out.println("no encontrado");
-        } else {
-            request.setAttribute("fechaEmision", resultado);
+        String resultado = tdao.buscar(pieza);        
+        if (resultado.isEmpty()) {            
+            out.println("no encontrado, no encontrado");
+        } else {            
             out.println(resultado);
         }
-
     }
 
     @Override

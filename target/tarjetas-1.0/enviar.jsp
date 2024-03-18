@@ -53,6 +53,7 @@
                                                         <option value="30">Flash</option>
                                                         <option value="33">La Veloz</option>
                                                         <option value="31">Coprisa</option>
+                                                        <option value="34">Oca</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -67,9 +68,9 @@
                                             <form action="ControladorBuscar" method="get" name="addCuenta" id="addCuenta">
 
                                                 <div class="row">
-                                                    <label for="inputCuenta" class="col-form-label">Ingreso Manual:</label>
+                                                    <label for="inputPieza" class="col-form-label">Ingreso Manual:</label>
                                                     <div class="col">
-                                                        <input type="text" class="form-control" name="inputCuenta" id="inputCuenta" placeholder="Ingrese el número de cuenta">
+                                                        <input type="text" class="form-control" name="inputPieza" id="inputPieza" placeholder="Ingrese el número de pieza">
 
                                                     </div>
                                                 </div>
@@ -91,16 +92,13 @@
                                         <table id="tblTarjetas" class="table" style="width:100%">
                                             <thead>
                                                 <tr>
-
+                                                    <th>Pieza</th>
                                                     <th>Cuenta</th>
                                                     <th>Fecha de Emisión</th>
                                                     <th>Acciones</th>
-
                                                 </tr>
                                             </thead>
                                             <tbody>
-
-
                                             </tbody>
                                         </table>
                                     </div>
@@ -130,45 +128,37 @@
 
             window.onload = iniciar;
             function iniciar() {
-                var fechaActual = new Date();
-                // Formatear la fecha como DD/MM/AAAA
-                var formatoFecha = fechaActual.toISOString().split('T')[0];
-                // Obtener el elemento de entrada de texto por su ID
-                var inputFecha = document.getElementById('inputFechaEnvio');
-                // Establecer el valor por defecto del input text como la fecha formateada
+                var fechaActual = new Date();                
+                var formatoFecha = fechaActual.toISOString().split('T')[0];                
+                var inputFecha = document.getElementById('inputFechaEnvio');                
                 inputFecha.value = formatoFecha;
             }
 
             function agregarFila() {
                 // Obtener los valores de los input
-                var cuenta = document.getElementById("inputCuenta").value;
+                var pieza = document.getElementById("inputPieza").value;
 
                 // Validar que los campos no estén vacíos
-                if (cuenta === '') {
-                    alert('Por favor, ingrese una cuenta.');
+                if (pieza === '') {
+                    alert('Por favor, ingrese una pieza.');
                     return;
                 }
 
-                // Validar el formato de la cuenta(número de 6 dígitos)
-                var cuentaRegex = /^\d{6}$/;
-
-                if (!cuenta.match(cuentaRegex)) {
-                    alert('Número de cuenta no válido. Debe ser un número de 6 dígitos.');
-                    return;
-                }
-
-                // Verificar que la cuenta esté en estado "Impresa"
-
-                var fechaEmision = "";
-                console.log("Iniciando llamada Http - cuenta:" + cuenta);
+                // Verificar que la tarjeta esté en estado "Impresa"
+                                
+                console.log("Iniciando llamada Http - pieza:" + pieza);
                 var http = new XMLHttpRequest();
-                url = 'ControladorBuscar?inputCuenta=' + cuenta;
+                url = 'ControladorBuscar?pieza=' + pieza;
                 http.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
-                        fechaEmision = this.responseText.trim();
-                        console.log("Response text:[" + fechaEmision + "]");
+                        var respuesta = this.responseText.trim().split(",");
+                        var fechaEmision = respuesta[0];
+                        var cuenta = respuesta[1];
+                        console.log("Response text:[" + respuesta + "]");
+                        console.log("Fecha Emisión:[" + fechaEmision + "]");
+                        console.log("Cuenta:[" + cuenta + "]");
                         if (fechaEmision === "no encontrado") {
-                            alert("No existe una tarjeta en estado Impresa con ese número de cuenta");
+                            alert("La pieza no se encuentra en estado Impresa");
                             return;
                         }
 
@@ -178,24 +168,28 @@
                         var tbody = tabla.getElementsByTagName("tbody")[0];
                         // Crear una nueva fila
                         var fila = tbody.insertRow();
-                        fila.id = "fila" + cuenta;
+                        fila.id = "fila" + pieza;
 
                         // Insertar celdas con los valores de los input
-                        var celdaCuenta = fila.insertCell(0);                        
-                        celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
+                        
+                        var celdaPieza = fila.insertCell(0);
+                        celdaPieza.innerHTML = '<input type="text" class="form-control-plaintext" name="pieza' + pieza + '" value="' + pieza + '" readonly>';
+                        
+                        var celdaCuenta = fila.insertCell(1);
+                        celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + pieza + '" value="' + cuenta + '" readonly>';
 
-                        var celdaFecha = fila.insertCell(1);
+                        var celdaFecha = fila.insertCell(2);
                         var fechaFormateada = new (Date);
                         fechaFormateada = formatearFecha2(fechaEmision);
-                        celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + cuenta + '" value="' + fechaFormateada + '" readonly>';
+                        celdaFecha.innerHTML = '<input type="text" class="form-control-plaintext" name="fecha' + pieza + '" value="' + fechaFormateada + '" readonly>';
 
                         // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
-                        var celdaEliminar = fila.insertCell(2);
-                        celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
+                        var celdaEliminar = fila.insertCell(3);
+                        celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila(' + pieza + ')"><i class="fas fa-trash-alt"></i></button>';
 
                         // Limpiar los valores de los input
-                        document.getElementById("inputCuenta").value = '';
-                        var enfocar = document.getElementById("inputCuenta");
+                        document.getElementById("inputPieza").value = '';
+                        var enfocar = document.getElementById("inputPieza");
                         enfocar.focus();
                     }
                 };
@@ -250,7 +244,7 @@
             }
 
             function eliminarFila(indiceFila) {
-                var confirmacion = confirm("¿Está seguro de que desea eliminar la cuenta " + indiceFila + "?");
+                var confirmacion = confirm("¿Está seguro de que desea eliminar la pieza " + indiceFila + "?");
                 if (confirmacion) {
                     var row = document.getElementById("fila" + indiceFila);
                     row.remove();

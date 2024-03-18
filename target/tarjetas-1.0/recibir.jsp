@@ -34,7 +34,7 @@
                         <div class="alert alert-danger" role="alert">
                             Esperando ingreso de tarjetas...
                         </div>
-                        <form action="ControladorRemito" method="POST" id="frmRecibir">
+                        <form action="ControladorRemito" method="post" id="frmRecibir">
                             <div class="row">
 
                                 <div class="col">
@@ -53,6 +53,7 @@
                                                         <option value="30">Flash</option>
                                                         <option value="33">La Veloz</option>
                                                         <option value="31">Coprisa</option>
+                                                        <option value="34">Oca</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -71,20 +72,17 @@
                                                 </div>
                                             </div>
 
-                                            <form action="ControladorBuscar2" method="get" name="addCuenta" id="addCuenta">
-
                                                 <div class="row">
-                                                    <label for="inputCuenta" class="col-form-label">Ingreso Manual:</label>
+                                                    <label for="inputPieza" class="col-form-label">Ingreso Manual:</label>
                                                     <div class="col">
-                                                        <input type="text" class="form-control" id="inputCuenta" placeholder="Ingrese el número de cuenta">
+                                                        <input type="text" class="form-control" id="inputPieza" placeholder="Ingrese el número de pieza">
                                                     </div>
                                                 </div>
 
                                                 <br>
 
                                                 <button type="button" class="btn btn-danger" onclick="agregarFila();">Agregar</button>
-                                            </form>
-
+                                            
                                         </div>
                                     </div>
 
@@ -94,11 +92,11 @@
                                         <table id="tblTarjetas" class="table table-striped" style="width:100%">
                                             <thead>
                                                 <tr>
+                                                    <th>Pieza</th>
                                                     <th>Cuenta</th>
                                                     <th>Resultado</th>
                                                     <th>Motivo</th>
                                                     <th>Acciones</th>
-
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -141,11 +139,11 @@
 
             function agregarFila() {
                 // Obtener los valores de los input
-                var cuenta = document.getElementById("inputCuenta").value;
+                var pieza = document.getElementById("inputPieza").value;
                 var correo = document.getElementById("selCorreo").value;
                 
                 // Validar que los campos no estén vacíos
-                if (cuenta === '') {
+                if (pieza === '') {
                     alert('Por favor, ingrese una cuenta.');
                     return;
                 }
@@ -155,29 +153,22 @@
                     return;
                 }                
 
-                // Validar el formato de la cuenta(número de 6 dígitos)
-                var cuentaRegex = /^\d{6}$/;
-                if (!cuenta.match(cuentaRegex)) {
-                    alert('Número de cuenta no válido. Debe ser un número de 6 dígitos.');
-                    return;
-                }
-                
-                // Verificar que la cuenta no haya sido ingresada en el mismo formulario
-                if (document.getElementById("fila"+cuenta)) {
-                    alert('Número de cuenta no válido. Ya fue ingresado.');
+                // Verificar que la pieza no haya sido ingresada en el mismo formulario
+                if (document.getElementById("fila"+pieza)) {
+                    alert('Número de pieza no válido. Ya fue ingresado.');
                     return;                    
                 }
                 
                 // Verificar que la cuenta esté en estado "En Distribución" y haya sido impuesta al correo seleccionado
-                console.log("Iniciando llamada Http - cuenta:" + cuenta);
+                console.log("Iniciando llamada Http - cuenta:" + pieza);
                 var http = new XMLHttpRequest();
-                url = 'ControladorBuscar2?cuenta=' + cuenta +'&correo=' + correo;
+                url = 'ControladorBuscar2?pieza=' + pieza +'&correo=' + correo;
                 http.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
-                        resultado = this.responseText.trim();
+                        var cuenta = this.responseText.trim();
                         console.log("Response text:[" + resultado + "]");
-                        if (resultado === "no encontrado") {
-                            alert("La tarjeta ingresada no se encuentra en estado En Distribución con ese correo");
+                        if (cuenta === "no encontrado")) {
+                            alert("La pieza ingresada no se encuentra en estado En Distribución con ese correo");
                             return;
                         }
 
@@ -189,20 +180,24 @@
 
                         // Crear una nueva fila
                         var fila = tbody.insertRow();
-                        fila.id = "fila" + cuenta;
+                        fila.id = "fila" + pieza;
 
                         // Insertar celdas con los valores de los input
-                        var celdaCuenta = fila.insertCell(0);
-                        celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + cuenta + '" value="' + cuenta + '" readonly>';
+                        
+                        var celdaPieza = fila.insertCell(0);
+                        celdaPieza.innerHTML = '<input type="text" class="form-control-plaintext" name="pieza' + pieza + '" value="' + pieza + '" readonly>';
+                        
+                        var celdaCuenta = fila.insertCell(1);
+                        celdaCuenta.innerHTML = '<input type="text" class="form-control-plaintext" name="cuenta' + pieza + '" value="' + cuenta + '" readonly>';
 
-                        var celdaResultado = fila.insertCell(1);
-                        celdaResultado.innerHTML = '<select class="form-select" name="resultado' + cuenta +
+                        var celdaResultado = fila.insertCell(2);
+                        celdaResultado.innerHTML = '<select class="form-select" name="resultado' + pieza +
                                 '"> <option selected value="">Seleccione el resultado</option>' +
                                 '<option value="7">Entregada</option>' +
                                 '<option value="3">Devuelta</option> </select>';
 
-                        var celdaMotivo = fila.insertCell(2);
-                        celdaMotivo.innerHTML = '<select class="form-select" name="motivo' + cuenta +
+                        var celdaMotivo = fila.insertCell(3);
+                        celdaMotivo.innerHTML = '<select class="form-select" name="motivo' + pieza +
                                 '"> <option selected value="0">Seleccione el motivo</option>' +
                                 '<option value="1">Faltan datos</option>' +
                                 '<option value="2">Zona no atendida</option>' +
@@ -216,12 +211,12 @@
                                 '<option value="10">Falleció el titular</option> </select>';
 
                         // Agregar un icono de cesto de basura y asociar un evento de clic para eliminar la fila
-                        var celdaEliminar = fila.insertCell(3);
-                        celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila2(' + cuenta + ')"><i class="fas fa-trash-alt"></i></button>';
+                        var celdaEliminar = fila.insertCell(4);
+                        celdaEliminar.innerHTML = '<button class="btn" onclick="eliminarFila2(' + pieza + ')"><i class="fas fa-trash-alt"></i></button>';
 
                         // Limpiar los valores de los input                        
-                        document.getElementById("inputCuenta").value = '';
-                        var enfocar = document.getElementById("inputCuenta");
+                        document.getElementById("inputPieza").value = '';
+                        var enfocar = document.getElementById("inputPieza");
                         enfocar.focus();
                     }
                 };
@@ -249,14 +244,6 @@
                 var fecha = document.getElementById("inputFechaRendicion").value;
                 var correo = document.getElementById("selCorreo").value;
                 var rendicion = document.getElementById("inputRendicion").value;
-
-                // Verificar que la rendición no exista en la BD
-                if (existeRendicion(rendicion)) {
-                    alert('La rendición ya existe en la base de datos.');
-                    return;
-                } else {
-                    console.log("OK: La rendición no existe en la base de datos");
-                }
 
                 // Validar que los campos no estén vacíos
                 if (fecha === '' || correo === '0' || rendicion === '') {
@@ -307,23 +294,6 @@
                 // Confeccionar el remito de recepción
                 formularioRecibir = document.getElementById("frmRecibir");
                 formularioRecibir.submit();
-                }
-
-                function existeRendicion(rendicion) {
-                    url = 'ControladorBuscar3?cuenta=' + rendicion;
-                    var http = new XMLHttpRequest();
-                    http.onreadystatechange = function () {
-                        if (this.readyState === 4 && this.status === 200) {
-                            resultado = this.responseText.trim();
-                            console.log("Rendicion response text:[" + resultado + "]");
-                            if (resultado === "no encontrado")
-                                return false;
-                            else
-                                return true;
-                        }
-                    };
-                    http.open('get', url);
-                    http.send();
                 }
 
         </script>

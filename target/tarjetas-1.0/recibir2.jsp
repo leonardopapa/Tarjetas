@@ -42,6 +42,7 @@
                                     String correo = (String) request.getAttribute("correo");
                                     String frend = (String) request.getAttribute("frend");
                                     String ccuentas = (String) request.getAttribute("ccuentas");
+                                    String ccpiezas = (String) request.getAttribute("ccpiezas");
                                     String cresultados = (String) request.getAttribute("cresultados");
                                     String cmotivos = (String) request.getAttribute("cmotivos");
                                     if (resultado.equalsIgnoreCase("error")) {                                        
@@ -71,6 +72,7 @@
                                     <input type="hidden" name="correo" value="<%= correo %>"> 
                                     <input type="hidden" name="frend" value="<%= frend %>"> 
                                     <input type="hidden" name="ccuentas" value="<%= ccuentas %>"> 
+                                    <input type="hidden" name="ccpiezas" value="<%= ccpiezas %>"> 
                                     <input type="hidden" name="cresultados" value="<%= cresultados %>"> 
                                     <input type="hidden" name="cmotivos" value="<%= cmotivos %>"> 
                                     
@@ -120,10 +122,8 @@
 
     function firmar() {
         var alias = document.getElementById("alias").value;
-        var password = document.getElementById("password").value;
-        // Verificar si el usuario ingresó un valor
-        if (alias !== null && password !== null) {            
-            // enviar los datos el formulario al servlet
+        var password = document.getElementById("password").value;        
+        if (alias !== null && password !== null) {                        
             var frmFirmar = document.getElementById("frmFirmar");
             frmFirmar.submit();
         } else {

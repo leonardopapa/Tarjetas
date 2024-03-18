@@ -48,27 +48,14 @@ public class ControladorTarjetas extends HttpServlet {
         
         // Obtener los parámetros del formulario
         Enumeration<String> parametros = request.getParameterNames();
-
-        // Arrays para almacenar cuentas, fechas, motivos y estados
         List<String> piezas = new ArrayList();
         List<String> cuentas = new ArrayList();
-        List<String> fechas = new ArrayList();
-        List<String> motivos = new ArrayList();
+        List<String> fechas = new ArrayList();        
         List<String> estados = new ArrayList();
         
-        /*
-        String[] piezas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] cuentas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] fechas = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] motivos = new String[10];  // Innecesario, movido a ControladorRemito
-        String[] estados = new String[10];  // Innecesario, movido a ControladorRemito
-        */
-
         // Procesar los parámetros
         while (parametros.hasMoreElements()) {
             String parametro = parametros.nextElement();
-
-            // Verificar si el parámetro es de tipo "cuenta", "fecha", "accion, "motivo" o "resultado"
             if (parametro.startsWith("pieza")) {
                 piezas.add(request.getParameter(parametro));
             } else if (parametro.startsWith("cuenta")) {
@@ -84,8 +71,6 @@ public class ControladorTarjetas extends HttpServlet {
                 }
             } else if (parametro.startsWith("accion")) {
                 accion = request.getParameter("accion");
-            } else if (parametro.startsWith("motivo")) {
-                motivos.add(request.getParameter(parametro));
             } else if (parametro.startsWith("resultado")) {
                 estados.add(request.getParameter(parametro));
             }

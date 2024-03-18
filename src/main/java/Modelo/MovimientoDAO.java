@@ -41,7 +41,7 @@ public class MovimientoDAO {
         // Agregar un movimiento "en distribución"
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO) VALUES(?,?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO, PIEZA) VALUES(?,?, ?, ?, ?, ?, ?);";
         try {
             ps = con.prepareStatement(sql);
             ps.setDate(1, movimiento.getFecha());
@@ -50,6 +50,7 @@ public class MovimientoDAO {
             ps.setInt(4, movimiento.getUbicacion().getId());
             ps.setInt(5, movimiento.getOperador().getId());
             ps.setString(6, movimiento.getDocumento());
+            ps.setInt(7, movimiento.getPieza());
             int filasAfectadas = ps.executeUpdate();
             resultado = (filasAfectadas > 0);
             System.out.println("Resultado movimiento:" + resultado);
@@ -67,7 +68,7 @@ public class MovimientoDAO {
         // Agrega un movimiento recibir con motivo de devolución
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, MOTIVO, OPERADOR,DOCUMENTO) VALUES(?,?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, MOTIVO, OPERADOR,DOCUMENTO, PIEZA) VALUES(?,?, ?, ?, ?, ?, ?, ?);";
 
         System.out.println("Movimiento a agregar:");
         System.out.println("Fecha:" + movimiento.getFecha());
@@ -87,6 +88,7 @@ public class MovimientoDAO {
             ps.setInt(5, movimiento.getMotivo().getId());
             ps.setInt(6, movimiento.getOperador().getId());
             ps.setString(7, movimiento.getDocumento());
+            ps.setInt(8, movimiento.getPieza());
             int filasAfectadas = ps.executeUpdate();
             resultado = (filasAfectadas > 0);
             System.out.println("Resultado movimiento:" + resultado);
@@ -104,7 +106,7 @@ public class MovimientoDAO {
         // Agrega un movimiento recibir sin motivo de devolución
         con = cn.Conexion();
         boolean resultado = false;
-        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO) VALUES(?,?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO movimientos (FECHA, TARJETA, ESTADO, UBICACION, OPERADOR, DOCUMENTO, PIEZA) VALUES(?,?, ?, ?, ?, ?, ?);";
 
         System.out.println("Movimiento a agregar:");
         System.out.println(movimiento.getFecha());
@@ -122,6 +124,7 @@ public class MovimientoDAO {
             ps.setInt(4, movimiento.getUbicacion().getId());
             ps.setInt(5, movimiento.getOperador().getId());
             ps.setString(6, movimiento.getDocumento());
+            ps.setInt(7, movimiento.getPieza());
             int filasAfectadas = ps.executeUpdate();
             resultado = (filasAfectadas > 0);
             System.out.println("Resultado movimiento:" + resultado);

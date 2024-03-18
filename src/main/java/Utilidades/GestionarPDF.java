@@ -32,11 +32,12 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.Certificate;
+import java.util.List;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class GestionarPDF {
 
-    public File crearRemito(String fechaRemito, String nombreCorreo, String[] cuentas, int cntCuentas, String numeroRemito, String rutaDespliegue) {
+    public File crearRemito(String fechaRemito, String nombreCorreo, List<String>cuentas, List<String> piezas, String numeroRemito, String rutaDespliegue) {
 
         // Crea un remito de entrega de tarjetas al correo
         PdfWriter writer = null;
@@ -108,7 +109,7 @@ public class GestionarPDF {
         document.add(table);
 
         // Agregar un párrafo
-        document.add(new Paragraph("En el día de la fecha, se entregan al correo las tarjetas que se indican a continuación:").setMarginTop(10));
+        document.add(new Paragraph("En el día de la fecha, se entregan al correo las piezas que se indican a continuación:").setMarginTop(10));
         document.add(new Paragraph(""));
 
         // Agregar el listado de cuentas
@@ -116,8 +117,8 @@ public class GestionarPDF {
                 .setListSymbol("\u2022")
                 .setSymbolIndent(12);
 
-        for (int i = 0; i < cntCuentas; i++) {
-            cuentasPDF.add(new ListItem(cuentas[i]));
+        for (int i = 0; i < piezas.size(); i++) {
+            cuentasPDF.add(new ListItem(piezas.get(i)));
         }
         document.add(cuentasPDF);
         document.add(new Paragraph(""));
@@ -136,7 +137,7 @@ public class GestionarPDF {
         return devolver("remito.pdf");
     }
 
-    public File crearRecepcion(String fechaRemito, String nombreCorreo, String[] cuentas, String[] estados, String [] motivos, int cntCuentas, String numeroRemito, String rutaDespliegue) {
+    public File crearRecepcion(String fechaRemito, String nombreCorreo, List<String> cuentas, List<String> piezas, List<String> estados, List<String> motivos, String numeroRemito, String rutaDespliegue) {
 
         // Crear un Comprobante de Recepción de Tarjetas del Correo
         PdfWriter writer = null;
@@ -200,41 +201,41 @@ public class GestionarPDF {
         document.add(table);
 
         // Agregar un párrafo
-        document.add(new Paragraph("En el día de la fecha, se reciben del correo " + nombreCorreo + " las tarjetas que se indican a continuación:").setMarginTop(10));
+        document.add(new Paragraph("En el día de la fecha, se reciben del correo " + nombreCorreo + " las piezas que se indican a continuación:").setMarginTop(10));
         document.add(new Paragraph(""));
 
         // Agregar una tabla para agregar el listado de cuentas, estados y motivos
-        table = new Table(new float[]{75, 100, 250});
-        // .setBorder(Border.NO_BORDER);
-        table.addCell(new Cell()
-                // .setBorder(Border.NO_BORDER)
+        table = new Table(new float[]{75, 75, 100, 250});
+        table.addCell(new Cell()                
+                .add(new Paragraph("Pieza")
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setBold()));
+        table.addCell(new Cell()                
                 .add(new Paragraph("Cuenta")
                         .setTextAlignment(TextAlignment.CENTER)
                         .setBold()));
-        table.addCell(new Cell()
-                // .setBorder(Border.NO_BORDER)                
+        table.addCell(new Cell()                
                 .setPaddingLeft(10F)
                 .add(new Paragraph("Resultado")
                         .setBold()));
-        table.addCell(new Cell()
-                // .setBorder(Border.NO_BORDER)                
+        table.addCell(new Cell()                
                 .setPaddingLeft(10F)
                 .add(new Paragraph("Motivo")
                         .setBold()));
 
-        for (int i = 0; i < cntCuentas; i++) {
-            table.addCell(new Cell()
-                    // .setBorder(Border.NO_BORDER)
+        for (int i = 0; i < piezas.size(); i++) {
+            table.addCell(new Cell()                    
                     .setTextAlignment(TextAlignment.CENTER)
-                    .add(new Paragraph(cuentas[i])));
-            table.addCell(new Cell()
-                    // .setBorder(Border.NO_BORDER)
+                    .add(new Paragraph(piezas.get(i))));
+            table.addCell(new Cell()                    
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .add(new Paragraph(cuentas.get(i))));
+            table.addCell(new Cell()                    
                     .setPaddingLeft(10F)
-                    .add(new Paragraph(estados[i])));
-            table.addCell(new Cell()
-                    // .setBorder(Border.NO_BORDER)
+                    .add(new Paragraph(estados.get(i))));
+            table.addCell(new Cell()                    
                     .setPaddingLeft(10F)
-                    .add(new Paragraph(motivos[i])));
+                    .add(new Paragraph(motivos.get(i))));
         }
 
         document.add(new Paragraph(""));
@@ -267,7 +268,7 @@ public class GestionarPDF {
                 return false;
             }
         } catch (Exception e) {
-            // Manejar excepciones, por ejemplo, si el archivo de keystore no es válido
+            System.out.println("Keystore no válido");
             System.out.println(e.getMessage());
             return false;
         }

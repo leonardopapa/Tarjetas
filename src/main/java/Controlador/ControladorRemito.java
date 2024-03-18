@@ -7,7 +7,9 @@ import Modelo.MotivoDAO;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
+import Modelo.OperadorDAO;
 import Modelo.RemitoDAO;
+import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
 import Modelo.UbicacionDAO;
 import Utilidades.GestionarEmail;
@@ -21,7 +23,9 @@ import java.io.PrintWriter;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -56,19 +60,13 @@ public class ControladorRemito extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        PrintWriter out = response.getWriter();
-
+        
         // Obtener los parámetros del formulario
         Enumeration<String> parametros = request.getParameterNames();
-
-        // Arrays para almacenar cuentas, motivos y estados
-        String[] cuentas = new String[10]; // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] motivos = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] estados = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades        
-        String[] motivosn = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades
-        String[] estadosn = new String[10];  // Tamaño arbitrario, puedes ajustarlo según tus necesidades  
-        int indiceCuentas = 0;
+        List<String> piezas = new ArrayList();
+        List<String> cuentas = new ArrayList();        
+        List<String> motivos = new ArrayList();
+        List<String> estados = new ArrayList();
 
         // Procesar los parámetros
         String accion = "";
@@ -76,25 +74,28 @@ public class ControladorRemito extends HttpServlet {
         MotivoDAO motivoDao = new MotivoDAO();
         while (parametros.hasMoreElements()) {
             String parametro = parametros.nextElement();
-
-            // Verificar si el parámetro es de tipo "cuenta", "accion", "motivo" o "resultado"
-            if (parametro.startsWith("cuenta")) {
-                cuentas[indiceCuentas++] = request.getParameter(parametro);
+            if (parametro.startsWith("pieza")) {
+                piezas.add(request.getParameter(parametro));
+            } else if (parametro.startsWith("cuenta")) {
+                cuentas.add(request.getParameter(parametro));
             } else if (parametro.startsWith("accion")) {
                 accion = request.getParameter("accion");
                 System.out.println("Acción:" + accion);
             } else if (parametro.startsWith("motivo")) {
-                motivos[indiceCuentas - 1] = request.getParameter(parametro);
-                if ("0".equals(motivos[indiceCuentas - 1])) {
-                    motivosn[indiceCuentas - 1] =" ";
+                String motivo = request.getParameter(parametro);
+                if ("0".equals(motivo)) {
+                    motivos.add(" ");
                 } else {
-                    motivosn[indiceCuentas - 1] = motivoDao.buscar(motivos[indiceCuentas - 1]);
+                    motivos.add(motivoDao.buscar(motivo));
                 }
             } else if (parametro.startsWith("resultado")) {
-                estados[indiceCuentas - 1] = request.getParameter(parametro);
-                estadosn[indiceCuentas - 1] = estadoDao.buscar(estados[indiceCuentas - 1]);
+                String estado = request.getParameter(parametro);
+                estados.add(estadoDao.buscar(estado));
             }
         }
+        
+        System.out.println("Piezas recibidas: " + piezas.size() );
+        System.out.println("Cuentas recibidas: " + cuentas.size() );
 
         // Obtener ruta de desgliegue
         ServletContext servletContext = getServletContext();
@@ -107,6 +108,7 @@ public class ControladorRemito extends HttpServlet {
         String rutaPdf = rutaDespliegue + "pdf";
 
         switch (accion) {
+            
             case "remito":
                 // Obtener correo
                 String idCorreo = request.getParameter("correo");
@@ -133,7 +135,7 @@ public class ControladorRemito extends HttpServlet {
                 System.out.println("Remito Nº: " + numeroRemito);
 
                 // Generar remito                
-                File documentoPDF = remito.crearRemito(fechaEnvio3, correo3, cuentas, indiceCuentas, numeroRemito, rutaDespliegue);
+                File documentoPDF = remito.crearRemito(fechaEnvio3, correo3, cuentas, piezas, numeroRemito, rutaDespliegue);
 
                 // Verificar si la carpeta "pdf" existe, si no, crearla
                 File carpetaPdf = new File(rutaPdf);
@@ -152,7 +154,8 @@ public class ControladorRemito extends HttpServlet {
                 request.setAttribute("archivo", nombreArchivo);
                 request.setAttribute("correo", idCorreo);
                 request.setAttribute("fenvio", fechaEnvio2);
-                request.setAttribute("ccuentas", concatenarCuentas(cuentas, indiceCuentas));
+                request.setAttribute("ccuentas", concatenarCuentas(cuentas));
+                request.setAttribute("cpiezas", concatenarCuentas(piezas));
                 request.getRequestDispatcher("enviar2.jsp").forward(request, response);
                 break;
 
@@ -164,6 +167,7 @@ public class ControladorRemito extends HttpServlet {
                 String idCorreo3 = request.getParameter("correo");
                 String fechaEnvio6 = request.getParameter("fenvio");
                 String ccuentas2 = request.getParameter("ccuentas");
+                String cpiezas = request.getParameter("cpiezas");
 
                 // Mostrar por consola los parámetros recibidos
                 System.out.println("Archivo:" + nombreArchivo2);
@@ -172,10 +176,11 @@ public class ControladorRemito extends HttpServlet {
 
                 // Obtener la ruta del archivo PDF a firmar                                                
                 String rutaPdfOrigen = rutaPdf + File.separator + nombreArchivo2;
-                // System.out.println("Ruta PDF origen = " + rutaPdfOrigen);
-
-                // Obtener el almacen de claves                
-                String rutaKeystore = rutaDespliegue + "keystore" + File.separator + "keystore.p12";
+                
+                // Obtener el almacen de claves
+                OperadorDAO opDao = new OperadorDAO();
+                String certificado = opDao.obtenerCertificado(11); // Obtener certificado para el operador 11
+                String rutaKeystore = rutaDespliegue + "keystore" + File.separator + certificado;
 
                 // Verificar alias y password
                 String resultado = null;
@@ -200,6 +205,7 @@ public class ControladorRemito extends HttpServlet {
                 request.setAttribute("correo", idCorreo3);
                 request.setAttribute("fenvio", fechaEnvio6);
                 request.setAttribute("ccuentas", ccuentas2);
+                request.setAttribute("cpiezas", cpiezas);
                 request.getRequestDispatcher(destino).forward(request, response);
                 break;
 
@@ -207,29 +213,29 @@ public class ControladorRemito extends HttpServlet {
                 // Obtener los parámetros                
                 String nombreArchivo3 = request.getParameter("archivo");
                 String ccuentas = request.getParameter("ccuentas");
+                String ccpiezas = request.getParameter("cpiezas");
                 String idCorreo2 = request.getParameter("correo");
                 String fechaEnvio4 = request.getParameter("fenvio");
-                String fechaEnvio5 = "";
-                System.out.println("Fecha a convertir:" + fechaEnvio4);
+                String fechaEnvio5 = "";                
                 try {
                     fechaEnvio5 = convertirFecha2(fechaEnvio4);
-                } catch (Exception e) {
-                    System.out.println(e.toString());
-                }
-                System.out.println("Fecha convertida:" + fechaEnvio5);
-
+                } catch (Exception e) {                
+                }                
+                
                 // Grabar movimiento "enviar" en BD
-                boolean resultadoGrabacion = grabarMovimientoEnviar(idCorreo2, fechaEnvio5, ccuentas, nombreArchivo3);
+                boolean resultadoGrabacion = grabarMovimientoEnviar(idCorreo2, fechaEnvio5, ccpiezas, nombreArchivo3);
                 String resultado2 = (resultadoGrabacion ? "exito" : "error");
-
-                // email Remito a correos por email
-                UbicacionDAO correoDao = new UbicacionDAO();
-                String emailCorreo = correoDao.obtenerEmail(idCorreo2);
-                GestionarEmail mailer = new GestionarEmail();
-                String subject = "Envío de remito " + nombreArchivo3;
-                String texto = "Se adjunta remito " + nombreArchivo3;
-                boolean resultadoEmail = mailer.enviarEmail(emailCorreo, subject, texto, rutaPdf + File.separator + nombreArchivo3, nombreArchivo3);
-                System.out.println("Resultado email:" + (resultadoEmail ? "OK" : "Fracaso"));
+                
+                if (resultadoGrabacion) {
+                    // Enviar Remito a correo por email
+                    UbicacionDAO correoDao = new UbicacionDAO();
+                    String emailCorreo = correoDao.obtenerEmail(idCorreo2);
+                    GestionarEmail mailer = new GestionarEmail();
+                    String subject = "Envío de remito " + nombreArchivo3;
+                    String texto = "Se adjunta remito " + nombreArchivo3;
+                    boolean resultadoEmail = mailer.enviarEmail(emailCorreo, subject, texto, rutaPdf + File.separator + nombreArchivo3, nombreArchivo3);
+                    System.out.println("Resultado email:" + (resultadoEmail ? "OK" : "Fracaso"));
+                }
 
                 // Devolver el control a la capa de presentación
                 request.setAttribute("resultado", resultado2);
@@ -255,9 +261,9 @@ public class ControladorRemito extends HttpServlet {
                 // Obtener número de rendición
                 String nroRendicion = request.getParameter("nrend");
                 
-                out.println("Correo: " + correo2);
-                out.println("Fecha de Rendición: " + fechaRendicion);
-                out.println("Numero de Rendicion: " + nroRendicion);
+                System.out.println("Correo: " + correo2);
+                System.out.println("Fecha de Rendición: " + fechaRendicion);
+                System.out.println("Numero de Rendicion: " + nroRendicion);
 
                 // Comprobar si la recepción ya existe en la base de datos
                 RemitoDAO recepcion = new RemitoDAO();
@@ -267,7 +273,7 @@ public class ControladorRemito extends HttpServlet {
                     resultado4 = "error";
                 } else {
                     // Generar remito de recepción
-                    File documentoPDF2 = remito.crearRecepcion(fechaRendicion, correo2, cuentas, estadosn, motivosn, indiceCuentas, nroRendicion, rutaDespliegue);
+                    File documentoPDF2 = remito.crearRecepcion(fechaRendicion, correo2, cuentas, piezas, estados, motivos, nroRendicion, rutaDespliegue);
 
                     // Verificar si la carpeta "pdf" existe, si no, crearla
                     File carpetaPdf2 = new File(rutaPdf);
@@ -282,15 +288,16 @@ public class ControladorRemito extends HttpServlet {
                     grabarArchivo(rutaPdf, nombreArchivo4, documentoPDF2);
                     resultado4 = "ok";
                 }
+                
                 // Direccionar la salida a la capa de presentación
-
                 request.setAttribute("resultado", resultado4);
                 request.setAttribute("archivo", nombreArchivo4);
                 request.setAttribute("correo", idCorreo4);
                 request.setAttribute("frend", fechaRendicion);
-                request.setAttribute("ccuentas", concatenarCuentas(cuentas, indiceCuentas));
-                request.setAttribute("cresultados", concatenarCuentas(estados, indiceCuentas));
-                request.setAttribute("cmotivos", concatenarCuentas(motivos, indiceCuentas));
+                request.setAttribute("ccuentas", concatenarCuentas(cuentas));
+                request.setAttribute("cpiezas", concatenarCuentas(piezas));
+                request.setAttribute("cresultados", concatenarCuentas(estados));
+                request.setAttribute("cmotivos", concatenarCuentas(motivos));
                 request.getRequestDispatcher("recibir2.jsp").forward(request, response);
                 break;
 
@@ -301,6 +308,7 @@ public class ControladorRemito extends HttpServlet {
                 String firma2 = request.getParameter("password");
                 String idCorreo5 = request.getParameter("correo");
                 String fechaRendicion2 = request.getParameter("frend");
+                String cpiezas2 = request.getParameter("ccuentas");
                 String ccuentas3 = request.getParameter("ccuentas");
                 String cresultados2 = request.getParameter("cresultados");
                 String cmotivos2 = request.getParameter("cmotivos");
@@ -340,6 +348,7 @@ public class ControladorRemito extends HttpServlet {
                 request.setAttribute("correo", idCorreo5);
                 request.setAttribute("frend", fechaRendicion2);
                 request.setAttribute("ccuentas", ccuentas3);
+                request.setAttribute("cpiezas", cpiezas2);
                 request.setAttribute("cresultados", cresultados2);
                 request.setAttribute("cmotivos", cmotivos2);
                 request.getRequestDispatcher(destino2).forward(request, response);
@@ -349,6 +358,7 @@ public class ControladorRemito extends HttpServlet {
                 // Obtener los parámetros                
                 String nombreArchivo6 = request.getParameter("archivo");
                 String ccuentas4 = request.getParameter("ccuentas");
+                String cpiezas3 = request.getParameter("cpiezas");
                 String cresultados3 = request.getParameter("cresultados");
                 String cmotivos3 = request.getParameter("cmotivos");
                 String idCorreo6 = request.getParameter("correo");
@@ -364,17 +374,19 @@ public class ControladorRemito extends HttpServlet {
                 System.out.println("Fecha convertida: " + fechaRecepcion3);
 
                 // Grabar movimiento "recibir" en BD
-                boolean resultadoGrabacion2 = grabarMovimientoRecibir(idCorreo6, fechaRecepcion3, ccuentas4, nombreArchivo6, cresultados3, cmotivos3);
+                boolean resultadoGrabacion2 = grabarMovimientoRecibir(idCorreo6, fechaRecepcion3, cpiezas3, ccuentas4, nombreArchivo6, cresultados3, cmotivos3);
                 String resultado5 = (resultadoGrabacion2 ? "exito" : "error");
 
                 // email Informe de Recepcion a correos por email
-                UbicacionDAO correoDao2 = new UbicacionDAO();
-                String emailCorreo2 = correoDao2.obtenerEmail(idCorreo6);
-                GestionarEmail mailer2 = new GestionarEmail();
-                String subject2 = "Recepcion Tarjetas Remito " + nombreArchivo6;
-                String texto2 = "Se adjunta informe de recepción de remito " + nombreArchivo6;
-                boolean resultadoEmail2 = mailer2.enviarEmail(emailCorreo2, subject2, texto2, rutaPdf + File.separator + nombreArchivo6, nombreArchivo6);
-                System.out.println("Resultado email:" + (resultadoEmail2 ? "OK" : "Fracaso"));
+                if (resultadoGrabacion2) {
+                    UbicacionDAO correoDao2 = new UbicacionDAO();
+                    String emailCorreo2 = correoDao2.obtenerEmail(idCorreo6);
+                    GestionarEmail mailer2 = new GestionarEmail();
+                    String subject2 = "Recepcion Tarjetas Remito " + nombreArchivo6;
+                    String texto2 = "Se adjunta informe de recepción de remito " + nombreArchivo6;
+                    boolean resultadoEmail2 = mailer2.enviarEmail(emailCorreo2, subject2, texto2, rutaPdf + File.separator + nombreArchivo6, nombreArchivo6);
+                    System.out.println("Resultado email:" + (resultadoEmail2 ? "OK" : "Fracaso"));
+                }
 
                 // Devolver el control a la capa de presentación
                 request.setAttribute("resultado", resultado5);
@@ -383,7 +395,7 @@ public class ControladorRemito extends HttpServlet {
                 break;
 
             default:
-                out.println("No se especificó una acción válida");
+                System.out.println("No se especificó una acción válida");
                 break;
         }
     }
@@ -423,25 +435,26 @@ public class ControladorRemito extends HttpServlet {
         return formatoDestino.format(fechaOrigenDate);
     }
 
-    private String concatenarCuentas(String[] cuentas, int cntCuentas) {
+    private String concatenarCuentas(List<String> cuentas) {
+        // Recibe una lista de Strings
+        // Devuelve un String con los valores de la lista concatenados y separados por comas
         StringBuilder resultado = new StringBuilder();
-
-        for (int i = 0; i < cntCuentas; i++) {
-            resultado.append(cuentas[i]);
+        for (int i = 0; i < cuentas.size(); i++) {
+            resultado.append(cuentas.get(i));
 
             // Agregar coma solo si no es el último elemento.
-            if (i < cntCuentas - 1) {
+            if (i < cuentas.size() - 1) {
                 resultado.append(",");
             }
         }
         return resultado.toString();
     }
 
-    private boolean grabarMovimientoEnviar(String idCorreo, String fechaEnvio, String ccuentas, String remito) {
+    private boolean grabarMovimientoEnviar(String idCorreo, String fechaEnvio, String cpiezas, String remito) {
 
         // Iterar sobre los datos y guardarlos en la base de datos
-        boolean resultado;
-        String[] cuentas = ccuentas.split(",");
+        boolean resultado;        
+        String[] piezas = cpiezas.split(",");
         String fecha = null;
         try {
             fecha = convertirFecha(fechaEnvio);
@@ -450,7 +463,8 @@ public class ControladorRemito extends HttpServlet {
         }
         int exitos = 0;
         int fracasos = 0;
-        for (String cuenta : cuentas) {
+        
+        for (String pieza : piezas) {
             Movimiento movimiento = new Movimiento();
             Estado estado = new Estado();
             estado.setId(2); // En Distribución
@@ -460,11 +474,13 @@ public class ControladorRemito extends HttpServlet {
             Ubicacion correo = new Ubicacion();
             correo.setId(Integer.parseInt(idCorreo));
             MovimientoDAO mdao = new MovimientoDAO();
+            movimiento.setPieza(Integer.parseInt(pieza));
+            TarjetaDAO tdao = new TarjetaDAO();
+            String cuenta = tdao.buscarCuenta(pieza);
             movimiento.setCliente(Integer.parseInt(cuenta));
             movimiento.setFecha(Date.valueOf(fecha));
             movimiento.setOperador(operador);
             movimiento.setUbicacion(correo);
-            System.out.println("Documento:<" + remito + ">");
             movimiento.setDocumento(remito);            
             resultado = mdao.agregarEnviar(movimiento);
             if (resultado) {
@@ -484,55 +500,40 @@ public class ControladorRemito extends HttpServlet {
         return resultado;
     }
 
-    private boolean grabarMovimientoRecibir(String idCorreo2, String fechaRecepcion, String ccuentas, String nombreArchivo3, String cresultados, String cmotivos) {
+    private boolean grabarMovimientoRecibir(String idCorreo2, String fechaRecepcion, String cpiezas, String ccuentas, String nombreArchivo3, String cresultados, String cmotivos) {
         // Iterar sobre los datos y guardarlos en la base de datos
         boolean resultado;
         String[] cuentas = ccuentas.split(",");
+        String[] piezas = cpiezas.split(",");
         String[] resultados = cresultados.split(",");
         String[] motivos = cmotivos.split(",");
-        /*
-        String fecha = null;
-        try {
-            fecha = convertirFecha(fechaRecepcion);
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-        }
-        */
+        
         int exitos = 0;
         int fracasos = 0;
-        for (int i=0; i < cuentas.length; i++) {        
+        for (int i=0; i < piezas.length; i++) {        
             Movimiento movimiento = new Movimiento();
             Estado estado = new Estado();
             estado.setId(Integer.parseInt(resultados[i])); 
-            movimiento.setMovimiento(estado);
-            
-            // Motivo motivo = new Motivo();
-            // motivo.setId(Integer.parseInt(motivos[i]));
-            // movimiento.setMotivo(motivo);
-            
+            movimiento.setMovimiento(estado);            
             Operador operador = new Operador();
             operador.setId(11); // Operador ficticio
             Ubicacion correo = new Ubicacion();
             correo.setId(Integer.parseInt(idCorreo2));
             MovimientoDAO mdao = new MovimientoDAO();
+            movimiento.setPieza(Integer.parseInt(piezas[i]));
             movimiento.setCliente(Integer.parseInt(cuentas[i]));
             movimiento.setFecha(Date.valueOf(fechaRecepcion));
             movimiento.setOperador(operador);
-            movimiento.setUbicacion(correo);
-            System.out.println("Documento:<" + nombreArchivo3 + ">");
-            movimiento.setDocumento(nombreArchivo3);
-            System.out.println("Motivo ("+i+"):" + motivos[i]+".");
-            if ("0".equals(motivos[i])) {
-                        System.out.println("Motivo vacío:" + i);
+            movimiento.setUbicacion(correo);            
+            movimiento.setDocumento(nombreArchivo3);            
+            if ("0".equals(motivos[i])) {                        
                         resultado = mdao.agregarRecibir2(movimiento);                        
-                    } else {
-                        System.out.println("Motivo no vacío:" + i);
+                    } else {                        
                         Motivo motivo = new Motivo();
                         motivo.setId(Integer.parseInt(motivos[i]));
                         movimiento.setMotivo(motivo);
                         resultado = mdao.agregarRecibir(movimiento);
-                    }
-            // resultado = mdao.agregarRecibir(movimiento);
+                    }            
             if (resultado) {
                 exitos++;
             } else {
