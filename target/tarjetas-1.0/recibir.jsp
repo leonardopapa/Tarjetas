@@ -37,7 +37,7 @@
                         <form action="ControladorRemito" method="post" id="frmRecibir">
                             <div class="row">
 
-                                <div class="col">
+                                <div class="col-3">
 
                                     <div class="card" >
 
@@ -128,12 +128,9 @@
             window.onload = iniciar;
 
             function iniciar() {
-                var fechaActual = new Date();
-                // Formatear la fecha como DD/MM/AAAA
-                var formatoFecha = fechaActual.toISOString().split('T')[0];
-                // Obtener el elemento de entrada de texto por su ID
-                var inputFecha = document.getElementById('inputFechaRendicion');
-                // Establecer el valor por defecto del input text como la fecha formateada
+                var fechaActual = new Date();                
+                var formatoFecha = fechaActual.toISOString().split('T')[0];                
+                var inputFecha = document.getElementById('inputFechaRendicion');                
                 inputFecha.value = formatoFecha;
             }
 
@@ -166,8 +163,8 @@
                 http.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
                         var cuenta = this.responseText.trim();
-                        console.log("Response text:[" + resultado + "]");
-                        if (cuenta === "no encontrado")) {
+                        console.log("Response text:[" + cuenta + "]");
+                        if (cuenta === "no encontrado") {
                             alert("La pieza ingresada no se encuentra en estado En Distribución con ese correo");
                             return;
                         }

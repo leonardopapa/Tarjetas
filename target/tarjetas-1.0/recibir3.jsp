@@ -42,6 +42,7 @@
                                     String correo = (String) request.getAttribute("correo");
                                     String frend = (String) request.getAttribute("frend");
                                     String ccuentas = (String) request.getAttribute("ccuentas");
+                                    String cpiezas = (String) request.getAttribute("cpiezas");
                                     String cresultados = (String) request.getAttribute("cresultados");
                                     String cmotivos = (String) request.getAttribute("cmotivos");
                                     String leyenda = null;
@@ -83,6 +84,7 @@
                                     <input type="hidden" name="correo" value="<%=correo%>"> 
                                     <input type="hidden" name="frend" value="<%=frend%>"> 
                                     <input type="hidden" name="ccuentas" value="<%=ccuentas%>">
+                                    <input type="hidden" name="cpiezas" value="<%=cpiezas%>">
                                     <input type="hidden" name="cresultados" value="<%= cresultados %>"> 
                                     <input type="hidden" name="cmotivos" value="<%= cmotivos %>"> 
 

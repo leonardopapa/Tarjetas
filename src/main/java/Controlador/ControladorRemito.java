@@ -67,6 +67,8 @@ public class ControladorRemito extends HttpServlet {
         List<String> cuentas = new ArrayList();        
         List<String> motivos = new ArrayList();
         List<String> estados = new ArrayList();
+        List<String> motivosn = new ArrayList();
+        List<String> estadosn = new ArrayList();
 
         // Procesar los parámetros
         String accion = "";
@@ -83,14 +85,16 @@ public class ControladorRemito extends HttpServlet {
                 System.out.println("Acción:" + accion);
             } else if (parametro.startsWith("motivo")) {
                 String motivo = request.getParameter(parametro);
+                motivos.add(motivo);
                 if ("0".equals(motivo)) {
-                    motivos.add(" ");
+                    motivosn.add(" ");
                 } else {
-                    motivos.add(motivoDao.buscar(motivo));
+                    motivosn.add(motivoDao.buscar(motivo));
                 }
             } else if (parametro.startsWith("resultado")) {
                 String estado = request.getParameter(parametro);
-                estados.add(estadoDao.buscar(estado));
+                estados.add(estado);
+                estadosn.add(estadoDao.buscar(estado));
             }
         }
         
@@ -269,11 +273,11 @@ public class ControladorRemito extends HttpServlet {
                 RemitoDAO recepcion = new RemitoDAO();
                 String resultado4 = null;
                 String nombreArchivo4 = null;
-                if (recepcion.existe(nroRendicion)) {
+                if (recepcion.existe(nroRendicion)) {                    
                     resultado4 = "error";
-                } else {
+                } else {                    
                     // Generar remito de recepción
-                    File documentoPDF2 = remito.crearRecepcion(fechaRendicion, correo2, cuentas, piezas, estados, motivos, nroRendicion, rutaDespliegue);
+                    File documentoPDF2 = remito.crearRecepcion(fechaRendicion, correo2, cuentas, piezas, estadosn, motivosn, nroRendicion, rutaDespliegue);
 
                     // Verificar si la carpeta "pdf" existe, si no, crearla
                     File carpetaPdf2 = new File(rutaPdf);
@@ -308,7 +312,7 @@ public class ControladorRemito extends HttpServlet {
                 String firma2 = request.getParameter("password");
                 String idCorreo5 = request.getParameter("correo");
                 String fechaRendicion2 = request.getParameter("frend");
-                String cpiezas2 = request.getParameter("ccuentas");
+                String cpiezas2 = request.getParameter("cpiezas");
                 String ccuentas3 = request.getParameter("ccuentas");
                 String cresultados2 = request.getParameter("cresultados");
                 String cmotivos2 = request.getParameter("cmotivos");
