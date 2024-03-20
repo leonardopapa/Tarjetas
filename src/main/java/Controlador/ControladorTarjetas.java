@@ -8,6 +8,7 @@ import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
 import Modelo.Reporte;
+import Modelo.ReporteDAO;
 import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
 import java.io.IOException;
@@ -45,14 +46,14 @@ public class ControladorTarjetas extends HttpServlet {
             throws ServletException, IOException {
 
         String accion = "";
-        
+
         // Obtener los parámetros del formulario
         Enumeration<String> parametros = request.getParameterNames();
         List<String> piezas = new ArrayList();
         List<String> cuentas = new ArrayList();
-        List<String> fechas = new ArrayList();        
+        List<String> fechas = new ArrayList();
         List<String> estados = new ArrayList();
-        
+
         // Procesar los parámetros
         while (parametros.hasMoreElements()) {
             String parametro = parametros.nextElement();
@@ -80,9 +81,8 @@ public class ControladorTarjetas extends HttpServlet {
         System.out.println("Piezas:" + piezas.size());
         System.out.println("Cuentas:" + cuentas.size());
         System.out.println("Fechas:" + fechas.size());
-        
+
         //Mostrar los parámetros recibidos
-        
         /*
         
         System.out.println("Datos recibidos:");        
@@ -90,8 +90,7 @@ public class ControladorTarjetas extends HttpServlet {
             System.out.println( i + " - Cuenta: " + cuentas.get(i) + " // Pieza: " + piezas.get(i)+ " // Fecha: " + fechas.get(i) + " // Estado: " + estados.get(i) + " // Motivo:" + motivos.get(i) );
         }
         System.out.println("Cantidad=" + piezas.size());
-        */
-        
+         */
         switch (accion) {
             case "capturar":
 
@@ -103,10 +102,10 @@ public class ControladorTarjetas extends HttpServlet {
                 String duplicados = td.buscar(piezas);
                 String result = "";
                 if (duplicados.equalsIgnoreCase("ok")) {
-                    
+
                     // Iterar sobre los datos y guardarlos en la base de datos
                     List<Movimiento> lista = new ArrayList<Movimiento>();
-                    for (int i = 0; i < piezas.size(); i++) {                        
+                    for (int i = 0; i < piezas.size(); i++) {
                         Movimiento movimiento = new Movimiento();
                         Estado estado = new Estado();
                         estado.setId(1); // Impresa
@@ -132,12 +131,12 @@ public class ControladorTarjetas extends HttpServlet {
                     System.out.println("Exitos=" + exitos);
                     System.out.println("Fracasos=" + fracasos);
 
-                    result = fracasos == 0 ? "OK. "+ exitos + " piezas grabada/as con éxito" : "Se grabaron con éxito " + exitos + "piezas y fallaron " + fracasos;
+                    result = fracasos == 0 ? "OK. " + exitos + " piezas grabada/as con éxito" : "Se grabaron con éxito " + exitos + "piezas y fallaron " + fracasos;
 
                 } else {
                     result = "La pieza " + result + " se encuentra duplicada. No se grabaron los cambios";
                 }
-                
+
                 System.out.println("Resultado:" + result);
                 request.setAttribute("resultado", result);
                 request.getRequestDispatcher("capturar.jsp").forward(request, response);
@@ -158,101 +157,34 @@ public class ControladorTarjetas extends HttpServlet {
                 String desde = request.getParameter("desde");
                 String hasta = request.getParameter("hasta");
                 String correo4 = request.getParameter("correo");
-                Conexion cn = new Conexion();
-                Connection con;
-                PreparedStatement ps;
-                ResultSet rs;
-                con = cn.Conexion();
+                
+                System.out.println("Reporte:" + reporte);
+                
                 String sql = "";
-                List<String> titulos = new ArrayList();
-                List<Reporte> reporte3 = new ArrayList();
-                String columna1 = "";
-                String columna2 = "cantidad";
-                String columna3 = "";
-                String columna4 = "";
-                String columna5 = "";
-                String columna6 = "";
-                String columna7 = "";
-                if (reporte.equalsIgnoreCase("1")) //tarjetas por estado
-                {
-                    sql = "CALL tarjetas_x_estado_impos(?,?)";
-                    titulos.add("Estado");
-                    titulos.add("Cantidad");
-                    columna1 = "estado";
-                } else if (reporte.equalsIgnoreCase("2")) //motivos de rechazo
-                {
-                    sql = (correo4 == null || correo4.isEmpty()) ? "CALL motivos2(?,?)" : "CALL motivos(?,?,?)";
-                    titulos.add("Motivo");
-                    titulos.add("Cantidad");
-                    columna1 = "causa";
-                } else if (reporte.equalsIgnoreCase("3")) //rapidez en la entrega
-                {
-                    sql = (correo4 == null || correo4.isEmpty()) ? "CALL rapidez(?,?)" : "CALL rapidez-correo(?,?,?)";
-                    titulos.add("Meses");
-                    titulos.add("Piezas");
-                    titulos.add("Días promedio");
-                    columna1 = "mes";
-                    columna2 = "total_piezas";
-                    columna3 = "rapidez";
-
-                } else if (reporte.equalsIgnoreCase("4")) //efectividad de la entrega
-                {
-                    sql = (correo4 == null || correo4.isEmpty()) ? "CALL efectiv(?,?)" : "CALL efectiv_correo(?,?,?)";
-                    titulos.add("Meses");
-                    titulos.add("Piezas");
-                    titulos.add("Entregadas");
-                    titulos.add("Devueltas");
-                    titulos.add("% Entregadas");
-                    titulos.add("% Devueltas");
-                    columna1 = "mes";
-                    columna2 = "total_piezas";
-                    columna3 = "total_piezas";
-                    columna4 = "entregadas";
-                    columna5 = "devueltas";
-                    columna6 = "porcentaje_entregadas";
-                    columna7 = "devueltas";
+                switch (reporte) {
+                    case "1":
+                        sql = "CALL tarjetas_x_estado_impos('" + desde + "', '"+ hasta + "')";
+                        break;
+                    case "2": 
+                        sql = "0".equalsIgnoreCase(correo4) ? "CALL motivos2('" + desde + "', '"+ hasta + "')" : "CALL motivos('" + desde + "', '"+ hasta + "', " + correo4+")";
+                        break;
+                    case "3":
+                        sql = "0".equalsIgnoreCase(correo4) ? "CALL rapidez('" + desde + "', '"+ hasta + "')" : "CALL rapidez_correo('" + desde + "', '"+ hasta + "', " + correo4+")";
+                        break;
+                    case "4":
+                        sql = "0".equalsIgnoreCase(correo4) ? "CALL efectiv('" + desde + "', '"+ hasta + "')" : "CALL efectiv_correo('" + desde + "', '"+ hasta + "', " + correo4+")";
+                        break;
                 }
-                try {
-                    ps = con.prepareStatement(sql);
-                    ps.setDate(1, Date.valueOf(desde));
-                    ps.setDate(2, Date.valueOf(hasta));
-                    if (!(correo4 == null || correo4.isEmpty()) && !reporte.equalsIgnoreCase("1")) {
-                        ps.setInt(3, Integer.valueOf(correo4));
-                    }
-                    rs = ps.executeQuery();
+                
+                ReporteDAO rdao = new ReporteDAO();                
+                List<ArrayList<Object>> report = rdao.generarReporte(sql);
 
-                    // Convertir el resultset a lista
-                    try {
-                        while (rs.next()) {
-                            Reporte reporteLinea = new Reporte();
-                            reporteLinea.setDescripcion(rs.getString(columna1));
-                            reporteLinea.setCantidad(rs.getInt(columna2));
-                            reporte3.add(reporteLinea);
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.toString());
-                    } finally {
-                        // Cierra el ResultSet si es necesario.
-                        try {
-                            if (rs != null) {
-                                rs.close();
-                            }
-                        } catch (Exception e) {
-                            System.out.println(e.toString());
-                        }
-                    }
-
-                } catch (Exception e) {
-                    System.out.println(e.toString());
-                    System.out.println("Error al generar el reporte");
-                    response.setStatus(500);
-                    return;
-                }
-                cn.Desconectar();
-                request.setAttribute("reporte", reporte3);
-                request.setAttribute("titulos", titulos);
-                response.setStatus(200);
-                request.getRequestDispatcher("reportes2.jsp").forward(request, response);
+                request.setAttribute("reporte", report);                                
+                request.setAttribute("correo", correo4);
+                request.setAttribute("desde", desde);
+                request.setAttribute("hasta", hasta);
+                request.setAttribute("nreporte", reporte);
+                request.getRequestDispatcher("reportes.jsp").forward(request, response);
                 break;
 
             case "dashboard":
@@ -328,12 +260,12 @@ public class ControladorTarjetas extends HttpServlet {
             case "buscarCambiar":
                 String pieza = request.getParameter("pieza");
                 String resultado3;
-                TarjetaDAO tdao = new TarjetaDAO();                
-                String fechaEmision = tdao.buscar(pieza, "fecha_emision");                
+                TarjetaDAO tdao = new TarjetaDAO();
+                String fechaEmision = tdao.buscar(pieza, "fecha_emision");
                 String estadoId = tdao.buscar(pieza, "estado");
-                String cuenta1 = tdao.buscar(pieza, "cliente");                
+                String cuenta1 = tdao.buscar(pieza, "cliente");
                 EstadoDAO estDAO = new EstadoDAO();
-                String estado = estDAO.buscar(estadoId);                         
+                String estado = estDAO.buscar(estadoId);
                 if (cuenta1.isEmpty()) {
                     resultado3 = "no encontrado";
                 } else {
@@ -345,7 +277,7 @@ public class ControladorTarjetas extends HttpServlet {
 
                 // Devolver la respuesta en formato JSON al cliente
                 response.setContentType("application/json");
-                response.getWriter().write(jsonResponse2);                
+                response.getWriter().write(jsonResponse2);
                 break;
 
             case "cambiar":

@@ -13,6 +13,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExportController extends HttpServlet {
+    
+    /* Convierte una tabla de datos en un archivo Excel
+        Recibe como parámetros:
+        a) el tipo de archivo de salida (exportTpye="XLS" o "XLSX")
+        b) el título de las columnas, separadas por comas
+        c) los datos, separados por comas        
+    */ 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

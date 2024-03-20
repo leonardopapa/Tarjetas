@@ -4,8 +4,6 @@ import Modelo.Tarjeta;
 import Modelo.TarjetaDAO;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +23,12 @@ public class ExportController2 extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
+        /* 
+            Genera un listado de tarjetas a partir de determinados parámetros de filtrado
+            y los convierte en un archivo Excel
+        */
+        
         // Obtener parámetros de filtrado                
         String cuenta = request.getParameter("cuenta");
         String estado = request.getParameter("selEstado");

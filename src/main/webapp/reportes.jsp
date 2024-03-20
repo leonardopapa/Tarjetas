@@ -1,3 +1,5 @@
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -31,6 +33,14 @@
                         <h5 class="card-title">Reportes</h5>
                         <hr>
 
+                        <%
+                                String nreporte = request.getParameter("nreporte");
+                                String desde = request.getParameter("desde");
+                                String hasta = request.getParameter("hasta");
+                                String correo = request.getParameter("correo");
+                                List<ArrayList<Object>> reporte = (List<ArrayList<Object>>) request.getAttribute("reporte");
+                        %>
+
                         <div class="row">
 
                             <div class="col">
@@ -59,7 +69,7 @@
                                                 <label for="selCorreo" class="col-form-label">Correo:</label>
                                                 <div class="col">
                                                     <select class="form-select" id="selCorreo" name="correo">
-                                                        <option selected">Seleccione el Correo</option>
+                                                        <option selected value="0">Seleccione el Correo</option>
                                                         <option value="29">Servicios Modernos</option>
                                                         <option value="32">Dago</option>
                                                         <option value="30">Flash</option>
@@ -87,43 +97,6 @@
 
                                             <br>
 
-                                            <!-- comment 
-                                            <div class="form-check ">
-                                                <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                                       id="flexRadioDefault1">
-                                                <label class="form-check-label" for="flexRadioDefault1">
-                                                    Resumido
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                                       id="flexRadioDefault2" checked>
-                                                <label class="form-check-label" for="flexRadioDefault2">
-                                                    Detallado
-                                                </label>
-                                            </div>
-                                            <br>
-                
-                
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="detalle"
-                                                       id="flexRadioDefault1">
-                                                <label class="form-check-label" for="flexRadioDefault1">
-                                                    Por fecha de enví­o
-                                                </label>
-                                            </div>
-                
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="detalle"
-                                                       id="flexRadioDefault2" checked>
-                                                <label class="form-check-label" for="flexRadioDefault2">
-                                                    Por fecha de rendición
-                                                </label>
-                                            </div>
-                
-                                            <br>
-                                            -->
-
                                             <input type="hidden" name="accion" value="reportes">
 
                                             <button type="button" class="btn btn-danger" onclick="obtenerReporte();">Obtener Reporte</button>
@@ -144,6 +117,72 @@
 
                                     <div class="card-body"> 
                                         <h6>Resultados</h6>
+
+                                        <form id="exportForm" action="ExportController" method="post">
+
+                                            <table id="tblReporte" class="table table-striped" style="width:100%">
+                                                <thead>
+                                                    <tr>
+
+                                                        <%                                                            // Obtener el reporte del request
+                                                            
+
+                                                            // Verificar si el reporte no es nulo y tiene al menos una fila
+                                                            if (reporte != null && !reporte.isEmpty()) {
+                                                                // Obtener los nombres de los campos de la primera fila
+                                                                ArrayList<Object> nombresCampos = reporte.get(0);
+
+                                                                // Iterar sobre los nombres de los campos para construir las columnas de la tabla
+                                                                for (Object nombreCampo : nombresCampos) {
+                                                        %>
+                                                        <th><%= nombreCampo%></th>
+                                                            <%
+                                                                }
+                                                            %>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <%
+                                                        // Iterar sobre las filas de datos del reporte
+                                                        for (int i = 1; i < reporte.size(); i++) {
+                                                            ArrayList<Object> fila = reporte.get(i);
+                                                    %>
+                                                    <tr>
+                                                        <%
+                                                            // Iterar sobre los valores de los campos en la fila actual
+                                                            for (Object valor : fila) {
+                                                        %>
+                                                        <td><%= valor%></td>
+                                                        <%
+                                                            }
+                                                        %>
+                                                    </tr>
+                                                    <%
+                                                            }
+                                                        }
+                                                    %>
+
+                                                </tbody>
+                                            </table> 
+
+                                            <input type="hidden" id="columnaInput" name="columna">
+                                            <input type="hidden" id="datoInput" name="dato">
+                                            <input type="hidden" id="exportTypeInput" name="exportType">
+
+                                            <button type="button" class="btn btn-success" onclick="submitForm('XLS')">
+                                                <img src="img/xls.png" width="25" height="25" alt="Exportar a XLS"/>
+                                                Exportar a XLS                                                
+                                            </button>
+
+                                            <button type="button" class="btn btn-success" onclick="submitForm('XLSX')">
+                                                <img src="img/xlsx.png" width="25" height="25" alt="Exportar a XLSX"/>
+                                                Exportar a XLSX                                            
+                                            </button>  
+
+                                        </form>
+
                                     </div>
                                 </div>
 
@@ -165,7 +204,7 @@
                 // Validar datos de entreda                
                 var reporte = document.getElementById("selReporte");
                 var desde = document.getElementById("desde");
-                var hasta = document.getElementById("hasta");                
+                var hasta = document.getElementById("hasta");
                 if (reporte.value === "0") {
                     alert("Debe seleccionar un reporte");
                     return;
@@ -188,7 +227,38 @@
                 if (confirmacion) {
                     window.location.href = "index.jsp";
                 }
-            }           
+            }
+
+            function submitForm(exportType) {
+                var table = document.getElementById("tblReporte");
+                var rows = table.getElementsByTagName("tr");
+                var columnas = [];
+
+                // Obtener encabezados
+                var headerRow = rows[0];
+                var cells = headerRow.getElementsByTagName("th");
+                for (var i = 0; i < cells.length; i++) {
+                    columnas.push(cells[i].innerText);
+                }
+
+                // Construir datos
+                var datos = [];
+                for (var j = 1; j < rows.length; j++) {
+                    var cells = rows[j].getElementsByTagName("td");
+                    var rowData = [];
+                    for (var k = 0; k < cells.length; k++) {
+                        rowData.push(cells[k].innerText);
+                    }
+                    datos.push(rowData.join(","));
+                }
+
+                // Crear campos ocultos y enviar formulario
+                document.getElementById("columnaInput").value = columnas.join(",");
+                document.getElementById("datoInput").value = datos.join(",");
+                document.getElementById("exportTypeInput").value = exportType;
+
+                document.forms["exportForm"].submit();
+            }
 
         </script>
 

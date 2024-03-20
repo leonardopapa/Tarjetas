@@ -128,7 +128,7 @@
                                     <br>
                                     <input type="hidden" name="accion" value="capturar">
 
-                                    <button type="submit" class="btn btn-danger" >Capturar</button>
+                                    <button type="submit" class="btn btn-danger" >Finalizar</button>
 
                                     <button type="button" class="btn btn-danger" onclick="cancelar()">Salir</button>
 
