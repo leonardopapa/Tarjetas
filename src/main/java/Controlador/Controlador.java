@@ -1,6 +1,5 @@
 package Controlador;
 
-import Modelo.Conexion;
 import Modelo.Estado;
 import Modelo.Ubicacion;
 import Modelo.EstadoDAO;
@@ -9,8 +8,6 @@ import Modelo.TarjetaDAO;
 import Modelo.UbicacionDAO;
 import Utilidades.GestionarExcel;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,6 +18,10 @@ public class Controlador extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        /*
+            Gestiones de los botones de navegación, exportación y filtrado de la pantalla principal
+        */
+        
         String accion = request.getParameter("accion");
         System.out.println("Accion:" + accion);        
         boolean acc1 = accion.equalsIgnoreCase("filtrar");
@@ -38,8 +39,10 @@ public class Controlador extends HttpServlet {
             String hasta = request.getParameter("hasta");
             String inicioListaS = request.getParameter("inicioLista");
             String tamanoSubListaS = request.getParameter("tamanoSubLista");
+            /*
             System.out.println("Inicio Lista: " + inicioListaS);
             System.out.println("Tamaño Sub Lista: " + tamanoSubListaS);
+            */
 
             // Generar lista de tarjetas filtrada                                
             TarjetaDAO tdao = new TarjetaDAO();
@@ -88,12 +91,14 @@ public class Controlador extends HttpServlet {
                 // Enviar el archivo Excel como respuesta                
                 response.getOutputStream().write(excelFile);
             }
-
+            
+            /*
             System.out.println("Luego del filtrado: ");
             System.out.println("Inicio Lista: " + inicioLista);
             System.out.println("Max Size: " + maxSize);
             System.out.println("Tamaño Lista: " + tamanoLista);
             System.out.println("Tamaño Sub Lista: " + tamanoSubLista);
+            */
 
             List<Tarjeta> lista = listat.subList(inicioLista, inicioLista + tamanoSubLista);
 

@@ -148,7 +148,7 @@
                                 
                 console.log("Iniciando llamada Http - pieza:" + pieza);
                 var http = new XMLHttpRequest();
-                url = 'ControladorBuscar?pieza=' + pieza;
+                url = 'ControladorTarjetas?pieza=' + pieza + '&accion=buscarEnviar';
                 http.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
                         var respuesta = this.responseText.trim().split(",");

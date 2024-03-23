@@ -34,12 +34,22 @@
                         <hr>
 
                         <%
-                                String nreporte = request.getParameter("nreporte");
-                                String desde = request.getParameter("desde");
-                                String hasta = request.getParameter("hasta");
-                                String correo = request.getParameter("correo");
-                                List<ArrayList<Object>> reporte = (List<ArrayList<Object>>) request.getAttribute("reporte");
+                            String nreporte = request.getParameter("nreporte");
+                            String reporten = request.getParameter("reporten");
+                            String desde = request.getParameter("desde");
+                            String hasta = request.getParameter("hasta");
+                            String correo = request.getParameter("correo");
+                            String nombrec = request.getParameter("nombrec");
+                            List<ArrayList<Object>> reporte = (List<ArrayList<Object>>) request.getAttribute("reporte");
                         %>
+                        
+                        <script>
+                            console.log("Correo:" + "<%=correo %>" );
+                            console.log("Nombre Correo:" + "<%=nombrec %>" );
+                            console.log("Reporte:" + "<%=nreporte %>" );
+                            console.log("Nombre Reporte:" + "<%=reporten %>" );
+                            
+                        </script>
 
                         <div class="row">
 
@@ -55,7 +65,19 @@
                                                 <label for="selReporte" class="col-form-label">Reporte:</label>
                                                 <div class="col">
                                                     <select class="form-select" id="selReporte" name="reporte">
-                                                        <option selected value="0">Seleccione el reporte</option>
+
+                                                        <%
+                                                            if (nreporte == null) {
+                                                            %>
+                                                            <option selected value="0">Seleccione el reporte</option>
+                                                            <%
+                                                            } else { %>
+                                                            <option selected value="<%= nreporte %>"><%= reporten %></option>
+                                                            <option value="0">Seleccione el reporte</option>
+                                                            <%
+                                                                }
+                                                        %>
+
                                                         <option value="1">Tarjetas por Estado</option>
                                                         <option value="2">Motivos de Rechazo</option>
                                                         <option value="3">Rapidez en la entrega</option>
@@ -69,6 +91,19 @@
                                                 <label for="selCorreo" class="col-form-label">Correo:</label>
                                                 <div class="col">
                                                     <select class="form-select" id="selCorreo" name="correo">
+                                                        
+                                                        <%
+                                                            if (correo == null) {
+                                                            %>
+                                                            <option selected value="0">Seleccione el correo</option>
+                                                            <%
+                                                            } else { %>
+                                                            <option selected value="<%= correo %>"><%= nombrec %></option>
+                                                            <option value="0">Seleccione el correo</option>
+                                                            <%
+                                                                }
+                                                        %>
+                                                        
                                                         <option selected value="0">Seleccione el Correo</option>
                                                         <option value="29">Servicios Modernos</option>
                                                         <option value="32">Dago</option>
@@ -84,14 +119,14 @@
                                             <div class="row">
                                                 <label for="desde" class="col-form-label">Fecha Desde:</label>
                                                 <div class="col">
-                                                    <input type="date" class="form-control" id="desde" name="desde" >
+                                                    <input type="date" class="form-control" id="desde" name="desde"  value="<%=desde%>">
                                                 </div>
                                             </div>
 
                                             <div class="row">
                                                 <label for="hasta" class="col-form-label">Fecha Hasta:</label>
                                                 <div class="col">
-                                                    <input type="date" class="form-control" id="hasta" name="hasta">
+                                                    <input type="date" class="form-control" id="hasta" name="hasta" value="<%=hasta%>">
                                                 </div>
                                             </div>
 
@@ -125,7 +160,6 @@
                                                     <tr>
 
                                                         <%                                                            // Obtener el reporte del request
-                                                            
 
                                                             // Verificar si el reporte no es nulo y tiene al menos una fila
                                                             if (reporte != null && !reporte.isEmpty()) {

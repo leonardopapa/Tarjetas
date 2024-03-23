@@ -156,7 +156,7 @@
                 // Verificar que la cuenta esté en estado "En Distribución" y haya sido impuesta al correo seleccionado
                 console.log("Iniciando llamada Http - cuenta:" + pieza);
                 var http = new XMLHttpRequest();
-                url = 'ControladorBuscar2?pieza=' + pieza +'&correo=' + correo;
+                url = 'ControladorTarjetas?pieza=' + pieza +'&correo=' + correo + '&accion=verificar';
                 http.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
                         var cuenta = this.responseText.trim();

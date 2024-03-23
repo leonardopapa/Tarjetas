@@ -28,7 +28,7 @@
 
                 <div class="card" style="margin:20px">
                     <div class="card-body">
-                        <h5 class="card-title">Recibir rendición del correo</h5>
+                        <h5 class="card-title">Enviar por Correo</h5>
                         <hr>
 
                         <form action="ControladorRemito" method="post" name="frmFirmar" id="frmFirmar">

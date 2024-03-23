@@ -20,6 +20,11 @@ public class Controlador2 extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        /*
+            Generar el listado inicial de tarjetas
+            en el rango de fechas entre la actual y 3 meses atrás
+        */
+        
         // Generar las fechas iniciales
         LocalDate fechaActual = LocalDate.now();
         LocalDate fechaHaceTresMeses = fechaActual.minusMonths(3);

@@ -16,13 +16,13 @@ public class ReporteDAO {
     ResultSet rs;
 
     public List<ArrayList<Object>> generarReporte(String sql) {
-        
+
         con = cn.Conexion();
         List<ArrayList<Object>> reporte = new ArrayList<>();
         List<String> nombresCampos = new ArrayList<>();
         List<Object> nombresCamposObjects = new ArrayList<>();
         List<ArrayList<Object>> valoresCampos = new ArrayList<>();
-        System.out.println("SQL:" + sql);    
+        System.out.println("SQL:" + sql);
         try {
             stmt = con.prepareCall(sql);
             rs = stmt.executeQuery();
@@ -39,20 +39,21 @@ public class ReporteDAO {
         }
 
         for (String nombreCampo : nombresCampos) {
-            nombresCamposObjects.add((Object) nombreCampo); 
+            nombresCamposObjects.add((Object) nombreCampo);
         }
         reporte.add((ArrayList<Object>) nombresCamposObjects);
         reporte.addAll(valoresCampos);
-        
-        
+
         // Imprimir el reporte
-            System.out.println("Reporte:");
-            for (ArrayList<Object> fila : reporte) {
-                for (Object valor : fila) {
-                    System.out.print(valor + "\t");
-                }
-                System.out.println();
+        /*
+        System.out.println("Reporte:");
+        for (ArrayList<Object> fila : reporte) {
+            for (Object valor : fila) {
+                System.out.print(valor + "\t");
             }
+            System.out.println();
+        }
+         */
         
         return reporte;
     }

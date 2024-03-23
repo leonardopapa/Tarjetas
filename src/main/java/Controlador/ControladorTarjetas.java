@@ -3,7 +3,6 @@ package Controlador;
 import Modelo.Conexion;
 import Modelo.Estado;
 import Modelo.EstadoDAO;
-import Modelo.Motivo;
 import Modelo.Movimiento;
 import Modelo.MovimientoDAO;
 import Modelo.Operador;
@@ -11,6 +10,7 @@ import Modelo.Reporte;
 import Modelo.ReporteDAO;
 import Modelo.TarjetaDAO;
 import Modelo.Ubicacion;
+import Modelo.UbicacionDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -78,10 +78,11 @@ public class ControladorTarjetas extends HttpServlet {
         }
 
         //Mostrar la cantidad de parámetros recibidos
+        /*
         System.out.println("Piezas:" + piezas.size());
         System.out.println("Cuentas:" + cuentas.size());
         System.out.println("Fechas:" + fechas.size());
-
+         */
         //Mostrar los parámetros recibidos
         /*
         
@@ -157,29 +158,54 @@ public class ControladorTarjetas extends HttpServlet {
                 String desde = request.getParameter("desde");
                 String hasta = request.getParameter("hasta");
                 String correo4 = request.getParameter("correo");
-                
+
                 System.out.println("Reporte:" + reporte);
-                
+
                 String sql = "";
                 switch (reporte) {
                     case "1":
-                        sql = "CALL tarjetas_x_estado_impos('" + desde + "', '"+ hasta + "')";
+                        sql = "CALL tarjetas_x_estado_impos('" + desde + "', '" + hasta + "')";
                         break;
-                    case "2": 
-                        sql = "0".equalsIgnoreCase(correo4) ? "CALL motivos2('" + desde + "', '"+ hasta + "')" : "CALL motivos('" + desde + "', '"+ hasta + "', " + correo4+")";
+                    case "2":
+                        sql = "0".equalsIgnoreCase(correo4) ? "CALL motivos2('" + desde + "', '" + hasta + "')" : "CALL motivos('" + desde + "', '" + hasta + "', " + correo4 + ")";
                         break;
                     case "3":
-                        sql = "0".equalsIgnoreCase(correo4) ? "CALL rapidez('" + desde + "', '"+ hasta + "')" : "CALL rapidez_correo('" + desde + "', '"+ hasta + "', " + correo4+")";
+                        sql = "0".equalsIgnoreCase(correo4) ? "CALL rapidez('" + desde + "', '" + hasta + "')" : "CALL rapidez_correo('" + desde + "', '" + hasta + "', " + correo4 + ")";
                         break;
                     case "4":
-                        sql = "0".equalsIgnoreCase(correo4) ? "CALL efectiv('" + desde + "', '"+ hasta + "')" : "CALL efectiv_correo('" + desde + "', '"+ hasta + "', " + correo4+")";
+                        sql = "0".equalsIgnoreCase(correo4) ? "CALL efectiv('" + desde + "', '" + hasta + "')" : "CALL efectiv_correo('" + desde + "', '" + hasta + "', " + correo4 + ")";
                         break;
                 }
-                
-                ReporteDAO rdao = new ReporteDAO();                
+
+                ReporteDAO rdao = new ReporteDAO();
                 List<ArrayList<Object>> report = rdao.generarReporte(sql);
 
-                request.setAttribute("reporte", report);                                
+                // Generar lista de reportes
+                List<Reporte> reportes = new ArrayList();
+                reportes.add(new Reporte("0", "Seleccione un reporte"));
+                reportes.add(new Reporte("1", "Tarjetas Impuestas por Estado"));
+                reportes.add(new Reporte("2", "Motivos de Rechazo"));
+                reportes.add(new Reporte("3", "Rapidez en la Entrega"));
+                reportes.add(new Reporte("4", "Valocidad en la Entrega"));
+
+                String reporten = null;
+                for (int i = 0; i < reportes.size(); i++) {
+                    if (reportes.get(i).getId().equalsIgnoreCase(reporte)) {
+                        reporten = reportes.get(i).getNombre();
+                        break;
+                    }
+                }
+
+                UbicacionDAO correosDao = new UbicacionDAO();
+                String nombreCorreo = correosDao.buscar(correo4);
+
+                System.out.println("Nombre correo: " + nombreCorreo);
+                System.out.println("Nombre reporte: " + reporten);
+
+                // Devolver valores a la capa de presentación
+                request.setAttribute("nombrec", nombreCorreo);
+                request.setAttribute("reporten", reporten);
+                request.setAttribute("reporte", report);
                 request.setAttribute("correo", correo4);
                 request.setAttribute("desde", desde);
                 request.setAttribute("hasta", hasta);
@@ -278,6 +304,40 @@ public class ControladorTarjetas extends HttpServlet {
                 // Devolver la respuesta en formato JSON al cliente
                 response.setContentType("application/json");
                 response.getWriter().write(jsonResponse2);
+                break;
+
+            case "buscarEnviar":
+                // Llamado desde enviar.jsp
+                // Busca una pieza y devuelve la fecha de emisión y el número de cuenta.
+                // En caso de no encontrarse, devuelve "no encontrado" en ambos casos
+
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter out = response.getWriter();
+                String pieza2 = piezas.get(0);
+                TarjetaDAO tdao2 = new TarjetaDAO();
+                String resultado2 = tdao2.buscar(pieza2);
+                if (resultado2.isEmpty()) {
+                    out.println("no encontrado, no encontrado");
+                } else {
+                    out.println(resultado2);
+                }
+
+                break;
+
+            case "verificar":
+                // Verificar si una pieza se encuenta en estado "En Distribución" para un determinado "correo"
+                // Si se encuentra devuelve el número de cuenta. Caso contrario devuelve "no encontrado"
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter out2 = response.getWriter();
+                String pieza3 = piezas.get(0);
+                String correo = request.getParameter("correo");
+                TarjetaDAO tdao3 = new TarjetaDAO();
+                String resultado4 = tdao3.buscar(pieza3, "2", correo);
+                if (resultado4.isEmpty()) {
+                    out2.println("no encontrado");
+                } else {
+                    out2.println(tdao3.buscarCuenta(pieza3));
+                }
                 break;
 
             case "cambiar":
